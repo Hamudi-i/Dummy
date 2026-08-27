@@ -1,0 +1,50 @@
+# Render Blueprint - https://render.com/docs/blueprint-spec
+# Deploy: Render Dashboard -> New -> Blueprint -> pick this repo.
+# Secrets (sync: false) must be filled in the Render dashboard after creation.
+services:
+  - type: web
+    name: backend-starter-pack
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Non-secret defaults
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SYNCHRONIZE
+        value: "true"
+      - key: BcryptHashRound
+        value: "10"
+      # Secrets / per-environment values - set these in the Render dashboard
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REFRESH_SECRET_TOKEN
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
+      - key: BREVO_SENDER_NAME
+        sync: false
+      - key: MINIO_ENDPOINT
+        sync: false
+      - key: MINIO_PORT
+        sync: false
+      - key: MINIO_USE_SSL
+        sync: false
+      - key: MINIO_ACCESS_KEY
+        sync: false
+      - key: MINIO_SECRET_KEY
+        sync: false
+      - key: MINIO_REGION
+        sync: false
