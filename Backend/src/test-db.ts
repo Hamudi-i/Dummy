@@ -1,10 +1,10 @@
-import {prisma} from './infrastructure/prisma';
+import { prisma } from './infrastructure/prisma';
 async function main() {
     const user = await prisma.user.create({
         data: {
             email: `Test_${Date.now()}@prisma.io`,
             name: 'Migration test',
-            passwordHash: 'dummyhash123',
+            password: 'dummyhash123',
         },
     });
 

@@ -1,6 +1,6 @@
 import express from "express";
 import { WorkspaceController } from "../controllers/workspaces-controller";
-import Authenticate from "src/middleware/auth";
+import Authenticate from "../middleware/auth";
 
 const router = express.Router();
 
@@ -8,5 +8,10 @@ const router = express.Router();
 router.use(Authenticate);
 
 router.get("/", WorkspaceController.getAllWorkspaces);
+router.get("/:id", WorkspaceController.getWorkspaceById);
+router.get("/:slug", WorkspaceController.getWorkspaceBySlug);
+router.post("/", WorkspaceController.createWorkspace);
+router.put("/:id", WorkspaceController.updateWorkspace);
+router.delete("/:id", WorkspaceController.deleteWorkspace);
 
 export default router;

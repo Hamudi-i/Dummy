@@ -4,17 +4,17 @@ import dotenv from "dotenv";
 // import fetch from "node-fetch";
 // import base64arraybuffer from "base64-arraybuffer";
 // import { ToWords } from "to-words";
-var bcrypt =require("bcrypt");
+var bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 
 dotenv.config();
 
 export class Util {
-//   static async convertToBase64(file: string): Promise<string> {
-//     const imageAsBase64 = fs.readFileSync(file, "base64");
-//     const mimeType = mime.lookup(file) || "application/octet-stream";
-//     return `data:${mimeType};base64,${imageAsBase64}`;
-//   }
+  //   static async convertToBase64(file: string): Promise<string> {
+  //     const imageAsBase64 = fs.readFileSync(file, "base64");
+  //     const mimeType = mime.lookup(file) || "application/octet-stream";
+  //     return `data:${mimeType};base64,${imageAsBase64}`;
+  //   }
 
   static hashPassword(plainPassword: string): string {
     return bcrypt.hashSync(plainPassword, Number(process.env.BcryptHashRound));
@@ -24,21 +24,21 @@ export class Util {
     return bcrypt.compareSync(plainPassword, encryptedPassword);
   }
 
-//   static async convertToBase64FromUrl(fileUrl: string): Promise<string> {
-//     const arrayBuffer = await fetch(fileUrl).then(res => res.arrayBuffer());
-//     const base64 = base64arraybuffer.encode(arrayBuffer);
-//     let mimeType = "image/png";
+  //   static async convertToBase64FromUrl(fileUrl: string): Promise<string> {
+  //     const arrayBuffer = await fetch(fileUrl).then(res => res.arrayBuffer());
+  //     const base64 = base64arraybuffer.encode(arrayBuffer);
+  //     let mimeType = "image/png";
 
-//     if (fileUrl.includes(".jpg")) {
-//       mimeType = "image/jpg";
-//     } else if (fileUrl.includes(".jpeg")) {
-//       mimeType = "image/jpeg";
-//     } else if (fileUrl.includes(".svg")) {
-//       mimeType = "image/svg+xml";
-//     }
+  //     if (fileUrl.includes(".jpg")) {
+  //       mimeType = "image/jpg";
+  //     } else if (fileUrl.includes(".jpeg")) {
+  //       mimeType = "image/jpeg";
+  //     } else if (fileUrl.includes(".svg")) {
+  //       mimeType = "image/svg+xml";
+  //     }
 
-//     return `data:${mimeType};base64,${base64}`;
-//   }
+  //     return `data:${mimeType};base64,${base64}`;
+  //   }
 
   static formatNumber(num: number | string | null): string {
     if (!num) return "";
@@ -46,27 +46,27 @@ export class Util {
     return num.toLocaleString("en-US");
   }
 
-//   static numberToWord(num: number | string): string {
-//     if (typeof num === "string") num = parseFloat(num);
+  //   static numberToWord(num: number | string): string {
+  //     if (typeof num === "string") num = parseFloat(num);
 
-//     const toWords = new ToWords({
-//       localeCode: "en-US",
-//       converterOptions: {
-//         currency: false,
-//         ignoreDecimal: false,
-//         ignoreZeroCurrency: false,
-//         doNotAddOnly: false,
-//         currencyOptions: {
-//           name: "Birr",
-//           plural: "Birr",
-//           symbol: "ብር",
-//           fractionalUnit: { name: "Santim", plural: "Santim", symbol: "" },
-//         },
-//       },
-//     });
+  //     const toWords = new ToWords({
+  //       localeCode: "en-US",
+  //       converterOptions: {
+  //         currency: false,
+  //         ignoreDecimal: false,
+  //         ignoreZeroCurrency: false,
+  //         doNotAddOnly: false,
+  //         currencyOptions: {
+  //           name: "Birr",
+  //           plural: "Birr",
+  //           symbol: "ብር",
+  //           fractionalUnit: { name: "Santim", plural: "Santim", symbol: "" },
+  //         },
+  //       },
+  //     });
 
-//     return toWords.convert(num);
-//   }
+  //     return toWords.convert(num);
+  //   }
 
   static addDays(date: Date, days: number): Date {
     const result = new Date(date);
@@ -91,6 +91,14 @@ export class Util {
     else return `<span style="color:black;"> no change from </span>`;
 
     return `<span style="color: ${change > 0 ? "green" : "red"}">${change.toFixed(0)}% ${arrow}</span> from`;
+  }
+
+  static generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 
   static formatDateWithDayName(date: Date): string {
@@ -128,10 +136,9 @@ export class Util {
   }
 
   static decodeVehicle(data: { side_number?: string; plate_number?: string; trailer_plate_number?: string; trailer?: { plate_number?: string } } | null): string {
-    return `${data?.side_number ? `${data.side_number} - (` : ""}${data?.plate_number ?? ""}${
-      data?.trailer_plate_number || data?.trailer?.plate_number
-        ? `/${data.trailer_plate_number || data.trailer?.plate_number}${data.side_number ? ")" : ""}`
-        : data?.side_number ? ")" : ""
-    }`;
+    return `${data?.side_number ? `${data.side_number} - (` : ""}${data?.plate_number ?? ""}${data?.trailer_plate_number || data?.trailer?.plate_number
+      ? `/${data.trailer_plate_number || data.trailer?.plate_number}${data.side_number ? ")" : ""}`
+      : data?.side_number ? ")" : ""
+      }`;
   }
 }
