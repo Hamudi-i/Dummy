@@ -7,15 +7,180 @@ generator client {
   output   = "../generated/prisma"
 }
 
-// Sample starter model - replace or extend for your new project
+// -------------------------------------------------------------
+// Enums
+// -------------------------------------------------------------
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum DocumentRole {
+  EDITOR
+  VIEWER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+// -------------------------------------------------------------
+// Core Models
+// -------------------------------------------------------------
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String             @id @default(uuid())
+  email        String             @unique
+  name         String?
+  avatarUrl    String?            @map("avatar_url")
+  password     String?            @map("password_hash")
+  role         String             @default("USER")
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  memberships   WorkspaceMember[]
+  documents     Document[]         @relation("DocumentAuthor")
+  documentRoles DocumentAccess[]
+  snapshots     DocumentSnapshot[] @relation("SnapshotAuthor")
+  invitesSent   WorkspaceInvite[]  @relation("InvitedBy")
 
   @@map("users")
+}
+
+//TODO Create CRUD on workspace
+model Workspace {
+  id        String            @id @default(uuid())
+  name      String
+  slug      String            @unique
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  members   WorkspaceMember[]
+  documents Document[]
+  invites   WorkspaceInvite[]
+
+  @@map("workspaces")
+}
+
+//TODO Create CRUD on workspace member
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  userId      String        @map("user_id")
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now()) @map("joined_at")
+
+  // Relations
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@map("workspace_members")
+}
+
+//TODO Create CRUD on workspace Invite
+model WorkspaceInvite {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  email       String
+  role        WorkspaceRole @default(MEMBER)
+  status      InviteStatus  @default(PENDING)
+  token       String        @unique
+  invitedById String        @map("invited_by_id")
+  expiresAt   DateTime      @map("expires_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy   User          @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, email])
+  @@map("workspace_invites")
+}
+
+//TODO Create CRUD on Document
+model Document {
+  id          String             @id @default(uuid())
+  workspaceId String             @map("workspace_id")
+  authorId    String             @map("author_id")
+  parentId    String?            @map("parent_id") // Enables nested folder/document hierarchies
+  title       String             @default("Untitled")
+  icon        String?
+  isArchived  Boolean            @default(false) @map("is_archived")
+  isPublic    Boolean            @default(false) @map("is_public")
+  publicRole  DocumentRole       @default(VIEWER) @map("public_role")
+
+  // Latest binary snapshot of the CRDT state (Yjs binary blob)
+  crdtState   Bytes?             @map("crdt_state")
+  // Plain text fallback preview for fast search indexing
+  plainText   String?            @map("plain_text") @db.Text
+
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  author      User               @relation("DocumentAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  parent      Document?          @relation("DocumentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Document[]         @relation("DocumentHierarchy")
+  accessList  DocumentAccess[]
+  snapshots   DocumentSnapshot[]
+  updates     DocumentUpdate[]
+
+  @@index([workspaceId, isArchived])
+  @@index([parentId])
+  @@map("documents")
+}
+
+//TODO Create CRUD on Document access
+model DocumentAccess {
+  id         String       @id @default(uuid())
+  documentId String       @map("document_id")
+  userId     String       @map("user_id")
+  role       DocumentRole @default(VIEWER)
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  document   Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+  @@index([userId])
+  @@map("document_access")
+}
+
+//TODO Create CRUD on Document Snapshot
+model DocumentSnapshot {
+  id          String    @id @default(uuid())
+  documentId  String    @map("document_id")
+  createdById String?   @map("created_by_id")
+  crdtState   Bytes     @map("crdt_state") // Historical binary state vector
+  summary     String?   // e.g. "Auto-saved version", "v1.0 release"
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdBy   User?     @relation("SnapshotAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([documentId, createdAt(sort: Desc)])
+  @@map("document_snapshots")
+}
+
+//TODO Create CRUD on Document Update
+model DocumentUpdate {
+  id          BigInt    @id @default(autoincrement())
+  documentId  String    @map("document_id")
+  updateBlob  Bytes     @map("update_blob") // Micro-diff emitted over WebSockets
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, id])
+  @@map("document_updates")
 }
