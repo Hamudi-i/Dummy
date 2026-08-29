@@ -50,7 +50,6 @@ model User {
   @@map("users")
 }
 
-//TODO Create CRUD on workspace
 model Workspace {
   id        String            @id @default(uuid())
   name      String
