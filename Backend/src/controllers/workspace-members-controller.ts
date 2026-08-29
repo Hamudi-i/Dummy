@@ -28,9 +28,11 @@ export class WorkspaceMembersController {
 
     static async updateRole(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const id = req.params.userId as string;
+            const workspaceId = req.params.workspaceId as string;
+            const userId = req.params.userId as string;
             const { role } = req.body;
-            const member = await WorkspaceMemberService.updateMemberRole(id, role);
+
+            const member = await WorkspaceMemberService.updateMemberRole(workspaceId, userId, role);
             res.status(200).json(member);
         } catch (error) {
             next(error);

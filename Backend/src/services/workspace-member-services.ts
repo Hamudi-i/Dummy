@@ -58,25 +58,36 @@ export class WorkspaceMemberService {
         });
     }
 
-    static async updateMemberRole(id: string, role: WorkspaceRole) {
-        const member = await prisma.workspaceMember.findUnique({
-            where: { id }
+    static async updateMemberRole(workspaceId: string, userId: string, role: WorkspaceRole) {
+        const existingMember = await prisma.workspaceMember.findUnique({
+            where: {
+                workspaceId_userId: {
+                    workspaceId,
+                    userId
+                }
+            }
         });
 
-        if (!member) {
-            throw new NotFoundException("Member not found");
+        if (!existingMember) {
+            throw new NotFoundException("User is not a member of this workspace");
         }
 
         return prisma.workspaceMember.update({
-            where: { id },
+            where: {
+                workspaceId_userId: {
+                    workspaceId,
+                    userId,
+                },
+            },
             data: { role },
             select: {
                 id: true,
                 workspaceId: true,
                 userId: true,
                 role: true,
-                joinedAt: true
-            }
+                joinedAt: true,
+            },
+
         });
     }
 
