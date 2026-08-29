@@ -6,6 +6,7 @@ import exceptionFilter from "./infrastructure/filters/exception-filter";
 import authRoutes from "./routes/auth-route";
 import userRoutes from "./routes/users-route";
 import workspaceRoutes from "./routes/workspaces-route";
+import workspaceMemberRouters from "./routes/workspace-member-routes";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.get("/health", (req: Request, res: Response) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/workspaces", workspaceRoutes);
+app.use("/api/workspaces", workspaceMemberRouters);
 
 // Centralized error handling
 app.use(exceptionFilter);
