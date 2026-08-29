@@ -28,13 +28,24 @@ export class WorkspaceMembersController {
 
     static async updateRole(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const workspaceId = req.params.workspaceId as string;
-            const userId = req.params.userId as string;
+            const id = req.params.userId as string;
             const { role } = req.body;
-            const member = await WorkspaceMemberService.updateMemberRole(workspaceId, userId, role);
+            const member = await WorkspaceMemberService.updateMemberRole(id, role);
             res.status(200).json(member);
         } catch (error) {
             next(error);
         }
     }
+
+    static async removeMember(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.userId as string;
+            await WorkspaceMemberService.removeMember(id);
+            res.status(200).json({ message: "Member removed successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
+
+export default WorkspaceMembersController;
