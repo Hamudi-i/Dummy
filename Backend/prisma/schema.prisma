@@ -65,7 +65,7 @@ model Workspace {
   @@map("workspaces")
 }
 
-//TODO Create CRUD on workspace member
+//FIXME implement ID specific deletion
 model WorkspaceMember {
   id          String        @id @default(uuid())
   workspaceId String        @map("workspace_id")

@@ -37,6 +37,26 @@ export class UserService {
     return user;
   }
 
+  static async getUserByEmail(email: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    return user;
+  }
+
   static async createUser(data: { email: string; name?: string; password?: string; role?: string }) {
     if (!data.email) {
       throw new BadRequestException("Email is required");

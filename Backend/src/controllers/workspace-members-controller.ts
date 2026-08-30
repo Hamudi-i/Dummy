@@ -39,9 +39,10 @@ export class WorkspaceMembersController {
         }
     }
 
+    //Don't use the UserID here, use the row's ID
     static async removeMember(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const id = req.params.userId as string;
+            const id = req.params.id as string;
             await WorkspaceMemberService.removeMember(id);
             res.status(200).json({ message: "Member removed successfully" });
         } catch (error) {

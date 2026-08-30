@@ -91,6 +91,7 @@ export class WorkspaceMemberService {
         });
     }
 
+    //FDon't use the UserID here, use the row's ID
     static async removeMember(id: string) {
         const member = await prisma.workspaceMember.findUnique({
             where: { id }

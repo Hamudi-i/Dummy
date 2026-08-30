@@ -10,6 +10,6 @@ router.use(Authenticate);
 router.get("/:workspaceId/members", WorkspaceMembersController.getMembersByWorkspace);
 router.post("/:workspaceId/members", WorkspaceMembersController.addMember);
 router.put("/:workspaceId/members/:userId", WorkspaceMembersController.updateRole);
-router.delete("/members/:userId", WorkspaceMembersController.removeMember);
+router.delete("/members/:id", WorkspaceMembersController.removeMember);
 
 export default router;
