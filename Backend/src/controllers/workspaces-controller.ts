@@ -33,7 +33,8 @@ export class WorkspaceController {
 
     static async createWorkspace(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const newWorkspace = await WorkspaceService.createWorkspace(req.body);
+            const userId = (req as any).currentUser.userId;
+            const newWorkspace = await WorkspaceService.createWorkspace(req.body, userId);
             res.status(201).json(newWorkspace);
         } catch (error) {
             next(error);

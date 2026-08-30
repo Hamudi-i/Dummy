@@ -65,7 +65,7 @@ export class WorkspaceService {
         return workspace;
     }
 
-    static async createWorkspace(data: { name: string }) {
+    static async createWorkspace(data: { name: string }, userId: string) {
         if (!data.name) {
             throw new BadRequestException("Name is required");
         }
@@ -84,6 +84,12 @@ export class WorkspaceService {
             data: {
                 name: data.name,
                 slug,
+                members: {
+                    create: {
+                        role: "OWNER",
+                        userId
+                    }
+                },
             },
             select: {
                 id: true,

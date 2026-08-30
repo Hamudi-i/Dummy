@@ -21,6 +21,16 @@ export class UserController {
     }
   }
 
+  static async getUserByEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const email = req.params.email as string;
+      const user = await UserService.getUserByEmail(email);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const newUser = await UserService.createUser(req.body);

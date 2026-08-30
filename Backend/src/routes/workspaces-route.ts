@@ -11,7 +11,7 @@ router.use(Authenticate);
 
 router.get("/", WorkspaceController.getAllWorkspaces);
 router.get("/:id", WorkspaceController.getWorkspaceById);
-router.get("/:slug", WorkspaceController.getWorkspaceBySlug);
+router.get("/slug/:slug", WorkspaceController.getWorkspaceBySlug);
 router.post("/", WorkspaceController.createWorkspace);
 router.put("/:id", WorkspaceController.updateWorkspace);
 router.delete("/:id", WorkspaceController.deleteWorkspace);
