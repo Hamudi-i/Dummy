@@ -1,5 +1,4 @@
 import prisma from "../infrastructure/prisma";
-import { Util } from "../common/utils";
 import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
 import { WorkspaceRole } from "../../generated/prisma/enums";
 
