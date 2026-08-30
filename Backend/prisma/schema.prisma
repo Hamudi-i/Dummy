@@ -65,7 +65,6 @@ model Workspace {
   @@map("workspaces")
 }
 
-//FIXME implement ID specific deletion
 model WorkspaceMember {
   id          String        @id @default(uuid())
   workspaceId String        @map("workspace_id")

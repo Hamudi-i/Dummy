@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { WorkspaceMemberService } from "../services/workspace-member-services"
+import { WorkspaceMemberService } from "../services/workspace-member-service"
 
 export class WorkspaceMembersController {
     static async getMembersByWorkspace(req: Request, res: Response, next: NextFunction): Promise<void> {
