@@ -2,8 +2,8 @@ import prisma from "../infrastructure/prisma";
 import { WorkspaceRole } from "../../generated/prisma/enums";
 import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
 import crypto from "crypto";
-export class workspaceInviteService {
-    async getWorkspaceInvites(workspaceId: string) {
+export class WorkspaceInviteService {
+    static async getWorkspaceInvites(workspaceId: string) {
         return prisma.workspaceInvite.findMany({
             where: { workspaceId },
             select: {
@@ -26,7 +26,7 @@ export class workspaceInviteService {
         });
     }
 
-    async createInvite(workspaceId: string, invitedById: string, email: string, role: WorkspaceRole = "MEMBER") {
+    static async createInvite(workspaceId: string, invitedById: string, email: string, role: WorkspaceRole = "MEMBER") {
         if (!email) {
             throw new BadRequestException("Email is required");
         }
@@ -165,3 +165,5 @@ export class workspaceInviteService {
         })
     }
 }
+
+export default WorkspaceInviteService;
