@@ -58,4 +58,49 @@ class DocumentService {
             throw new NotFoundException("Document not found");
         }
     }
+
+    static async createDocument(workspaceId: string,
+        authorId: string,
+        data: {
+            title?: string;
+            icon?: string;
+            plainText?: string;
+        }
+    ) {
+        const workspace = await prisma.workspace.findUnique({
+            where: { id: workspaceId }
+        });
+        if (!workspace) {
+            throw new NotFoundException("Workspace not found");
+        }
+
+        return prisma.document.create({
+            data: {
+                workspaceId,
+                authorId,
+                title: data.title?.trim() || "Untitled",
+                icon: data.icon,
+                plainText: data.plainText,
+            },
+            select: {
+                id: true,
+                workspaceId: true,
+                authorId: true,
+                title: true,
+                icon: true,
+                isArchived: true,
+                isPublic: true,
+                createdAt: true,
+                updatedAt: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true,
+                    },
+                },
+            }
+        });
+    }
 }
