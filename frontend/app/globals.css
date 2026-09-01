@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&family=Gaegu:wght@400;700&family=Gochi+Hand&family=Patrick+Hand&family=Schoolbell&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-hand: 'Patrick Hand', cursive;
+    --font-school: 'Schoolbell', cursive;
+    --font-comic: 'Comic Neue', cursive;
+    --font-gaegu: 'Gaegu', cursive;
+    --font-logo: 'Fredoka', 'Gochi Hand', cursive;
+  }
+
+  body {
+    font-family: 'Patrick Hand', 'Comic Neue', cursive, sans-serif;
+    background-color: #F8F5EC;
+    color: #30312C;
+  }
+}
+
+.font-hand {
+  font-family: 'Patrick Hand', cursive;
+}
+
+.font-school {
+  font-family: 'Schoolbell', cursive;
+}
+
+.font-comic {
+  font-family: 'Comic Neue', cursive;
+}
+
+.font-gaegu {
+  font-family: 'Gaegu', cursive;
+}
+
+.font-gochi {
+  font-family: 'Gochi Hand', cursive;
+}
+
+.font-caveat {
+  font-family: 'Caveat', cursive;
+}
+
+.font-fredoka {
+  font-family: 'Fredoka', cursive, sans-serif;
+}
+
+/* Colored pencil textured button pattern */
+.pencil-blue-texture {
+  background-color: #5587C2;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.12) 1.5px,
+    transparent 1.5px,
+    transparent 4px
+  ),
+  repeating-linear-gradient(
+    45deg,
+    rgba(30, 60, 110, 0.15),
+    rgba(30, 60, 110, 0.15) 1.5px,
+    transparent 1.5px,
+    transparent 4.5px
+  );
+}
+
+/* Subtle hand-drawn wiggle on hover */
+@keyframes subtle-wobble {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-0.5deg); }
+  75% { transform: rotate(0.5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.hover-wobble:hover {
+  animation: subtle-wobble 0.25s ease-in-out;
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bounceOnce {
+  0% { transform: translateY(-10px); opacity: 0; }
+  60% { transform: translateY(2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-bounceOnce {
+  animation: bounceOnce 0.3s ease-out forwards;
+}
+
+/* Custom hand-drawn outline styles */
+.sketch-border {
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+.sketch-border-subtle {
+  border-radius: 12px 16px 14px 18px/16px 13px 17px 14px;
+}
+
+.sketch-border-card {
+  border-radius: 22px 18px 24px 20px/19px 23px 18px 22px;
+}
