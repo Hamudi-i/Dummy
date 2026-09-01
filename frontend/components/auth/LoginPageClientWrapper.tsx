@@ -12,16 +12,14 @@ interface LoginPageClientWrapperProps {
   brandHeader: React.ReactNode;
   welcomeSign: React.ReactNode;
   foxMascot: React.ReactNode;
-  leftIllustrations: React.ReactNode;
-  rightIllustrations: React.ReactNode;
+  sideIllustrations: React.ReactNode;
 }
 
 export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
   brandHeader,
   welcomeSign,
   foxMascot,
-  leftIllustrations,
-  rightIllustrations,
+  sideIllustrations,
 }) => {
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,11 +71,8 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
 
       {/* Main Canvas Area */}
       <main className="w-full flex-1 flex flex-col items-center justify-center px-4 py-1 relative z-10">
-        {/* Left Side Illustrations (Server Component passed as prop) */}
-        {leftIllustrations}
-
-        {/* Right Side Illustrations (Server Component passed as prop) */}
-        {rightIllustrations}
+        {/* Side Illustrations (Combined Left & Right Server Component) */}
+        {sideIllustrations}
 
         {/* Center Main Stage */}
         <div className="w-full max-w-[490px] flex flex-col items-center justify-center relative -mt-8 sm:-mt-12">

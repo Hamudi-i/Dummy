@@ -17,35 +17,191 @@
   }
 }
 
-.font-hand {
-  font-family: 'Patrick Hand', cursive;
-}
+/* =========================================================================
+   TYPOGRAPHY CLASSES
+   ========================================================================= */
+.font-hand { font-family: 'Patrick Hand', cursive; }
+.font-school { font-family: 'Schoolbell', cursive; }
+.font-comic { font-family: 'Comic Neue', cursive; }
+.font-gaegu { font-family: 'Gaegu', cursive; }
+.font-gochi { font-family: 'Gochi Hand', cursive; }
+.font-caveat { font-family: 'Caveat', cursive; }
+.font-fredoka { font-family: 'Fredoka', cursive, sans-serif; }
 
-.font-school {
+.heading-primary {
   font-family: 'Schoolbell', cursive;
+  font-size: 26.5px;
+  font-weight: 700;
+  color: #30312C;
+  letter-spacing: 0.025em;
+  line-height: 1.25;
 }
 
-.font-comic {
+.subtitle-text {
+  font-family: 'Schoolbell', cursive;
+  color: #30312C;
+  font-size: 19px;
+  letter-spacing: 0.025em;
+  font-weight: 600;
+}
+
+/* =========================================================================
+   REUSABLE UI COMPONENTS & FORM CONTROLS
+   ========================================================================= */
+.input-sketch {
+  width: 100%;
+  height: 40px;
+  padding-left: 2.25rem;
+  padding-right: 0.5rem;
+  font-size: 15.5px;
   font-family: 'Comic Neue', cursive;
+  background-color: #FFFFFF;
+  color: #30312C;
+  border-radius: 6px;
+  border: 1.4px solid #30312C;
+  transition: all 0.2s ease-in-out;
+}
+.input-sketch:focus {
+  outline: none;
+  border-color: #4B7DB9;
+  box-shadow: 0 0 0 1px #4B7DB9;
 }
 
-.font-gaegu {
-  font-family: 'Gaegu', cursive;
+.btn-pencil-primary {
+  width: 100%;
+  height: 40px;
+  color: #1D2127;
+  font-family: 'Comic Neue', cursive;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  border: 1.5px solid #30312C;
+  box-shadow: 0 2px 0px #30312C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.btn-pencil-primary:hover {
+  filter: brightness(1.05);
+}
+.btn-pencil-primary:active {
+  transform: translateY(1px);
 }
 
-.font-gochi {
-  font-family: 'Gochi Hand', cursive;
+.social-btn {
+  width: 44px;
+  height: 43px;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  border: 1.3px solid #30312C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 0px rgba(0,0,0,0.1);
+  transition: all 0.15s ease-in-out;
+}
+.social-btn:hover {
+  background-color: #F9F7F1;
+  transform: scale(1.05);
+}
+.social-btn:active {
+  transform: translateY(1px);
 }
 
-.font-caveat {
-  font-family: 'Caveat', cursive;
+/* =========================================================================
+   CARDS & CONTAINERS
+   ========================================================================= */
+.card-container {
+  width: 352px;
+  min-height: 450px;
+  background-color: #D8B995;
+  border-radius: 18px;
+  padding: 6px;
+  border: 2.2px solid #30312C;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  z-index: 10;
+}
+@media (min-width: 640px) {
+  .card-container {
+    width: 360px;
+  }
 }
 
-.font-fredoka {
-  font-family: 'Fredoka', cursive, sans-serif;
+.card-inner {
+  flex: 1;
+  background-color: #FBF8EF;
+  border-radius: 13px;
+  border: 1.5px solid #30312C;
+  padding: 1.5rem 1.25rem 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-/* Colored pencil textured button pattern */
+/* =========================================================================
+   ILLUSTRATION UTILITIES
+   ========================================================================= */
+.illustration-side-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 350px;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  overflow: visible;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .illustration-side-left { display: block; }
+}
+@media (min-width: 1280px) {
+  .illustration-side-left { width: 410px; }
+}
+@media (min-width: 1536px) {
+  .illustration-side-left { width: 470px; }
+}
+
+.illustration-side-right {
+  position: absolute;
+  right: 2rem;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  overflow: visible;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .illustration-side-right { display: block; }
+}
+@media (min-width: 1280px) {
+  .illustration-side-right { right: 3.5rem; width: 350px; }
+}
+@media (min-width: 1536px) {
+  .illustration-side-right { right: 2rem; width: 400px; }
+}
+
+.illustration-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.7s ease;
+  pointer-events: auto;
+}
+
+/* =========================================================================
+   TEXTURES & KEYFRAMES
+   ========================================================================= */
 .pencil-blue-texture {
   background-color: #5587C2;
   background-image: repeating-linear-gradient(
@@ -64,7 +220,6 @@
   );
 }
 
-/* Subtle hand-drawn wiggle on hover */
 @keyframes subtle-wobble {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(-0.5deg); }
@@ -76,7 +231,6 @@
   animation: subtle-wobble 0.25s ease-in-out;
 }
 
-/* Modal animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -105,7 +259,6 @@
   animation: bounceOnce 0.3s ease-out forwards;
 }
 
-/* Custom hand-drawn outline styles */
 .sketch-border {
   border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
 }
