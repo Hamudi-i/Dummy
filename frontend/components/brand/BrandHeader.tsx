@@ -16,11 +16,8 @@ export const BrandHeader: React.FC = () => {
       </div>
 
       {/* Subtitle */}
-      <p
-        id="colab-subtitle"
-        className="font-school text-[#30312C] text-[19px] tracking-wide mt-1 mb-1 font-semibold"
-      >
-        Collaborative Documents & Creative Spaces
+      <p id="colab-subtitle" className="subtitle-text mt-1 mb-1">
+        Collaborative Documents &amp; Creative Spaces
       </p>
     </header>
   );
