@@ -1,9 +1,12 @@
+//TODO clean up dead boilerplate code
 // import fs from "fs";
 // import mime from "mime-types";
 import dotenv from "dotenv";
 // import fetch from "node-fetch";
 // import base64arraybuffer from "base64-arraybuffer";
 // import { ToWords } from "to-words";
+
+//TODO figure out why import statement doesnt work
 var bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 
@@ -16,10 +19,12 @@ export class Util {
   //     return `data:${mimeType};base64,${imageAsBase64}`;
   //   }
 
+  //TODO try to make this asynchronus
   static hashPassword(plainPassword: string): string {
     return bcrypt.hashSync(plainPassword, Number(process.env.BcryptHashRound));
   }
 
+  //TODO try to make this asynchronus
   static comparePassword(plainPassword: string, encryptedPassword: string): boolean {
     return bcrypt.compareSync(plainPassword, encryptedPassword);
   }

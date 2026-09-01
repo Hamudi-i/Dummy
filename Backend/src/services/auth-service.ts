@@ -51,6 +51,8 @@ export class AuthService {
 
   static async login(payload: { email: string; password: string }) {
     const { email, password } = payload;
+
+    //TODO Add a request validation layer, use Zod
     if (!email || !password) {
       throw new BadRequestException("Email and password are required");
     }

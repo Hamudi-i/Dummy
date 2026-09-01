@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
+//TODO figure out why import statement doesnt work
 require('dotenv').config();
-import { NextFunction, Request,Response } from "express";
+import { NextFunction, Request, Response } from "express";
 const jwtSecret = process.env.JWT_SECRET;
-const Authenticate = async (req:Request, res:Response, next:NextFunction) => {
+const Authenticate = async (req: Request, res: Response, next: NextFunction) => {
   //Get the jwt token from the head
   const tokenHeader = req.headers['authorization'];
   if (!tokenHeader) {
