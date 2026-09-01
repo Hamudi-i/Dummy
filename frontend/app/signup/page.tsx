@@ -3,13 +3,13 @@ import { BrandHeader } from '@/components/brand/BrandHeader';
 import { WelcomeSign } from '@/components/brand/WelcomeSign';
 import { FoxMascot } from '@/components/mascot/FoxMascot';
 import { SideIllustrations } from '@/components/illustrations/SideIllustrations';
-import { LoginPageClientWrapper } from '@/components/auth/LoginPageClientWrapper';
+import { SignUpPageClientWrapper } from '@/components/auth/SignUpPageClientWrapper';
 
-export default function LoginPage() {
+export default function SignUpPage() {
   return (
-    <LoginPageClientWrapper
+    <SignUpPageClientWrapper
       brandHeader={<BrandHeader />}
-      welcomeSign={<WelcomeSign text="WELCOME BACK!" />}
+      welcomeSign={<WelcomeSign text="WELCOME TO CO-LAB!" />}
       foxMascot={<FoxMascot />}
       sideIllustrations={<SideIllustrations />}
     />

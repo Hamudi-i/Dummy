@@ -1,26 +1,28 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ActiveModal, ToastMessage } from '@/app/types';
 import { TopNav } from '@/components/layout/TopNav';
 import { Footer } from '@/components/layout/Footer';
-import { LoginCard } from '@/components/auth/LoginCard';
+import { SignUpCard } from '@/components/auth/SignUpCard';
 import { HandDrawnModal } from '@/components/modals/HandDrawnModal';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 
-interface LoginPageClientWrapperProps {
+interface SignUpPageClientWrapperProps {
   brandHeader: React.ReactNode;
   welcomeSign: React.ReactNode;
   foxMascot: React.ReactNode;
   sideIllustrations: React.ReactNode;
 }
 
-export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
+export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = ({
   brandHeader,
   welcomeSign,
   foxMascot,
   sideIllustrations,
 }) => {
+  const router = useRouter();
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
   const [searchQuery, setSearchQuery] = useState('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -33,17 +35,20 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
     }, 4000);
   };
 
-  const handleLogin = (creds: { email: string; pass: string }) => {
+  const handleSignUp = (data: { name: string; email: string; pass: string }) => {
     addToast(
-      'Welcome to Co-Lab!',
-      `Logged in successfully as ${creds.email || 'Creative Member'}`
+      'Account Created!',
+      `Welcome to Co-Lab, ${data.name || data.email}! Redirecting to login...`
     );
+    setTimeout(() => {
+      router.push('/login');
+    }, 1500);
   };
 
   const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {
     addToast(
-      `${provider} Authentication`,
-      `Connecting to Co-Lab workspace via ${provider}...`
+      `${provider} Sign Up`,
+      `Creating your Co-Lab account via ${provider}...`
     );
   };
 
@@ -62,7 +67,7 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
       {/* Toast Notification Container */}
       <ToastContainer toasts={toasts} />
 
-      {/* Top Navigation (Client Component) */}
+      {/* Top Navigation */}
       <TopNav
         onOpenDocs={() => setActiveModal('docs')}
         onOpenTeam={() => setActiveModal('team')}
@@ -71,32 +76,31 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
 
       {/* Main Canvas Area */}
       <main className="w-full flex-1 flex flex-col items-center justify-center px-4 py-1 relative z-10">
-        {/* Side Illustrations (Combined Left & Right Server Component) */}
+        {/* Side Illustrations */}
         {sideIllustrations}
 
         {/* Center Main Stage */}
         <div className="w-full max-w-[490px] flex flex-col items-center justify-center relative -mt-8 sm:-mt-12">
-          {/* Main Logo & Subtitle (Server Component) */}
+          {/* Main Logo & Subtitle */}
           {brandHeader}
 
-          {/* Welcome Signpost pointing right (Server Component) */}
+          {/* Welcome Signpost */}
           {welcomeSign}
 
           {/* Center Card & Fox Wrapper */}
           <div className="relative mt-1">
-            <LoginCard
-              onLogin={handleLogin}
-              onForgotPassword={() => setActiveModal('forgot_password')}
+            <SignUpCard
+              onSignUp={handleSignUp}
               onSocialLogin={handleSocialLogin}
             />
 
-            {/* Hand-drawn Fox Mascot (Server Component) */}
+            {/* Hand-drawn Fox Mascot */}
             {foxMascot}
           </div>
         </div>
       </main>
 
-      {/* Footer (Client Component) */}
+      {/* Footer */}
       <Footer
         onOpenPrivacy={() => setActiveModal('docs')}
         onOpenTerms={() => setActiveModal('docs')}
