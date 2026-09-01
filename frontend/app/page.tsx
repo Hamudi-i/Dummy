@@ -1,18 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 export default function LandingPage() {
-  const [message, setMessage] = useState<string | null>(null);
-
-  const handleSignUpClick = () => {
-    setMessage("Under construction");
-    setTimeout(() => {
-      setMessage(null);
-    }, 3500);
-  };
-
   return (
     <div className="min-h-screen w-full bg-[#F8F5EC] text-[#30312C] flex flex-col items-center justify-center relative overflow-hidden font-comic p-4 select-none">
       {/* Subtle Paper Texture Overlay */}
@@ -39,22 +30,13 @@ export default function LandingPage() {
           </Link>
 
           {/* Sign Up Button */}
-          <button
-            type="button"
-            onClick={handleSignUpClick}
+          <Link
+            href="/signup"
             className="w-full sm:w-1/2 h-[44px] bg-[#FAF7EE] text-[#30312C] font-comic font-bold text-[17px] tracking-wider rounded-[8px] border-[1.8px] border-[#30312C] hover:bg-[#F2ECE0] active:translate-y-[1px] transition-all shadow-[0_3px_0px_#30312C] flex items-center justify-center cursor-pointer"
           >
             Sign Up
-          </button>
+          </Link>
         </div>
-
-        {/* Message Alert Notification */}
-        {message && (
-          <div className="mt-6 w-full p-3 bg-[#FFF3D6] border-[1.5px] border-[#30312C] rounded-[8px] text-[#30312C] font-comic text-[15px] font-bold animate-bounceOnce flex items-center justify-center space-x-2">
-            <span>🚧</span>
-            <span>{message}</span>
-          </div>
-        )}
       </div>
     </div>
   );

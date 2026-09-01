@@ -1,6 +1,10 @@
 import React from 'react';
 
-export const WelcomeSign: React.FC = () => {
+interface WelcomeSignProps {
+  text?: string;
+}
+
+export const WelcomeSign: React.FC<WelcomeSignProps> = ({ text = "WELCOME BACK!" }) => {
   return (
     <div className="relative flex flex-col items-center justify-center -mb-2 z-10 select-none">
       {/* Hand-drawn Arrow Sign */}
@@ -39,9 +43,9 @@ export const WelcomeSign: React.FC = () => {
           />
         </svg>
 
-        {/* Text inside sign */}
-        <span className="absolute left-8 top-2.5 font-comic text-[#30312C] text-[16.5px] sm:text-[17px] font-bold tracking-wider">
-          WELCOME TO CO-LAB!
+        {/* Text inside sign (Centered inside sign body with right margin for arrow tip) */}
+        <span className="absolute inset-0 pr-5 flex items-center justify-center font-comic text-[#30312C] text-[15.5px] sm:text-[16.5px] font-bold tracking-wider text-center">
+          {text}
         </span>
       </div>
 
