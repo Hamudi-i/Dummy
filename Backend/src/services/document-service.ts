@@ -1,7 +1,7 @@
 import prisma from "../infrastructure/prisma";
 import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
 
-class DocumentService {
+export class DocumentService {
     static async getWorkspaceDocuments(workspaceId: string, options: { isArchived?: boolean } = {}) {
         const { isArchived = false } = options;
         return prisma.document.findMany({
