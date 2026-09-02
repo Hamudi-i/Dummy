@@ -35,14 +35,48 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
     }, 4000);
   };
 
-  const handleSignUp = (data: { name: string; email: string; pass: string }) => {
-    addToast(
-      'Account Created!',
-      `Welcome to Co-Lab, ${data.name || data.email}! Redirecting to login...`
-    );
-    setTimeout(() => {
-      router.push('/login');
-    }, 1500);
+  const handleSignUp = async (data: { name: string; email: string; pass: string }) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.pass,
+        }),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        addToast(
+          'Registration Failed',
+          resData.message || 'Could not create account',
+          'error'
+        );
+        return;
+      }
+
+      addToast(
+        'Account Created!',
+        `Welcome to Co-Lab, ${data.name || data.email}! Redirecting to login...`,
+        'success'
+      );
+
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+    } catch (error) {
+      console.error("Signup error:", error);
+      addToast(
+        'Network Error',
+        'Could not connect to the authentication server',
+        'error'
+      );
+    }
   };
 
   const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {

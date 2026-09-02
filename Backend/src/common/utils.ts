@@ -20,9 +20,10 @@ export class Util {
   //   }
 
   //TODO try to make this asynchronus
-  static hashPassword(plainPassword: string): string {
-    return bcrypt.hashSync(plainPassword, Number(process.env.BcryptHashRound));
-  }
+ static hashPassword(plainPassword: string): string {
+  const rounds = Number(process.env.BcryptHashRound) || 10;
+  return bcrypt.hashSync(plainPassword, rounds);
+}
 
   //TODO try to make this asynchronus
   static comparePassword(plainPassword: string, encryptedPassword: string): boolean {

@@ -1,14 +1,16 @@
 import { PrismaClient } from "../../generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+// Ensure .env is loaded from the Backend root
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const connectionString = process.env.DATABASE_URL;
 
-const adapter = new PrismaPg({
-  connectionString,
-});
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 declare global {
   // eslint-disable-next-line no-var

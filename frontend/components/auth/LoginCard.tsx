@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { AuthState } from '@/app/types';
 
 interface LoginCardProps {
-  onLogin: (credentials: { email: string; pass: string }) => void;
+  onLogin: (credentials: { email: string; pass: string }) => Promise<void> | void;
   onForgotPassword: () => void;
   onSocialLogin: (provider: 'Google' | 'GitHub' | 'Apple') => void;
 }
-
 export const LoginCard: React.FC<LoginCardProps> = ({
   onLogin,
   onForgotPassword,
@@ -23,13 +22,14 @@ export const LoginCard: React.FC<LoginCardProps> = ({
 
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await onLogin({ email: auth.email, pass: auth.password });
+    } finally {
       setLoading(false);
-      onLogin({ email: auth.email, pass: auth.password });
-    }, 400);
+    }
   };
 
   return (
