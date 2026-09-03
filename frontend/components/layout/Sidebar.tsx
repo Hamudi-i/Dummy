@@ -194,7 +194,13 @@ export const Sidebar: React.FC = () => {
         {/* Pages Links (Structured Spacing) */}
         <nav className="w-full space-y-2 px-0.5">
           {mainNavItems.map((item) => {
-            const isActive = pathname === item.href || (item.href === "/workspace" && pathname === "/");
+            const isActive =
+              item.href === "/workspace"
+                ? pathname === "/workspace" || pathname === "/" || (pathname.startsWith("/workspace") && !pathname.includes("/notebook/"))
+                : item.href === "/notebooks"
+                ? pathname.startsWith("/notebooks") || pathname.includes("/notebook/")
+                : pathname === item.href;
+
             return (
               <Link
                 key={item.name}
