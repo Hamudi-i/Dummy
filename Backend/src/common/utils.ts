@@ -4,7 +4,7 @@
 import dotenv from "dotenv";
 // import fetch from "node-fetch";
 // import base64arraybuffer from "base64-arraybuffer";
-// import { ToWords } from "to-words";
+// import {  ToWords } from "to-words";
 
 //TODO figure out why import statement doesnt work
 var bcrypt = require("bcrypt");
@@ -20,10 +20,10 @@ export class Util {
   //   }
 
   //TODO try to make this asynchronus
- static hashPassword(plainPassword: string): string {
-  const rounds = Number(process.env.BcryptHashRound) || 10;
-  return bcrypt.hashSync(plainPassword, rounds);
-}
+  static hashPassword(plainPassword: string): string {
+    return bcrypt.hashSync(plainPassword, Number(process.env.BcryptHashRound));
+  }
+
 
   //TODO try to make this asynchronus
   static comparePassword(plainPassword: string, encryptedPassword: string): boolean {
@@ -129,7 +129,6 @@ export class Util {
       columnName = String.fromCharCode(65 + modulo) + columnName;
       dividend = Math.floor((dividend - modulo) / 26);
     }
-
     return columnName;
   }
 
