@@ -101,6 +101,7 @@ model Document {
   authorId    String             @map("author_id")
   title       String             @default("Untitled")
   icon        String?
+  slug        String
   isArchived  Boolean            @default(false) @map("is_archived")
 
   // Latest binary snapshot of the CRDT state (Yjs binary blob)
@@ -117,6 +118,7 @@ model Document {
   snapshots   DocumentSnapshot[]
   updates     DocumentUpdate[]
 
+  @@unique([workspaceId, slug])
   @@index([workspaceId, isArchived])
   @@map("documents")
 }
