@@ -1,5 +1,6 @@
 import prisma from "../infrastructure/prisma";
 import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
+import { Util } from "../common/utils";
 
 export class DocumentService {
     static async getWorkspaceDocuments(workspaceId: string, options: { isArchived?: boolean } = {}) {
@@ -72,6 +73,8 @@ export class DocumentService {
         if (!workspace) {
             throw new NotFoundException("Workspace not found");
         }
+
+        const slug = Util.generateSlug(data.title || "Untitled");
 
         return prisma.document.create({
             data: {
