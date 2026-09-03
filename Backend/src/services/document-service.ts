@@ -1,8 +1,7 @@
 import prisma from "../infrastructure/prisma";
 import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
-import { DocumentRole } from "../../generated/prisma/enums";
 
-class DocumentService {
+export class DocumentService {
     static async getWorkspaceDocuments(workspaceId: string, options: { isArchived?: boolean } = {}) {
         const { isArchived = false } = options;
         return prisma.document.findMany({
@@ -103,4 +102,51 @@ class DocumentService {
             }
         });
     }
+
+    // Update document metadata
+    static async updateDocument(
+        id: string,
+        data: {
+            title?: string;
+            icon?: string;
+            plainText?: string;
+            isArchived?: boolean;
+        }
+    ) {
+        await this.getDocumentById(id);
+
+        return prisma.document.update({
+            where: { id },
+            data: {
+                title: data.title !== undefined ? data.title : undefined,
+                icon: data.icon !== undefined ? data.icon : undefined,
+                plainText: data.plainText !== undefined ? data.plainText : undefined,
+                isArchived: data.isArchived !== undefined ? data.isArchived : undefined
+            }
+        });
+    }
+
+    // Soft delete
+    static async setArchiveStatus(id: string, isArchived: boolean) {
+        await this.getDocumentById(id);
+        return prisma.document.update({
+            where: { id },
+            data: { isArchived },
+            select: {
+                id: true,
+                title: true,
+                isArchived: true
+            }
+        });
+    }
+
+    // Hard/permanent delete
+    static async deleteDocument(id: string) {
+        await this.getDocumentById(id);
+        return prisma.document.delete({
+            where: { id },
+        });
+    }
 }
+
+export default DocumentService;

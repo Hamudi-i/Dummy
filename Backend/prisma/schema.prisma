@@ -16,11 +16,6 @@ enum WorkspaceRole {
   MEMBER
 }
 
-enum DocumentRole {
-  EDITOR
-  VIEWER
-}
-
 enum InviteStatus {
   PENDING
   ACCEPTED
@@ -43,7 +38,6 @@ model User {
   // Relations
   memberships   WorkspaceMember[]
   documents     Document[]         @relation("DocumentAuthor")
-  documentRoles DocumentAccess[]
   snapshots     DocumentSnapshot[] @relation("SnapshotAuthor")
   invitesSent   WorkspaceInvite[]  @relation("InvitedBy")
 
@@ -108,8 +102,6 @@ model Document {
   title       String             @default("Untitled")
   icon        String?
   isArchived  Boolean            @default(false) @map("is_archived")
-  isPublic    Boolean            @default(false) @map("is_public")
-  publicRole  DocumentRole       @default(VIEWER) @map("public_role")
 
   // Latest binary snapshot of the CRDT state (Yjs binary blob)
   crdtState   Bytes?             @map("crdt_state")
@@ -122,29 +114,11 @@ model Document {
   // Relations
   workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   author      User               @relation("DocumentAuthor", fields: [authorId], references: [id], onDelete: Restrict)
-  accessList  DocumentAccess[]
   snapshots   DocumentSnapshot[]
   updates     DocumentUpdate[]
 
   @@index([workspaceId, isArchived])
   @@map("documents")
-}
-
-//TODO Create CRUD on Document access
-model DocumentAccess {
-  id         String       @id @default(uuid())
-  documentId String       @map("document_id")
-  userId     String       @map("user_id")
-  role       DocumentRole @default(VIEWER)
-  createdAt  DateTime     @default(now()) @map("created_at")
-
-  // Relations
-  document   Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([documentId, userId])
-  @@index([userId])
-  @@map("document_access")
 }
 
 //TODO Create CRUD on Document Snapshot
