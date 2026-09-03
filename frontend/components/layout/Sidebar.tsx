@@ -146,12 +146,12 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-[256px] min-h-[calc(100vh-74px)] bg-[#f0eded] border-r-2 border-[#30312C] flex flex-col justify-between p-4 shrink-0 select-none">
+    <aside className="fixed top-0 left-0 w-[256px] h-screen bg-sidebar-bg flex flex-col justify-between pt-[96px] pb-6 px-4 shrink-0 select-none shadow-[6px_0_24px_rgba(48,49,44,0.09),2px_0_6px_rgba(0,0,0,0.04)] z-20 overflow-y-auto">
       {/* Top Section */}
       <div className="flex flex-col items-center w-full">
-        {/* Profile Circle & Info */}
-        <div className="flex flex-col items-center text-center mt-2 mb-4">
-          <div className="w-16 h-16 rounded-full border-2 border-[#30312C] bg-[#fdd355] overflow-hidden p-0.5 shadow-[0_2px_0px_#30312C]">
+        {/* Profile Circle & Info (Tight Psychological Grouping) */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="w-16 h-16 rounded-full border-2 border-[#30312C] bg-accent overflow-hidden p-0.5 shadow-[2px_2px_0px_#30312C]">
             <Image
               src="/fox.png"
               alt="My Studio Profile"
@@ -160,54 +160,49 @@ export const Sidebar: React.FC = () => {
               className="w-full h-full object-cover rounded-full"
             />
           </div>
-          <h2 className="font-school text-[20px] font-bold text-[#30312C] mt-2.5 leading-tight">
+          <h2 className="font-header text-[20.5px] font-extrabold text-[#30312C] mt-3 leading-tight tracking-tight">
             My studio
           </h2>
-          <span className="font-hand text-[15px] font-semibold text-[#66645e]">
+          <span className="font-body text-[13.5px] italic font-medium text-[#66645e] mt-0.5">
             creative space
           </span>
         </div>
 
-        {/* + New Sketch Button (Exact Figma Specifications) */}
-        <div className="pt-[16px] w-full flex justify-center">
+        {/* + New Sketch Button (Distinct Section Gap) */}
+        <div className="w-full flex justify-center mb-7">
           <button
             type="button"
-            className="group flex items-center justify-center font-comic font-bold text-[#30312C] text-[16.5px] tracking-wide transition-all active:translate-y-[2px] cursor-pointer"
-            style={{
-              width: "211.98px",
-              height: "61px",
-              backgroundColor: "#fdd355",
-              borderRadius: "135px 120px 120px 135px",
-              borderRight: "4px solid #30312C",
-              borderBottom: "5px solid #30312C",
-              borderTop: "1.5px solid #30312C",
-              borderLeft: "1.5px solid #30312C",
-              paddingTop: "12px",
-              paddingRight: "24.67px",
-              paddingBottom: "12px",
-              paddingLeft: "24.66px",
-              gap: "7.99px",
-            }}
+            className="group h-[55px] w-[210px] bg-accent hover:bg-accent-hover text-[#45473e]/90 font-header font-bold text-[21px] tracking-wide rounded-full px-5 gap-2.5 flex items-center justify-center transition-all active:translate-y-[1px] cursor-pointer shadow-none"
           >
-            <span className="text-[20px] font-extrabold leading-none group-hover:scale-125 transition-transform">
-              +
-            </span>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              className="group-hover:rotate-[360deg] transition-transform duration-800 ease-in-out shrink-0"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
             <span>New Sketch</span>
           </button>
         </div>
 
-        {/* Pages Links */}
-        <nav className="w-full mt-6 space-y-1.5 px-1">
+        {/* Pages Links (Structured Spacing) */}
+        <nav className="w-full space-y-2 px-0.5">
           {mainNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href === "/workspace" && pathname === "/");
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-comic font-bold transition-all ${
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-body font-semibold transition-all border-1.5 ${
                   isActive
-                    ? "bg-[#2c5e91] text-white shadow-[0_2px_0px_#30312C] border-1.5 border-[#30312C]"
-                    : "text-[#30312C] hover:bg-[#e4e0d5] hover:translate-x-1"
+                    ? "bg-primary text-white shadow-[2px_2px_0px_#30312C] border-[#30312C]"
+                    : "text-[#30312C] border-transparent hover:bg-[#e4e0d5] hover:border-[#30312C] hover:shadow-[2px_2px_0px_#30312C] hover:translate-x-0.5"
                 }`}
               >
                 <div className="shrink-0">{item.icon(isActive)}</div>
@@ -218,20 +213,20 @@ export const Sidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Far Bottom Section */}
-      <div className="w-full px-1 pb-2">
-        <hr className="border-t-1.5 border-[#30312C]/20 mb-3" />
-        <nav className="space-y-1.5">
+      {/* Far Bottom Section (Separated Anchor Group) */}
+      <div className="w-full px-0.5 pt-4">
+        <hr className="border-t-1.5 border-[#30312C]/20 mb-3.5" />
+        <nav className="space-y-2">
           {bottomNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-comic font-bold transition-all ${
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-body font-semibold transition-all border-1.5 ${
                   isActive
-                    ? "bg-[#2c5e91] text-white shadow-[0_2px_0px_#30312C] border-1.5 border-[#30312C]"
-                    : "text-[#30312C] hover:bg-[#e4e0d5] hover:translate-x-1"
+                    ? "bg-primary text-white shadow-[2px_2px_0px_#30312C] border-[#30312C]"
+                    : "text-[#30312C] border-transparent hover:bg-[#e4e0d5] hover:border-[#30312C] hover:shadow-[2px_2px_0px_#30312C] hover:translate-x-0.5"
                 }`}
               >
                 <div className="shrink-0">{item.icon(isActive)}</div>

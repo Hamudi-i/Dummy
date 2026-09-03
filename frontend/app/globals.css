@@ -1,47 +1,62 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&family=Gaegu:wght@400;700&family=Gochi+Hand&family=Patrick+Hand&family=Schoolbell&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #2c5e91;
+  --color-primary-hover: #214870;
+  --color-accent: #fdd355;
+  --color-accent-hover: #fcc833;
+  --color-accent-light: #fcf8ef;
+  --color-sidebar-bg: #f0eded;
+}
 
 @layer base {
   :root {
-    --font-hand: 'Patrick Hand', cursive;
-    --font-school: 'Schoolbell', cursive;
-    --font-comic: 'Comic Neue', cursive;
-    --font-gaegu: 'Gaegu', cursive;
-    --font-logo: 'Fredoka', 'Gochi Hand', cursive;
+    --font-header: var(--font-bricolage);
+    --font-body: var(--font-be-vietnam);
   }
 
   body {
-    font-family: 'Patrick Hand', 'Comic Neue', cursive, sans-serif;
+    font-family: var(--font-be-vietnam);
     background-color: #F8F5EC;
     color: #30312C;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bricolage);
   }
 }
 
 /* =========================================================================
    TYPOGRAPHY CLASSES
    ========================================================================= */
-.font-hand { font-family: 'Patrick Hand', cursive; }
-.font-school { font-family: 'Schoolbell', cursive; }
-.font-comic { font-family: 'Comic Neue', cursive; }
-.font-gaegu { font-family: 'Gaegu', cursive; }
-.font-gochi { font-family: 'Gochi Hand', cursive; }
-.font-caveat { font-family: 'Caveat', cursive; }
-.font-fredoka { font-family: 'Fredoka', cursive, sans-serif; }
+.font-header { font-family: var(--font-bricolage); }
+.font-body { font-family: var(--font-be-vietnam); }
+
+/* Compatibility aliases resolving exclusively to Be Vietnam Pro (Body) */
+.font-hand,
+.font-school,
+.font-comic,
+.font-gaegu,
+.font-gochi,
+.font-caveat,
+.font-fredoka {
+  font-family: var(--font-be-vietnam);
+}
 
 .heading-primary {
-  font-family: 'Schoolbell', cursive;
+  font-family: var(--font-bricolage);
   font-size: 26.5px;
   font-weight: 700;
   color: #30312C;
-  letter-spacing: 0.025em;
+  letter-spacing: -0.01em;
   line-height: 1.25;
 }
 
 .subtitle-text {
-  font-family: 'Schoolbell', cursive;
+  font-family: var(--font-bricolage);
   color: #30312C;
   font-size: 19px;
-  letter-spacing: 0.025em;
+  letter-spacing: -0.01em;
   font-weight: 600;
 }
 

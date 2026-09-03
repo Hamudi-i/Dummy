@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
   };
 
   return (
-    <header className="w-full h-[74px] bg-[#fcf8ef] border-b-2 border-[#30312C] rounded-b-2xl px-4 sm:px-6 flex items-center justify-between z-30 shadow-[0_2px_4px_rgba(0,0,0,0.03)] select-none">
+    <header className="w-full h-[74px] bg-accent-light rounded-b-[80px] px-8 sm:px-12 md:px-16 flex items-center justify-between z-30 shadow-[0_4px_12px_rgba(0,0,0,0.04)] select-none">
       {/* Left: Book SVG (#2c5e91) + CO-LAB Logo */}
       <div className="flex items-center space-x-3 sm:space-x-4">
         {/* Notebook / Book SVG */}
@@ -86,9 +86,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
           <Image
             src="/logo.png"
             alt="CO-LAB Logo"
-            width={120}
-            height={36}
-            className="h-8 sm:h-9 w-auto object-contain"
+            width={195}
+            height={58}
+            className="h-12 sm:h-[50px] md:h-[54px] w-auto object-contain"
             priority
           />
         </Link>
@@ -99,7 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
         {/* Docs Link */}
         <Link
           href="/help"
-          className="flex items-center space-x-1.5 font-comic text-[#30312C] text-[14px] sm:text-[15px] font-bold hover:text-[#2c5e91] transition-colors group"
+          className="flex items-center space-x-1.5 font-header text-[#30312C] text-[14px] sm:text-[15px] font-bold hover:text-[#2c5e91] transition-colors group"
         >
           <svg
             width="16"
@@ -119,13 +119,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
             <path d="M 5.5 2 L 5.5 16" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
             <path d="M 8 6 L 13 6 M 8 9 L 13 9 M 8 12 L 11 12" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
           </svg>
-          <span className="hidden xs:inline">Docs</span>
+          <span className="inline font-bold">Docs</span>
         </Link>
 
         {/* Team Link */}
         <Link
           href="/workspace"
-          className="flex items-center space-x-1.5 font-comic text-[#30312C] text-[14px] sm:text-[15px] font-bold hover:text-[#2c5e91] transition-colors group"
+          className="flex items-center space-x-1.5 font-header text-[#30312C] text-[14px] sm:text-[15px] font-bold hover:text-[#2c5e91] transition-colors group"
         >
           <svg
             width="17"
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
               strokeLinecap="round"
             />
           </svg>
-          <span className="hidden xs:inline">Team</span>
+          <span className="inline font-bold">Team</span>
         </Link>
 
         {/* Search Bar */}
@@ -160,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search..."
-            className="w-[110px] sm:w-[150px] md:w-[180px] h-[36px] pl-8 pr-3 py-1 font-comic text-[14px] bg-[#FFFFFF] text-[#30312C] placeholder-[#8E8B82] rounded-full border-1.5 border-[#30312C] focus:outline-none focus:ring-2 focus:ring-[#2c5e91] focus:border-[#2c5e91] transition-all shadow-inner"
+            className="w-[120px] sm:w-[160px] md:w-[190px] h-[36px] pl-8 pr-3 py-1 font-body text-[13.5px] bg-[#FFFFFF] text-[#30312C] placeholder-[#8E8B82] rounded-full border border-[#30312C]/25 focus:outline-none focus:ring-1.5 focus:ring-[#2c5e91] focus:border-[#2c5e91] transition-all shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
           />
           <svg
             width="14"
@@ -177,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
         {/* Circular Profile Icon */}
         <Link
           href="/settings"
-          className="relative w-10 h-10 rounded-full border-1.5 border-[#30312C] bg-[#fdd355] overflow-hidden flex items-center justify-center hover:scale-105 transition-transform shadow-[0_2px_0px_#30312C]"
+          className="relative w-10 h-10 rounded-full border-1.5 border-[#30312C] bg-accent overflow-hidden flex items-center justify-center hover:scale-105 transition-transform shadow-[0_2px_0px_#30312C]"
           title="Profile & Settings"
         >
           <Image

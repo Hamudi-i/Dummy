@@ -8,20 +8,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F8F5EC] flex flex-col font-hand text-[#30312C]">
-      {/* Top Shared Navbar */}
-      <Navbar />
-
-      {/* Main Container: Sidebar + Content */}
-      <div className="flex flex-1 w-full overflow-hidden">
-        {/* Left Shared Sidebar */}
-        <Sidebar />
-
-        {/* Dynamic Page Content */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-[#F8F5EC] min-h-[calc(100vh-74px)]">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </main>
+    <div className="h-screen w-screen bg-[#F8F5EC] relative overflow-hidden font-body text-[#30312C]">
+      {/* Top Navbar (High z-index z-40 over Sidebar and Main) */}
+      <div className="fixed top-0 left-0 w-full z-40">
+        <Navbar />
       </div>
+
+      {/* Full-Height Left Sidebar (Fixed top-0 left-0 z-20) */}
+      <Sidebar />
+
+      {/* Dynamic Main Workspace Content */}
+      <main className="h-full w-full pl-[256px] pt-[74px] overflow-y-auto bg-[#F8F5EC]">
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">{children}</div>
+      </main>
     </div>
   );
 }
