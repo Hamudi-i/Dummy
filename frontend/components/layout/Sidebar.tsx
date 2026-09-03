@@ -1,0 +1,246 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export const Sidebar: React.FC = () => {
+  const pathname = usePathname();
+
+  const mainNavItems = [
+    {
+      name: "Workspace",
+      href: "/workspace",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect
+            x="3"
+            y="3"
+            width="8"
+            height="8"
+            rx="2"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+          />
+          <rect
+            x="13"
+            y="3"
+            width="8"
+            height="8"
+            rx="2"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+          />
+          <rect
+            x="3"
+            y="13"
+            width="8"
+            height="8"
+            rx="2"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+          />
+          <rect
+            x="13"
+            y="13"
+            width="8"
+            height="8"
+            rx="2"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "Notebooks",
+      href: "/notebooks",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M 4 4 C 4 3 5 2.5 6.5 2.5 L 18 2.5 C 19.5 2.5 20 3 20 4 L 20 20 C 20 21 19.5 21.5 18 21.5 L 6.5 21.5 C 5 21.5 4 21 4 20 Z"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+          <path d="M 7.5 2.5 L 7.5 21.5" stroke="#30312C" strokeWidth="1.5" strokeDasharray="2 2" />
+          <path d="M 10 7 L 17 7 M 10 11 L 17 11 M 10 15 L 14 15" stroke={active ? "#ffffff" : "#30312C"} strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      name: "Drafts",
+      href: "/drafts",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M 16.5 3.5 L 20.5 7.5 L 9.5 18.5 L 5.5 18.5 L 5.5 14.5 Z"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+          <path d="M 14 6 L 18 10" stroke="#30312C" strokeWidth="1.4" />
+          <path d="M 4 21 L 20 21" stroke="#30312C" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      name: "Archive",
+      href: "/archive",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M 4 4 L 20 4 L 20 9 L 4 9 Z"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M 5 9 L 5 20 C 5 21 6 21.5 7 21.5 L 17 21.5 C 18 21.5 19 21 19 20 L 19 9"
+            fill={active ? "#2c5e91" : "#FAF7EE"}
+            stroke="#30312C"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+          <path d="M 10 13 L 14 13" stroke={active ? "#ffffff" : "#30312C"} strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+  ];
+
+  const bottomNavItems = [
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3" fill={active ? "#2c5e91" : "#FAF7EE"} stroke="#30312C" strokeWidth="1.6" />
+          <path
+            d="M 12 2 L 12 4 M 12 20 L 12 22 M 2 12 L 4 12 M 20 12 L 22 12 M 4.9 4.9 L 6.3 6.3 M 17.7 17.7 L 19.1 19.1 M 4.9 19.1 L 6.3 17.7 M 17.7 6.3 L 19.1 4.9"
+            stroke="#30312C"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "Help",
+      href: "/help",
+      icon: (active: boolean) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" fill={active ? "#2c5e91" : "#FAF7EE"} stroke="#30312C" strokeWidth="1.6" />
+          <path d="M 9.5 9 C 9.5 7.5 10.5 6.5 12 6.5 C 13.5 6.5 14.5 7.5 14.5 9 C 14.5 11 12 11.5 12 13.5" stroke={active ? "#ffffff" : "#30312C"} strokeWidth="1.6" strokeLinecap="round" />
+          <circle cx="12" cy="16.5" r="1" fill={active ? "#ffffff" : "#30312C"} />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <aside className="w-[256px] min-h-[calc(100vh-74px)] bg-[#f0eded] border-r-2 border-[#30312C] flex flex-col justify-between p-4 shrink-0 select-none">
+      {/* Top Section */}
+      <div className="flex flex-col items-center w-full">
+        {/* Profile Circle & Info */}
+        <div className="flex flex-col items-center text-center mt-2 mb-4">
+          <div className="w-16 h-16 rounded-full border-2 border-[#30312C] bg-[#fdd355] overflow-hidden p-0.5 shadow-[0_2px_0px_#30312C]">
+            <Image
+              src="/fox.png"
+              alt="My Studio Profile"
+              width={64}
+              height={64}
+              className="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          <h2 className="font-school text-[20px] font-bold text-[#30312C] mt-2.5 leading-tight">
+            My studio
+          </h2>
+          <span className="font-hand text-[15px] font-semibold text-[#66645e]">
+            creative space
+          </span>
+        </div>
+
+        {/* + New Sketch Button (Exact Figma Specifications) */}
+        <div className="pt-[16px] w-full flex justify-center">
+          <button
+            type="button"
+            className="group flex items-center justify-center font-comic font-bold text-[#30312C] text-[16.5px] tracking-wide transition-all active:translate-y-[2px] cursor-pointer"
+            style={{
+              width: "211.98px",
+              height: "61px",
+              backgroundColor: "#fdd355",
+              borderRadius: "135px 120px 120px 135px",
+              borderRight: "4px solid #30312C",
+              borderBottom: "5px solid #30312C",
+              borderTop: "1.5px solid #30312C",
+              borderLeft: "1.5px solid #30312C",
+              paddingTop: "12px",
+              paddingRight: "24.67px",
+              paddingBottom: "12px",
+              paddingLeft: "24.66px",
+              gap: "7.99px",
+            }}
+          >
+            <span className="text-[20px] font-extrabold leading-none group-hover:scale-125 transition-transform">
+              +
+            </span>
+            <span>New Sketch</span>
+          </button>
+        </div>
+
+        {/* Pages Links */}
+        <nav className="w-full mt-6 space-y-1.5 px-1">
+          {mainNavItems.map((item) => {
+            const isActive = pathname === item.href || (item.href === "/workspace" && pathname === "/");
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-comic font-bold transition-all ${
+                  isActive
+                    ? "bg-[#2c5e91] text-white shadow-[0_2px_0px_#30312C] border-1.5 border-[#30312C]"
+                    : "text-[#30312C] hover:bg-[#e4e0d5] hover:translate-x-1"
+                }`}
+              >
+                <div className="shrink-0">{item.icon(isActive)}</div>
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Far Bottom Section */}
+      <div className="w-full px-1 pb-2">
+        <hr className="border-t-1.5 border-[#30312C]/20 mb-3" />
+        <nav className="space-y-1.5">
+          {bottomNavItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-[15.5px] font-comic font-bold transition-all ${
+                  isActive
+                    ? "bg-[#2c5e91] text-white shadow-[0_2px_0px_#30312C] border-1.5 border-[#30312C]"
+                    : "text-[#30312C] hover:bg-[#e4e0d5] hover:translate-x-1"
+                }`}
+              >
+                <div className="shrink-0">{item.icon(isActive)}</div>
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </aside>
+  );
+};
