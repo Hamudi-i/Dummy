@@ -53,7 +53,8 @@ export class DocumentController {
         }
     }
 
-    // Un-archive document
+    // Un-archive document 
+    // /api/do
     static async restoreDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
