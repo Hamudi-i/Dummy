@@ -146,7 +146,7 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="fixed top-0 left-0 w-[256px] h-screen bg-sidebar-bg flex flex-col justify-between pt-[96px] pb-6 px-4 shrink-0 select-none shadow-[6px_0_24px_rgba(48,49,44,0.09),2px_0_6px_rgba(0,0,0,0.04)] z-20 overflow-y-auto">
+    <aside className="fixed top-0 left-0 w-[256px] h-screen bg-sidebar-bg border-r border-[#30312C]/20 flex flex-col justify-between pt-[96px] pb-6 px-4 shrink-0 select-none shadow-[6px_0_24px_rgba(48,49,44,0.09),2px_0_6px_rgba(0,0,0,0.04)] z-20 overflow-y-auto">
       {/* Top Section */}
       <div className="flex flex-col items-center w-full">
         {/* Profile Circle & Info (Tight Psychological Grouping) */}
@@ -194,7 +194,13 @@ export const Sidebar: React.FC = () => {
         {/* Pages Links (Structured Spacing) */}
         <nav className="w-full space-y-2 px-0.5">
           {mainNavItems.map((item) => {
-            const isActive = pathname === item.href || (item.href === "/workspace" && pathname === "/");
+            const isActive =
+              item.href === "/workspace"
+                ? pathname === "/workspace" || pathname === "/" || (pathname.startsWith("/workspace") && !pathname.includes("/notebook/"))
+                : item.href === "/notebooks"
+                ? pathname.startsWith("/notebooks") || pathname.includes("/notebook/")
+                : pathname === item.href;
+
             return (
               <Link
                 key={item.name}

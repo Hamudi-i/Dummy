@@ -3,13 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { INITIAL_WORKSPACES, WorkspaceItem } from "@/lib/mock-data";
+import { IconRenderer } from "@/components/ui/IconRenderer";
 
 export default function WorkspacesOverviewPage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>(INITIAL_WORKSPACES);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
-  const [newIcon, setNewIcon] = useState("✨");
+  const [newIcon, setNewIcon] = useState("palette");
 
   const handleCreateWorkspace = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +20,13 @@ export default function WorkspacesOverviewPage() {
       id: `ws-${Date.now()}`,
       title: newTitle.trim(),
       description: newDesc.trim() || "Creative workspace for notes, sketches, and documents.",
-      icon: newIcon || "✨",
+      icon: newIcon || "palette",
       color: "#fdd355",
       notebookCount: 0,
       lastUpdated: "Just now",
+      badgeLabel: "Workspace",
+      badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30",
+      previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
     };
 
     setWorkspaces([newWorkspace, ...workspaces]);
@@ -32,68 +36,161 @@ export default function WorkspacesOverviewPage() {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn select-none">
+    <div className="space-y-8 animate-fadeIn select-none pt-6 sm:pt-8">
       {/* Header & Title Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#30312C]/10 pb-5">
-        <div>
-          <h1 className="font-header text-3xl sm:text-4xl font-extrabold text-[#30312C] tracking-tight">
-            Workspaces
-          </h1>
-          <p className="font-body text-base text-[#66645e] mt-1">
-            Select a workspace to explore its notebooks or create a new space for your team.
-          </p>
+      <div className="space-y-3 pb-2">
+        {/* Row 1: Header Title on Left & Action Button on Right (Same Line) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="relative inline-block transform -rotate-1 sm:-rotate-1.5 origin-left">
+            <h1 className="font-header text-4xl sm:text-[44px] font-extrabold text-[#30312C] tracking-tight relative z-10 leading-tight">
+              Recent Sketches
+            </h1>
+            <svg
+              viewBox="0 0 240 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute -bottom-2.5 left-0 w-full h-3.5 pointer-events-none z-0"
+            >
+              <line
+                x1="2"
+                y1="6"
+                x2="238"
+                y2="6"
+                stroke="#fdd355"
+                strokeWidth="9"
+                strokeLinecap="round"
+                strokeOpacity="0.65"
+              />
+            </svg>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="h-[46px] px-5 bg-accent hover:bg-accent-hover text-[#30312C] font-header font-bold text-[16px] tracking-wide rounded-full border-1.5 border-[#30312C] shadow-[2px_2px_0px_#30312C] flex items-center space-x-2 transition-all active:translate-y-[1px] cursor-pointer shrink-0"
+          >
+            <span className="text-xl font-bold">+</span>
+            <span>Create Workspace</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="self-start sm:self-center h-[46px] px-5 bg-accent hover:bg-accent-hover text-[#30312C] font-header font-bold text-[16px] tracking-wide rounded-full border-1.5 border-[#30312C] shadow-[2px_2px_0px_#30312C] flex items-center space-x-2 transition-all active:translate-y-[1px] cursor-pointer shrink-0"
-        >
-          <span className="text-xl font-bold">+</span>
-          <span>Create Workspace</span>
-        </button>
+        {/* Row 2: Subheader below */}
+        <p className="font-body text-base text-[#66645e] max-w-xl leading-relaxed">
+          Welcome back! Pick up your pen where you left off or start a new collaborative canvas.
+        </p>
       </div>
 
       {/* Workspaces Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {workspaces.map((ws) => (
-          <Link
-            key={ws.id}
-            href={`/workspace/${ws.id}`}
-            className="group bg-[#FAF7EE] border-2 border-[#30312C] rounded-2xl p-6 shadow-[3px_3px_0px_#30312C] hover:shadow-[5px_5px_0px_#30312C] hover:-translate-y-0.5 transition-all flex flex-col justify-between cursor-pointer space-y-4"
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border-1.5 border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C]"
-                  style={{ backgroundColor: ws.color }}
-                >
-                  {ws.icon}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 sm:gap-8 max-w-6xl mx-auto pl-2 sm:pl-4">
+        {workspaces.map((ws, idx) => {
+          const defaultRotations = ["-rotate-1.5", "rotate-1", "-rotate-1", "rotate-1.5"];
+          const tapeTilts = ["-rotate-3", "rotate-4", "-rotate-2", "rotate-[3.5deg]"];
+          const currentRotation = ws.rotation || defaultRotations[idx % defaultRotations.length];
+          const currentTapeTilt = tapeTilts[idx % tapeTilts.length];
+
+          return (
+            <Link
+              key={ws.id}
+              href={`/workspace/${ws.id}`}
+              /* Connected Top Curve (160px Top Radii), Bottom-Right 114px, Bottom-Left 14px */
+              className={`group bg-[#FFFFFF] border-2 border-[#1B1C1C] rounded-tl-[160px] rounded-tr-[160px] rounded-br-[114px] rounded-bl-[14px] p-6 min-h-[355px] shadow-[5px_5px_0px_rgba(27,28,28,0.22)] hover:shadow-[7px_7px_0px_rgba(27,28,28,0.38)] ${currentRotation} hover:rotate-0 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 relative overflow-visible`}
+            >
+              {/* Authentic Masking Tape Badge (Top-Center, Overlapping Top Border with Random Tilt) */}
+              <div className={`absolute left-1/2 -translate-x-1/2 -top-4.5 z-20 ${currentTapeTilt} pointer-events-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.12)]`}>
+                <div className="relative px-4 py-0.5 bg-[#FFF8DC]/95 text-[#30312C] font-header font-bold text-[11px] tracking-wider uppercase border-y border-[#D6C79B]/70 flex items-center justify-center select-none">
+                  {/* Left Torn Tape Edge (Jagged SVG) */}
+                  <div className="absolute -left-2 top-0 bottom-0 w-2.5 overflow-hidden">
+                    <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
+                      <path d="M10,0 L0,3 L5,8 L0,14 L6,20 L0,26 L10,30 Z" />
+                    </svg>
+                  </div>
+
+                  <span>{ws.badgeLabel || "Workspace"}</span>
+
+                  {/* Right Torn Tape Edge (Jagged SVG) */}
+                  <div className="absolute -right-2 top-0 bottom-0 w-2.5 overflow-hidden">
+                    <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
+                      <path d="M0,0 L10,3 L5,8 L10,14 L4,20 L10,26 L0,30 Z" />
+                    </svg>
+                  </div>
                 </div>
-                <span className="font-body text-xs font-semibold text-[#807d74] bg-[#efe9d9] px-2.5 py-1 rounded-full border border-[#30312C]/20">
+              </div>
+
+              {/* 1. Top Row: 3-Dots Button (Top-Right) */}
+              <div className="flex items-center justify-end relative z-10 min-h-[28px]">
+                {/* 3 Dots Vertical Settings Button (Top Right) */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert(`Settings for ${ws.title}`);
+                  }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#30312C] hover:bg-[#30312C]/10 transition-colors cursor-pointer"
+                  title="Workspace Options"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="12" cy="19" r="2" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* 2. Rectangular Picture showing canvas preview placeholder */}
+              <div className="w-[88%] mx-auto h-28 rounded-xl border-1.5 border-[#30312C]/30 overflow-hidden relative shadow-xs bg-[#FAF7EE] group-hover:scale-[1.01] transition-transform z-10 flex items-center justify-center">
+                <img
+                  src="/sketch-preview.jpg"
+                  alt={`${ws.title} Canvas Preview`}
+                  className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
+                />
+                <div className="absolute bottom-1.5 right-2 px-2 py-0.5 bg-[#1B1C1C]/80 text-white rounded-md text-[9.5px] font-header font-bold tracking-wider backdrop-blur-xs">
+                  Canvas Preview
+                </div>
+              </div>
+
+              {/* 3. Workspace Name */}
+              <h3 className="font-header text-xl font-extrabold text-[#30312C] group-hover:text-primary transition-colors relative z-10">
+                {ws.title}
+              </h3>
+
+              {/* 4. Bottom Row: Edited Time (Bottom Left) & Notebook Count (Bottom Right) */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#30312C]/10 relative z-10">
+                {/* Edited Sometime Ago (Bottom Left) */}
+                <p className="font-body text-xs font-semibold text-[#737067]">
+                  Edited {ws.lastUpdated}
+                </p>
+
+                {/* Notebook Count Badge (Bottom Right) */}
+                <span className="font-body text-xs mr-5 font-semibold text-[#737067] bg-[#efe9d9] px-2.5 py-0.5 rounded-full border border-[#30312C]/20">
                   {ws.notebookCount} {ws.notebookCount === 1 ? "Notebook" : "Notebooks"}
                 </span>
               </div>
+            </Link>
+          );
+        })}
+      </div>
 
-              <div>
-                <h3 className="font-header text-xl font-bold text-[#30312C] group-hover:text-primary transition-colors">
-                  {ws.title}
-                </h3>
-                <p className="font-body text-[14.5px] text-[#55534c] mt-1.5 leading-relaxed line-clamp-2">
-                  {ws.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-[#30312C]/10 flex items-center justify-between text-xs font-body text-[#737067]">
-              <span>Updated {ws.lastUpdated}</span>
-              <span className="font-header font-bold text-primary flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
-                <span>Open Workspace</span>
-                <span>→</span>
-              </span>
-            </div>
-          </Link>
-        ))}
+      {/* Bottom Divider & Footer */}
+      <div className="pt-10 pb-4 space-y-6">
+        <hr className="border-t-1.5 border-[#30312C]/20" />
+        <footer className="w-full flex items-center justify-center text-xs font-body text-[#30312C]/70 space-x-4 select-none">
+          <span>© Co-Lab 2024</span>
+          <button
+            type="button"
+            onClick={() => alert("Privacy Policy")}
+            className="underline hover:text-primary transition-colors cursor-pointer"
+          >
+            Privacy
+          </button>
+          <button
+            type="button"
+            onClick={() => alert("Terms of Service")}
+            className="underline hover:text-primary transition-colors cursor-pointer"
+          >
+            Terms
+          </button>
+        </footer>
       </div>
 
       {/* Modal: Create Workspace */}
@@ -117,16 +214,15 @@ export default function WorkspacesOverviewPage() {
                   Workspace Icon
                 </label>
                 <div className="flex space-x-2">
-                  {["🎨", "🚀", "✏️", "📂", "💡", "🔮"].map((emoji) => (
+                  {["palette", "rocket", "pen-tool", "compass", "layers", "zap"].map((iconKey) => (
                     <button
-                      key={emoji}
+                      key={iconKey}
                       type="button"
-                      onClick={() => setNewIcon(emoji)}
-                      className={`w-10 h-10 rounded-xl border border-[#30312C] text-xl flex items-center justify-center ${
-                        newIcon === emoji ? "bg-accent shadow-[1.5px_1.5px_0px_#30312C]" : "bg-[#FFFFFF]"
-                      }`}
+                      onClick={() => setNewIcon(iconKey)}
+                      className={`w-10 h-10 rounded-xl border border-[#30312C] flex items-center justify-center ${newIcon === iconKey ? "bg-accent shadow-[1.5px_1.5px_0px_#30312C]" : "bg-[#FFFFFF]"
+                        }`}
                     >
-                      {emoji}
+                      <IconRenderer name={iconKey} className="w-5 h-5 text-[#30312C]" />
                     </button>
                   ))}
                 </div>
