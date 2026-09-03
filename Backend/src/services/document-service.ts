@@ -80,6 +80,7 @@ export class DocumentService {
             data: {
                 workspaceId,
                 authorId,
+                slug,
                 title: data.title?.trim() || "Untitled",
                 icon: data.icon,
                 plainText: data.plainText,
@@ -90,6 +91,7 @@ export class DocumentService {
                 authorId: true,
                 title: true,
                 icon: true,
+                slug: true,
                 isArchived: true,
                 isPublic: true,
                 createdAt: true,
@@ -118,10 +120,23 @@ export class DocumentService {
     ) {
         await this.getDocumentById(id);
 
+
+        var newSlug;
+        if (data.title) newSlug = Util.generateSlug(data.title);
+
+        const existingWorkspace = await prisma.workspace.findUnique({
+            where: { slug: newSlug }
+        })
+
+        if (existingWorkspace) {
+            throw new BadRequestException("Workspace with this slug already exists");
+        }
+
         return prisma.document.update({
             where: { id },
             data: {
                 title: data.title !== undefined ? data.title : undefined,
+                slug: newSlug !== undefined ? newSlug : undefined,
                 icon: data.icon !== undefined ? data.icon : undefined,
                 plainText: data.plainText !== undefined ? data.plainText : undefined,
                 isArchived: data.isArchived !== undefined ? data.isArchived : undefined
