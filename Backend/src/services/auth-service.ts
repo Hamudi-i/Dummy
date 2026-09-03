@@ -5,6 +5,13 @@ import { BadRequestException } from "../infrastructure/http-exceptions";
 export class AuthService {
   static async register(payload: { email: string; password: string; name?: string }) {
     const { email, password, name } = payload;
+
+    console.log("[AuthService.register] Received payload:", {
+      email,
+      passwordLength: password?.length,
+      rawPassword: JSON.stringify(password),
+    });
+
     if (!email || !password) {
       throw new BadRequestException("Email and password are required");
     }
@@ -14,10 +21,12 @@ export class AuthService {
     });
 
     if (existingUser) {
+      console.warn("[AuthService.register] Email already registered:", email);
       throw new BadRequestException("Email is already registered");
     }
 
     const hashedPassword = Util.hashPassword(password);
+    console.log("[AuthService.register] Generated hash:", hashedPassword);
 
     const user = await prisma.user.create({
       data: {
@@ -27,6 +36,8 @@ export class AuthService {
         role: "USER",
       },
     });
+
+    console.log("[AuthService.register] User successfully saved to DB:", user.id);
 
     const tokenPayload = {
       userId: user.id,
@@ -52,7 +63,12 @@ export class AuthService {
   static async login(payload: { email: string; password: string }) {
     const { email, password } = payload;
 
-    //TODO Add a request validation layer, use Zod
+    console.log("[AuthService.login] Incoming login attempt:", {
+      email,
+      passwordLength: password?.length,
+      rawPassword: JSON.stringify(password),
+    });
+
     if (!email || !password) {
       throw new BadRequestException("Email and password are required");
     }
@@ -61,12 +77,18 @@ export class AuthService {
       where: { email: email.toLowerCase() },
     });
 
+    console.log("[AuthService.login] Database user lookup result:", user);
+
     if (!user || !user.password) {
+      console.warn("[AuthService.login] User not found or missing password hash in DB");
       throw new BadRequestException("Invalid email or password");
     }
 
     const isValidPassword = Util.comparePassword(password, user.password);
+    console.log("[AuthService.login] Password comparison result:", isValidPassword);
+
     if (!isValidPassword) {
+      console.warn("[AuthService.login] Password comparison failed");
       throw new BadRequestException("Invalid email or password");
     }
 

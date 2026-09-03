@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ActiveModal, ToastMessage } from '@/app/types';
 import { TopNav } from '@/components/layout/TopNav';
 import { Footer } from '@/components/layout/Footer';
@@ -21,6 +22,7 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
   foxMascot,
   sideIllustrations,
 }) => {
+  const router = useRouter();
   const [activeModal, setActiveModal] = useState<ActiveModal>('none');
   const [searchQuery, setSearchQuery] = useState('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -33,11 +35,40 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
     }, 4000);
   };
 
-  const handleLogin = (creds: { email: string; pass: string }) => {
-    addToast(
-      'Welcome to Co-Lab!',
-      `Logged in successfully as ${creds.email || 'Creative Member'}`
-    );
+  const handleLogin = async (creds: { email: string; pass: string }) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: creds.email,
+          password: creds.pass,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Invalid email or password');
+      }
+
+      // Store auth session details per teammate backend spec
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      addToast('Welcome to Co-Lab!', 'Logged in successfully!');
+      
+      // Redirect to main app/dashboard
+      router.push('/dashboard');
+    } catch (err: any) {
+      addToast('Login Failed', err.message || 'Unable to sign in. Please try again.', 'error');
+    }
   };
 
   const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {
@@ -106,6 +137,7 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
       <HandDrawnModal
         modal={activeModal}
         searchQuery={searchQuery}
+        aria-modal="true"
         onClose={() => setActiveModal('none')}
         onSuccessToast={addToast}
       />
