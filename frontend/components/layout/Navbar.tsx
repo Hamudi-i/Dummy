@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
   };
 
   return (
-    <header className="w-full h-[74px] bg-accent-light rounded-b-[80px] px-8 sm:px-12 md:px-16 flex items-center justify-between z-30 shadow-[0_4px_12px_rgba(0,0,0,0.04)] select-none">
+    <header className="w-full h-[74px] bg-accent-light rounded-b-[80px] px-8 sm:px-12 md:px-16 flex items-center justify-between z-30 shadow-[0_6px_20px_rgba(48,49,44,0.12)] select-none">
       {/* Left: Book SVG (#2c5e91) + CO-LAB Logo */}
       <div className="flex items-center space-x-3 sm:space-x-4">
         {/* Notebook / Book SVG */}

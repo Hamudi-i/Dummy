@@ -6,6 +6,10 @@ export interface WorkspaceItem {
   color: string;
   notebookCount: number;
   lastUpdated: string;
+  badgeLabel: string;
+  badgeStyle: string; // Tailwind class string for light transparent badge background & text color
+  previewGradient: string; // Gradient style for the rectangular picture preview
+  rotation?: string; // Slight random tilt class (e.g. -rotate-1.5, rotate-1)
 }
 
 export interface NotebookItem {
@@ -28,6 +32,10 @@ export const INITIAL_WORKSPACES: WorkspaceItem[] = [
     color: "#2c5e91",
     notebookCount: 3,
     lastUpdated: "2 hours ago",
+    badgeLabel: "Design System",
+    badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30",
+    previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+    rotation: "-rotate-1.5",
   },
   {
     id: "ws-product-roadmap",
@@ -37,6 +45,10 @@ export const INITIAL_WORKSPACES: WorkspaceItem[] = [
     color: "#fdd355",
     notebookCount: 4,
     lastUpdated: "Yesterday",
+    badgeLabel: "Roadmap",
+    badgeStyle: "bg-[#fdd355]/30 text-[#856404] border-[#fdd355]/50",
+    previewGradient: "from-[#fdd355]/30 via-[#e48358]/20 to-[#FAF7EE]",
+    rotation: "rotate-1",
   },
   {
     id: "ws-creative-lab",
@@ -46,6 +58,10 @@ export const INITIAL_WORKSPACES: WorkspaceItem[] = [
     color: "#e48358",
     notebookCount: 2,
     lastUpdated: "3 days ago",
+    badgeLabel: "Creative Lab",
+    badgeStyle: "bg-[#e48358]/15 text-[#c25a2e] border-[#e48358]/30",
+    previewGradient: "from-[#e48358]/25 via-[#2c5e91]/15 to-[#FAF7EE]",
+    rotation: "-rotate-1",
   },
 ];
 
