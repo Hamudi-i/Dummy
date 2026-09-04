@@ -5,7 +5,8 @@ export class DocumentController {
     static async getWorkspaceDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const workspaceId = req.params.workspaceId as string;
-            const document = await DocumentService.getWorkspaceDocuments(workspaceId);
+            const userId = (req as any).currentUser.userId;
+            const document = await DocumentService.getWorkspaceDocuments(workspaceId, userId);
             res.status(200).json(document);
         } catch (error) {
             next(error);
@@ -15,7 +16,8 @@ export class DocumentController {
     static async getDocumentById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
-            const document = await DocumentService.getDocumentById(id);
+            const userId = (req as any).currentUser.userId;
+            const document = await DocumentService.getDocumentById(id, userId);
             res.status(200).json(document);
         } catch (error) {
             next(error);
@@ -36,7 +38,8 @@ export class DocumentController {
     static async updateDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
-            const updatedDocument = await DocumentService.updateDocument(id, req.body);
+            const userId = (req as any).currentUser.userId;
+            const updatedDocument = await DocumentService.updateDocument(id, userId, req.body);
             res.status(200).json(updatedDocument);
         } catch (error) {
             next(error);
@@ -46,7 +49,8 @@ export class DocumentController {
     static async archiveDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
-            const archivedDocument = await DocumentService.setArchiveStatus(id, true);
+            const userId = (req as any).currentUser.userId;
+            const archivedDocument = await DocumentService.setArchiveStatus(id, userId, true);
             res.status(200).json(archivedDocument);
         } catch (error) {
             next(error);
@@ -58,7 +62,8 @@ export class DocumentController {
     static async restoreDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
-            const restoredDocument = await DocumentService.setArchiveStatus(id, false);
+            const userId = (req as any).currentUser.userId;
+            const restoredDocument = await DocumentService.setArchiveStatus(id, userId, false);
             res.status(200).json(restoredDocument);
         } catch (error) {
             next(error);
@@ -68,7 +73,8 @@ export class DocumentController {
     static async deleteDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
-            await DocumentService.deleteDocument(id);
+            const userId = (req as any).currentUser.userId;
+            await DocumentService.deleteDocument(id, userId);
             res.status(200).json({ message: "Document deleted successfully" });
         } catch (error) {
             next(error);
