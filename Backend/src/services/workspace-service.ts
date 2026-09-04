@@ -3,8 +3,15 @@ import { BadRequestException, NotFoundException } from "../infrastructure/http-e
 import { Util } from "../common/utils";
 
 export class WorkspaceService {
-    static async getAllWorkspaces() {
+    static async getAllWorkspaces(userId: string) {
         return prisma.workspace.findMany({
+            where: {
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
             select: {
                 id: true,
                 name: true,
@@ -18,9 +25,17 @@ export class WorkspaceService {
             orderBy: { createdAt: "desc" },
         });
     }
-    static async getWorkspaceById(id: string) {
-        const workspace = await prisma.workspace.findUnique({
-            where: { id },
+
+    static async getWorkspaceById(id: string, userId: string) {
+        const workspace = await prisma.workspace.findFirst({
+            where: {
+                id,
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
             select: {
                 id: true,
                 name: true,
@@ -40,12 +55,19 @@ export class WorkspaceService {
         return workspace;
     }
 
-    static async getWorkspaceBySlug(slug: string) {
+    static async getWorkspaceBySlug(slug: string, userId: string) {
         if (!slug) {
             throw new BadRequestException("Slug is required");
         }
-        const workspace = await prisma.workspace.findUnique({
-            where: { slug },
+        const workspace = await prisma.workspace.findFirst({
+            where: {
+                slug,
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
             select: {
                 id: true,
                 name: true,
@@ -99,8 +121,8 @@ export class WorkspaceService {
         });
     }
 
-    static async updateWorkspace(id: string, data: { name?: string; }) {
-        await this.getWorkspaceById(id);
+    static async updateWorkspace(id: string, userId: string, data: { name?: string; }) {
+        await this.getWorkspaceById(id, userId);
 
         var newSlug;
         if (data.name) {
@@ -130,8 +152,8 @@ export class WorkspaceService {
         });
     }
 
-    static async deleteWorkspace(id: string) {
-        await this.getWorkspaceById(id);
+    static async deleteWorkspace(id: string, userId: string) {
+        await this.getWorkspaceById(id, userId);
         return prisma.workspace.delete({
             where: { id },
         });

@@ -1,10 +1,24 @@
 import prisma from "../infrastructure/prisma";
-import { BadRequestException, NotFoundException } from "../infrastructure/http-exceptions";
+import { BadRequestException, ForbiddenException, NotFoundException } from "../infrastructure/http-exceptions";
 import { Util } from "../common/utils";
 
 export class DocumentService {
-    static async getWorkspaceDocuments(workspaceId: string, options: { isArchived?: boolean } = {}) {
+    static async getWorkspaceDocuments(workspaceId: string, userId: string, options: { isArchived?: boolean } = {}) {
         const { isArchived = false } = options;
+
+        const isMember = await prisma.workspaceMember.findUnique({
+            where: {
+                workspaceId_userId: {
+                    workspaceId,
+                    userId,
+                },
+            },
+        });
+
+        if (!isMember) {
+            throw new ForbiddenException("You do not have access to this workspace's documents");
+        }
+
         return prisma.document.findMany({
             where: {
                 workspaceId,
@@ -29,9 +43,18 @@ export class DocumentService {
         });
     }
 
-    static async getDocumentById(id: string) {
-        const document = await prisma.document.findUnique({
-            where: { id },
+    static async getDocumentById(id: string, userId: string) {
+        const document = await prisma.document.findFirst({
+            where: {
+                id,
+                workspace: {
+                    members: {
+                        some: {
+                            userId,
+                        },
+                    },
+                },
+            },
             include: {
                 author: {
                     select: {
@@ -42,7 +65,6 @@ export class DocumentService {
                     },
                 }
             },
-
         });
 
         if (!document) {
@@ -65,6 +87,18 @@ export class DocumentService {
         });
         if (!workspace) {
             throw new NotFoundException("Workspace not found");
+        }
+
+        const isMember = await prisma.workspaceMember.findUnique({
+            where: {
+                workspaceId_userId: {
+                    workspaceId,
+                    userId: authorId,
+                }
+            }
+        });
+        if (!isMember) {
+            throw new ForbiddenException("You do not have permission to create documents in this workspace");
         }
 
         const slug = Util.generateSlug(data.title || "Untitled");
@@ -103,6 +137,7 @@ export class DocumentService {
     // Update document metadata
     static async updateDocument(
         id: string,
+        userId: string,
         data: {
             title?: string;
             icon?: string;
@@ -110,18 +145,23 @@ export class DocumentService {
             isArchived?: boolean;
         }
     ) {
-        await this.getDocumentById(id);
-
+        const document = await this.getDocumentById(id, userId);
 
         var newSlug;
         if (data.title) newSlug = Util.generateSlug(data.title);
 
-        const existingWorkspace = await prisma.workspace.findUnique({
-            where: { slug: newSlug }
-        })
+        if (newSlug) {
+            const existingDocument = await prisma.document.findFirst({
+                where: {
+                    workspaceId: document.workspaceId,
+                    slug: newSlug,
+                    id: { not: id }
+                }
+            });
 
-        if (existingWorkspace) {
-            throw new BadRequestException("Workspace with this slug already exists");
+            if (existingDocument) {
+                throw new BadRequestException("Document with this title already exists in this workspace");
+            }
         }
 
         return prisma.document.update({
@@ -137,8 +177,8 @@ export class DocumentService {
     }
 
     // Soft delete
-    static async setArchiveStatus(id: string, isArchived: boolean) {
-        await this.getDocumentById(id);
+    static async setArchiveStatus(id: string, userId: string, isArchived: boolean) {
+        await this.getDocumentById(id, userId);
         return prisma.document.update({
             where: { id },
             data: { isArchived },
@@ -151,8 +191,8 @@ export class DocumentService {
     }
 
     // Hard/permanent delete
-    static async deleteDocument(id: string) {
-        await this.getDocumentById(id);
+    static async deleteDocument(id: string, userId: string) {
+        await this.getDocumentById(id, userId);
         return prisma.document.delete({
             where: { id },
         });

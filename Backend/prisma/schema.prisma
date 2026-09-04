@@ -94,7 +94,6 @@ model WorkspaceInvite {
   @@map("workspace_invites")
 }
 
-//TODO Create CRUD on Document
 model Document {
   id          String             @id @default(uuid())
   workspaceId String             @map("workspace_id")
