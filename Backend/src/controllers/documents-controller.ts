@@ -25,7 +25,7 @@ export class DocumentController {
     static async createDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const workspaceId = req.params.workspaceId as string;
-            const authorId = (req.params as any).currentUser.userId;
+            const authorId = (req as any).currentUser.userId;
             const document = await DocumentService.createDocument(workspaceId, authorId, req.body);
             res.status(201).json(document);
         } catch (error) {

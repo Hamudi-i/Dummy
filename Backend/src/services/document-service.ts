@@ -15,7 +15,6 @@ export class DocumentService {
                 title: true,
                 icon: true,
                 isArchived: true,
-                isPublic: true,
                 updatedAt: true,
                 author: {
                     select: {
@@ -41,15 +40,7 @@ export class DocumentService {
                         email: true,
                         avatarUrl: true,
                     },
-                },
-                children: {
-                    where: { isArchived: false },
-                    select: {
-                        id: true,
-                        title: true,
-                        icon: true,
-                    },
-                },
+                }
             },
 
         });
@@ -57,6 +48,8 @@ export class DocumentService {
         if (!document) {
             throw new NotFoundException("Document not found");
         }
+
+        return document;
     }
 
     static async createDocument(workspaceId: string,
@@ -93,7 +86,6 @@ export class DocumentService {
                 icon: true,
                 slug: true,
                 isArchived: true,
-                isPublic: true,
                 createdAt: true,
                 updatedAt: true,
                 author: {

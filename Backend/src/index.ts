@@ -8,6 +8,7 @@ import userRoutes from "./routes/users-route";
 import workspaceRoutes from "./routes/workspaces-route";
 import workspaceMemberRoutes from "./routes/workspace-member-routes";
 import workspaceInviteRoutes from "./routes/workspace-invite-route";
+import documentRouters from "./routes/documents-route";
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces", workspaceMemberRoutes);
 app.use("/api", workspaceInviteRoutes);
+app.use("/api", documentRouters);
 
 // Centralized error handling
 app.use(exceptionFilter);
