@@ -23,4 +23,15 @@ export class DocumentSnapshotService {
             orderBy: { createdAt: "desc" }
         });
     }
+
+    static async createDocumentSnapshot(documentId: string, createdById: string, summary: string) {
+        const document = prisma.document.findUnique({
+            where: { id: documentId }
+        });
+
+        if (!document) {
+            throw new NotFoundException("Dcoument not found");
+        }
+
+    }
 }
