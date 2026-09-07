@@ -32,6 +32,5 @@ export class DocumentSnapshotService {
         if (!document) {
             throw new NotFoundException("Dcoument not found");
         }
-
     }
 }
