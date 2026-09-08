@@ -33,7 +33,7 @@ export default function NotebookEditorPage() {
     INITIAL_NOTEBOOKS.find((n) => n.id === notebookId) || INITIAL_NOTEBOOKS[0];
 
   const [content, setContent] = useState(
-    `📐 Component Specifications & Guidelines\n\n- Primary Accent: #fdd355\n- Brand Blue: #2c5e91\n- Border Rules: Solid 1.8px #30312C sketch borders\n- Typography: Bricolage Grotesque for headers and Be Vietnam Pro for body.\n\nType here to start editing your notebook canvas...`
+    "📐 Component Specifications & Guidelines\n\n- Primary Accent: #fdd355\n- Brand Blue: #2c5e91\n- Border Rules: Solid 1.8px #30312C sketch borders\n- Typography: Bricolage Grotesque for headers and Be Vietnam Pro for body.\n\nType here to start editing your notebook canvas..."
   );
 
   const [activeFormats, setActiveFormats] = useState<{ [key: string]: boolean }>({
@@ -119,166 +119,215 @@ export default function NotebookEditorPage() {
         </div>
       </div>
 
-      {/* Editable White Document Container */}
-      <div className="mt-12 w-full max-w-[896px] mx-auto bg-white min-h-[856.8px] h-[917px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[135px] rounded-tr-[120px] rounded-br-[120px] rounded-bl-[135px] shadow-[8px_8px_8px_0px_rgba(27,28,28,0.1)] overflow-hidden flex flex-col transition-all">
-        {/* Formatting Toolbar - Clear Background with Dashed Divider */}
-        <div className="bg-white border-b-2 border-dashed border-[#30312C]/20 px-14 sm:px-20 pt-10 pb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center space-x-1 flex-wrap gap-y-1">
-            {/* Bold */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("bold")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.bold
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Bold"
-            >
-              <Bold className="w-4 h-4" />
-            </button>
+      {/* Canvas Outer Wrapper with Top Margin & Corner Tapes */}
+      <div className="relative mt-14 w-full max-w-[1024px] mx-auto">
+        {/* Left Tape Accent */}
+        <div
+          className="absolute -top-3 -left-7 w-[46px] h-[20px] bg-white/60 border border-black/10 shadow-[0px_6px_0px_0px_rgba(0,0,0,0.12)] pointer-events-none z-30 rounded-xs backdrop-blur-[0.5px]"
+          style={{ transform: "rotate(-40deg)" }}
+        />
 
-            {/* Italic */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("italic")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.italic
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Italic"
-            >
-              <Italic className="w-4 h-4" />
-            </button>
+        {/* Right Tape Accent */}
+        <div
+          className="absolute -top-3 -right-7 w-[46px] h-[20px] bg-white/60 border border-black/10 shadow-[0px_6px_0px_0px_rgba(0,0,0,0.12)] pointer-events-none z-30 rounded-xs backdrop-blur-[0.5px]"
+          style={{ transform: "rotate(40deg)" }}
+        />
 
-            {/* Underline */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("underline")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.underline
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Underline"
-            >
-              <UnderlineIcon className="w-4 h-4" />
-            </button>
+        {/* 2 Collaborator Profile Badges (Pushed Far Right) */}
+        <div className="absolute top-4 -right-22 sm:-right-32 md:-right-22 z-40 flex flex-col items-center space-y-3">
+          {/* Avatar Circle 1 */}
+          <div className="relative group cursor-pointer" title="Natty (Active Collaborator)">
+            <div className="w-9.5 h-9.5 rounded-full bg-[#FAF7EE] border-1.5 border-[#30312C] shadow-[2px_1.5px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+              <div className="w-full h-full bg-[#2c5e91] text-white font-header font-bold text-xs flex items-center justify-center">
+                N
+              </div>
+            </div>
+            <span
+              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#2c5e91] shadow-xs"
+              title="Online & Editing"
+            />
+          </div>
 
-            {/* Strikethrough */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("strikethrough")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.strikethrough
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Strikethrough"
-            >
-              <Strikethrough className="w-4 h-4" />
-            </button>
-
-            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-            {/* Code */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("code")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.code
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Code Inline"
-            >
-              <CodeIcon className="w-4 h-4" />
-            </button>
-
-            {/* Highlight */}
-            <button
-              type="button"
-              onClick={() => toggleFormat("highlight")}
-              className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                activeFormats.highlight
-                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-              }`}
-              title="Highlight"
-            >
-              <Highlighter className="w-4 h-4 text-amber-600" />
-            </button>
-
-            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-            {/* Headings */}
-            <button
-              type="button"
-              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-              title="Heading 1"
-            >
-              <Heading1 className="w-4 h-4" />
-            </button>
-
-            <button
-              type="button"
-              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-              title="Heading 2"
-            >
-              <Heading2 className="w-4 h-4" />
-            </button>
-
-            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-            {/* Bullet List */}
-            <button
-              type="button"
-              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-              title="Bullet List"
-            >
-              <List className="w-4 h-4" />
-            </button>
-
-            {/* Numbered List */}
-            <button
-              type="button"
-              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-              title="Numbered List"
-            >
-              <ListOrdered className="w-4 h-4" />
-            </button>
-
-            {/* Task Checklist */}
-            <button
-              type="button"
-              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-              title="Task List"
-            >
-              <CheckSquare className="w-4 h-4" />
-            </button>
+          {/* Avatar Circle 2 */}
+          <div className="relative group cursor-pointer" title="Maya (Design Lead)">
+            <div className="w-9.5 h-9.5 rounded-full bg-[#FAF7EE] border-1.5 border-[#30312C] shadow-[2px_1.5px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+              <div className="w-full h-full bg-[#fdd355] text-[#30312C] font-header font-bold text-xs flex items-center justify-center">
+                M
+              </div>
+            </div>
+            <span
+              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#2c5e91] shadow-xs"
+              title="Online & Editing"
+            />
           </div>
         </div>
 
-        {/* Editable Area */}
-        <div className="px-14 sm:px-20 pb-12 pt-6 flex-1 bg-white">
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Start typing your document..."
-            className="w-full h-full min-h-[420px] bg-transparent font-body text-base text-[#30312C] leading-relaxed focus:outline-none resize-none"
-            style={{
-              fontWeight: activeFormats.bold ? "bold" : "normal",
-              fontStyle: activeFormats.italic ? "italic" : "normal",
-              textDecoration: [
-                activeFormats.underline ? "underline" : "",
-                activeFormats.strikethrough ? "line-through" : "",
-              ]
-                .filter(Boolean)
-                .join(" "),
-              backgroundColor: activeFormats.highlight ? "#fef08a" : "transparent",
-            }}
-          />
+        {/* Editable White Document Container */}
+        <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] overflow-hidden flex flex-col transition-all">
+          {/* Formatting Toolbar - Clear Background */}
+          <div className="bg-white px-8 sm:px-12 pt-7 pb-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center space-x-1 flex-wrap gap-y-1">
+              {/* Bold */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("bold")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.bold
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Bold"
+              >
+                <Bold className="w-4 h-4" />
+              </button>
+
+              {/* Italic */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("italic")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.italic
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Italic"
+              >
+                <Italic className="w-4 h-4" />
+              </button>
+
+              {/* Underline */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("underline")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.underline
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Underline"
+              >
+                <UnderlineIcon className="w-4 h-4" />
+              </button>
+
+              {/* Strikethrough */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("strikethrough")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.strikethrough
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Strikethrough"
+              >
+                <Strikethrough className="w-4 h-4" />
+              </button>
+
+              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+              {/* Code */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("code")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.code
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Code Inline"
+              >
+                <CodeIcon className="w-4 h-4" />
+              </button>
+
+              {/* Highlight */}
+              <button
+                type="button"
+                onClick={() => toggleFormat("highlight")}
+                className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                  activeFormats.highlight
+                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+                }`}
+                title="Highlight"
+              >
+                <Highlighter className="w-4 h-4 text-amber-600" />
+              </button>
+
+              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+              {/* Headings */}
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+                title="Heading 1"
+              >
+                <Heading1 className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+                title="Heading 2"
+              >
+                <Heading2 className="w-4 h-4" />
+              </button>
+
+              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+              {/* Bullet List */}
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+                title="Bullet List"
+              >
+                <List className="w-4 h-4" />
+              </button>
+
+              {/* Numbered List */}
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+                title="Numbered List"
+              >
+                <ListOrdered className="w-4 h-4" />
+              </button>
+
+              {/* Task Checklist */}
+              <button
+                type="button"
+                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+                title="Task List"
+              >
+                <CheckSquare className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Inset Dashed Divider Line (Does not touch outer edges) */}
+          <div className="px-8 sm:px-12">
+            <div className="border-b-2 border-dashed border-[#30312C]/20 w-full" />
+          </div>
+
+          {/* Editable Area */}
+          <div className="px-8 sm:px-12 pb-10 pt-5 flex-1 bg-white flex flex-col">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start typing your document..."
+              className="w-full h-full min-h-[420px] bg-transparent font-body text-base text-[#30312C] leading-relaxed focus:outline-none resize-none"
+              style={{
+                fontWeight: activeFormats.bold ? "bold" : "normal",
+                fontStyle: activeFormats.italic ? "italic" : "normal",
+                textDecoration: [
+                  activeFormats.underline ? "underline" : "",
+                  activeFormats.strikethrough ? "line-through" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" "),
+                backgroundColor: activeFormats.highlight ? "#fef08a" : "transparent",
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
