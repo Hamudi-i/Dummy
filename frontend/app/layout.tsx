@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -29,7 +30,9 @@ export default function RootLayout({
     <html lang="en" className={`${bricolage.variable} ${beVietnam.variable} h-full antialiased`}>
       <body className={`${beVietnam.className} min-h-full flex flex-col bg-[#F8F5EC] text-[#30312C]`}>
         {children}
+        <Toaster />
       </body>
     </html>
   );
 }
+

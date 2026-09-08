@@ -4,10 +4,14 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { INITIAL_NOTEBOOKS, INITIAL_WORKSPACES, NotebookItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
+import { CreateNotebookModal } from "@/components/modals/CreateNotebookModal";
+import { archiveItem } from "@/lib/archive-store";
 
 export default function NotebooksPage() {
   const [notebooks, setNotebooks] = useState<NotebookItem[]>(INITIAL_NOTEBOOKS);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSettingsItem, setSelectedSettingsItem] = useState<NotebookItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("book-open");
@@ -144,7 +148,7 @@ export default function NotebooksPage() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          alert(`Notebook Settings for ${nb.title}`);
+                          setSelectedSettingsItem(nb);
                         }}
                         className="w-7 h-7 rounded-lg border border-[#1B1C1C]/25 bg-[#EFE8DC] hover:bg-accent text-[#30312C] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0 z-20"
                         title="Notebook Settings"
@@ -189,88 +193,66 @@ export default function NotebooksPage() {
         })}
       </div>
 
-      {/* Modal: Create Notebook */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-[6px_6px_0px_#30312C] space-y-5">
-            <div className="flex items-center justify-between border-b border-[#30312C]/15 pb-3">
-              <h3 className="font-header text-2xl font-bold text-[#30312C]">Create New Notebook</h3>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-[#30312C] flex items-center justify-center text-[#30312C] hover:bg-[#e8e2d3] transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateNotebook} className="space-y-4">
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Notebook Icon
-                </label>
-                <div className="flex space-x-2">
-                  {["book-open", "palette", "layers", "kanban", "zap", "pen-tool"].map((iconKey) => (
-                    <button
-                      key={iconKey}
-                      type="button"
-                      onClick={() => setNewIcon(iconKey)}
-                      className={`w-10 h-10 rounded-xl border border-[#30312C] flex items-center justify-center ${
-                        newIcon === iconKey ? "bg-accent shadow-[1.5px_1.5px_0px_#30312C]" : "bg-[#FFFFFF]"
-                      }`}
-                    >
-                      <IconRenderer name={iconKey} className="w-5 h-5 text-[#30312C]" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Notebook Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Component Wireframes"
-                  className="w-full h-11 px-3.5 font-body text-sm bg-[#FFFFFF] border border-[#30312C] rounded-xl focus:outline-none focus:ring-1.5 focus:ring-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Description
-                </label>
-                <textarea
-                  rows={3}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="What is this notebook used for?"
-                  className="w-full p-3 font-body text-sm bg-[#FFFFFF] border border-[#30312C] rounded-xl focus:outline-none focus:ring-1.5 focus:ring-primary resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 font-body font-semibold text-sm text-[#30312C] hover:bg-[#e8e2d3] rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-primary text-white font-header font-bold text-sm rounded-xl border border-[#30312C] shadow-[2px_2px_0px_#30312C] hover:brightness-105 active:translate-y-[1px]"
-                >
-                  Create Notebook
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Create Notebook Modal */}
+      <CreateNotebookModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onNotebookCreated={(newNb) => {
+          const notebookItem: NotebookItem = {
+            id: newNb.id,
+            workspaceId: newNb.workspaceId,
+            title: newNb.title,
+            description: newNb.description,
+            icon: newNb.icon,
+            pageCount: 1,
+            lastEdited: "Just now",
+            status: "active",
+          };
+          setNotebooks([notebookItem, ...notebooks]);
+        }}
+      />
+      {/* Item Settings Modal */}
+      <ItemSettingsModal
+        isOpen={Boolean(selectedSettingsItem)}
+        onClose={() => setSelectedSettingsItem(null)}
+        item={
+          selectedSettingsItem
+            ? {
+                id: selectedSettingsItem.id,
+                title: selectedSettingsItem.title,
+                description: selectedSettingsItem.description,
+                icon: selectedSettingsItem.icon,
+                type: "notebook",
+              }
+            : null
+        }
+        onSave={(updated) => {
+          setNotebooks((prev) =>
+            prev.map((n) =>
+              n.id === updated.id
+                ? { ...n, title: updated.title, description: updated.description || n.description }
+                : n
+            )
+          );
+        }}
+        onArchive={(id) => {
+          const itemToArchive = notebooks.find((n) => n.id === id);
+          if (itemToArchive) {
+            archiveItem({
+              id: itemToArchive.id,
+              title: itemToArchive.title,
+              description: itemToArchive.description,
+              icon: itemToArchive.icon,
+              type: "notebook",
+              workspaceId: itemToArchive.workspaceId,
+            });
+            setNotebooks((prev) => prev.filter((n) => n.id !== id));
+          }
+        }}
+        onDelete={(id) => {
+          setNotebooks((prev) => prev.filter((n) => n.id !== id));
+        }}
+      />
     </div>
   );
 }

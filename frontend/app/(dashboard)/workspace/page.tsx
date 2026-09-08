@@ -4,10 +4,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { INITIAL_WORKSPACES, WorkspaceItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
+import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
+import { archiveItem } from "@/lib/archive-store";
+import { toast } from "@/components/ui/sonner";
 
 export default function WorkspacesOverviewPage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>(INITIAL_WORKSPACES);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSettingsItem, setSelectedSettingsItem] = useState<WorkspaceItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("palette");
@@ -124,7 +129,7 @@ export default function WorkspacesOverviewPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    alert(`Settings for ${ws.title}`);
+                    setSelectedSettingsItem(ws);
                   }}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[#30312C] hover:bg-[#30312C]/10 transition-colors cursor-pointer"
                   title="Workspace Options"
@@ -178,14 +183,14 @@ export default function WorkspacesOverviewPage() {
           <span>© Co-Lab 2024</span>
           <button
             type="button"
-            onClick={() => alert("Privacy Policy")}
+            onClick={() => toast.info("Privacy Policy", { description: "Co-Lab respects your creative data privacy." })}
             className="underline hover:text-primary transition-colors cursor-pointer"
           >
             Privacy
           </button>
           <button
             type="button"
-            onClick={() => alert("Terms of Service")}
+            onClick={() => toast.info("Terms of Service", { description: "Co-Lab terms of service and workspace guidelines." })}
             className="underline hover:text-primary transition-colors cursor-pointer"
           >
             Terms
@@ -193,87 +198,67 @@ export default function WorkspacesOverviewPage() {
         </footer>
       </div>
 
-      {/* Modal: Create Workspace */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-[6px_6px_0px_#30312C] space-y-5">
-            <div className="flex items-center justify-between border-b border-[#30312C]/15 pb-3">
-              <h3 className="font-header text-2xl font-bold text-[#30312C]">Create New Workspace</h3>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-[#30312C] flex items-center justify-center text-[#30312C] hover:bg-[#e8e2d3] transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateWorkspace} className="space-y-4">
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Workspace Icon
-                </label>
-                <div className="flex space-x-2">
-                  {["palette", "rocket", "pen-tool", "compass", "layers", "zap"].map((iconKey) => (
-                    <button
-                      key={iconKey}
-                      type="button"
-                      onClick={() => setNewIcon(iconKey)}
-                      className={`w-10 h-10 rounded-xl border border-[#30312C] flex items-center justify-center ${newIcon === iconKey ? "bg-accent shadow-[1.5px_1.5px_0px_#30312C]" : "bg-[#FFFFFF]"
-                        }`}
-                    >
-                      <IconRenderer name={iconKey} className="w-5 h-5 text-[#30312C]" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Workspace Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Mobile App Redesign"
-                  className="w-full h-11 px-3.5 font-body text-sm bg-[#FFFFFF] border border-[#30312C] rounded-xl focus:outline-none focus:ring-1.5 focus:ring-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block font-header font-bold text-sm text-[#30312C] mb-1">
-                  Description
-                </label>
-                <textarea
-                  rows={3}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Brief summary of what this workspace contains..."
-                  className="w-full p-3 font-body text-sm bg-[#FFFFFF] border border-[#30312C] rounded-xl focus:outline-none focus:ring-1.5 focus:ring-primary resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 font-body font-semibold text-sm text-[#30312C] hover:bg-[#e8e2d3] rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-primary text-white font-header font-bold text-sm rounded-xl border border-[#30312C] shadow-[2px_2px_0px_#30312C] hover:brightness-105 active:translate-y-[1px]"
-                >
-                  Create Workspace
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Create Workspace Modal */}
+      <CreateWorkspaceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onWorkspaceCreated={(newWs) => {
+          const workspaceItem: WorkspaceItem = {
+            id: newWs.id,
+            title: newWs.title,
+            description: newWs.description,
+            icon: newWs.icon,
+            color: "#fdd355",
+            notebookCount: 0,
+            lastUpdated: "Just now",
+            badgeLabel: "Workspace",
+            badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30",
+            previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+          };
+          setWorkspaces([workspaceItem, ...workspaces]);
+        }}
+      />
+      {/* Item Settings Modal */}
+      <ItemSettingsModal
+        isOpen={Boolean(selectedSettingsItem)}
+        onClose={() => setSelectedSettingsItem(null)}
+        item={
+          selectedSettingsItem
+            ? {
+                id: selectedSettingsItem.id,
+                title: selectedSettingsItem.title,
+                description: selectedSettingsItem.description,
+                icon: selectedSettingsItem.icon,
+                type: "workspace",
+              }
+            : null
+        }
+        onSave={(updated) => {
+          setWorkspaces((prev) =>
+            prev.map((w) =>
+              w.id === updated.id
+                ? { ...w, title: updated.title, description: updated.description || w.description }
+                : w
+            )
+          );
+        }}
+        onArchive={(id) => {
+          const itemToArchive = workspaces.find((w) => w.id === id);
+          if (itemToArchive) {
+            archiveItem({
+              id: itemToArchive.id,
+              title: itemToArchive.title,
+              description: itemToArchive.description,
+              icon: itemToArchive.icon,
+              type: "workspace",
+            });
+            setWorkspaces((prev) => prev.filter((w) => w.id !== id));
+          }
+        }}
+        onDelete={(id) => {
+          setWorkspaces((prev) => prev.filter((w) => w.id !== id));
+        }}
+      />
     </div>
   );
 }
