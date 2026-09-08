@@ -11,5 +11,5 @@ export interface ToastMessage {
   id: string;
   title: string;
   message: string;
-  type: 'success' | 'info' | 'alert';
+  type: 'success' | 'info' | 'alert' | 'error';
 }

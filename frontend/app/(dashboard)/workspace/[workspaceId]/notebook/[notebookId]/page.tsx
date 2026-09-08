@@ -4,6 +4,22 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
+import { IconRenderer } from "@/components/ui/IconRenderer";
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Strikethrough,
+  Code as CodeIcon,
+  Highlighter,
+  List,
+  ListOrdered,
+  CheckSquare,
+  Heading1,
+  Heading2,
+  Share2,
+  Download,
+} from "lucide-react";
 
 export default function NotebookEditorPage() {
   const params = useParams();
@@ -16,158 +32,253 @@ export default function NotebookEditorPage() {
   const currentNotebook =
     INITIAL_NOTEBOOKS.find((n) => n.id === notebookId) || INITIAL_NOTEBOOKS[0];
 
-  const [activeTab, setActiveTab] = useState("page-1");
-  const [selectedTool, setSelectedTool] = useState<"pen" | "sticky" | "text" | "select">("pen");
-  const [notesText, setNotesText] = useState(
-    "## 📐 Component Specs & Guidelines\n\n- **Primary Accent**: `#fdd355`\n- **Brand Blue**: `#2c5e91`\n- **Border Rules**: Solid `1.8px #30312C` sketch borders\n- **Typography**: `Bricolage Grotesque` for headers and `Be Vietnam Pro` for body."
+  const [content, setContent] = useState(
+    `📐 Component Specifications & Guidelines\n\n- Primary Accent: #fdd355\n- Brand Blue: #2c5e91\n- Border Rules: Solid 1.8px #30312C sketch borders\n- Typography: Bricolage Grotesque for headers and Be Vietnam Pro for body.\n\nType here to start editing your notebook canvas...`
   );
 
+  const [activeFormats, setActiveFormats] = useState<{ [key: string]: boolean }>({
+    bold: false,
+    italic: false,
+    underline: false,
+    strikethrough: false,
+    code: false,
+    highlight: false,
+  });
+
+  const toggleFormat = (format: string) => {
+    setActiveFormats((prev) => ({ ...prev, [format]: !prev[format] }));
+  };
+
   return (
-    <div className="space-y-6 animate-fadeIn select-none">
-      {/* Top Header & Breadcrumbs */}
-      <div className="space-y-3 border-b-2 border-[#30312C]/10 pb-4">
+    <div className="space-y-6 animate-fadeIn select-none pt-6 sm:pt-8">
+      {/* Breadcrumbs & Header Section */}
+      <div className="space-y-3">
+        {/* Breadcrumb Trail */}
         <div className="flex items-center space-x-2 text-xs font-body text-[#737067]">
           <Link href="/workspace" className="hover:text-primary transition-colors">
             Workspaces
           </Link>
           <span>/</span>
-          <Link href={`/workspace/${currentWorkspace.id}`} className="hover:text-primary transition-colors">
+          <Link
+            href={`/workspace/${currentWorkspace.id}`}
+            className="hover:text-primary transition-colors"
+          >
             {currentWorkspace.title}
           </Link>
           <span>/</span>
           <span className="font-semibold text-[#30312C]">{currentNotebook.title}</span>
         </div>
 
+        {/* Title Header with Random Tilt & SVG Underline */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-white border border-[#30312C] flex items-center justify-center text-2xl shadow-xs">
-              {currentNotebook.icon}
-            </div>
-            <div>
-              <h1 className="font-header text-2xl sm:text-3xl font-extrabold text-[#30312C] tracking-tight">
-                {currentNotebook.title}
-              </h1>
-              <p className="font-body text-xs sm:text-sm text-[#66645e]">
-                {currentNotebook.description}
-              </p>
-            </div>
+          <div className="relative inline-block transform -rotate-1 sm:-rotate-1.5 origin-left">
+            <h1 className="font-header text-4xl sm:text-[44px] font-extrabold text-[#30312C] tracking-tight relative z-10 leading-tight flex items-center space-x-3">
+              <span className="text-[#30312C]">
+                <IconRenderer name={currentNotebook.icon} className="w-9 h-9 text-[#30312C]" />
+              </span>
+              <span>{currentNotebook.title}</span>
+            </h1>
+            <svg
+              viewBox="0 0 240 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute -bottom-2.5 left-0 w-full h-3.5 pointer-events-none z-0"
+            >
+              <line
+                x1="2"
+                y1="6"
+                x2="238"
+                y2="6"
+                stroke="#fdd355"
+                strokeWidth="9"
+                strokeLinecap="round"
+                strokeOpacity="0.65"
+              />
+            </svg>
           </div>
 
           {/* Action Tools */}
           <div className="flex items-center space-x-2 shrink-0">
             <button
               type="button"
-              onClick={() => alert("Notebook exported as PDF!")}
-              className="h-9 px-3.5 bg-[#FAF7EE] hover:bg-[#e8e2d3] text-[#30312C] font-header font-bold text-xs rounded-lg border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer"
+              onClick={() => alert("Notebook exported!")}
+              className="h-10 px-4 bg-white hover:bg-[#FAF7EE] text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1.5"
             >
-              Export
+              <Download className="w-4 h-4" />
+              <span>Export</span>
             </button>
             <button
               type="button"
-              onClick={() => alert("Share link copied to clipboard!")}
-              className="h-9 px-4 bg-primary text-white font-header font-bold text-xs rounded-lg border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer"
+              onClick={() => alert("Share link copied!")}
+              className="h-10 px-4 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer flex items-center space-x-1.5"
             >
-              Share Canvas
+              <Share2 className="w-4 h-4" />
+              <span>Share</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Editor Toolbar & Canvas Container */}
-      <div className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-2xl shadow-[4px_4px_0px_#30312C] overflow-hidden flex flex-col min-h-[550px]">
-        {/* Toolbar Header */}
-        <div className="bg-[#efe8d8] border-b-2 border-[#30312C] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
-          {/* Page Tabs */}
-          <div className="flex items-center space-x-1.5 overflow-x-auto">
-            {["page-1", "page-2", "page-3"].map((tab, idx) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1 rounded-lg text-xs font-header font-bold transition-all border ${
-                  activeTab === tab
-                    ? "bg-accent text-[#30312C] border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-[#FAF7EE] text-[#5A5852] border-transparent hover:bg-white"
-                }`}
-              >
-                Page {idx + 1}
-              </button>
-            ))}
+      {/* Editable White Document Container */}
+      <div className="mt-12 w-full max-w-[896px] mx-auto bg-white min-h-[856.8px] h-[917px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[135px] rounded-tr-[120px] rounded-br-[120px] rounded-bl-[135px] shadow-[8px_8px_8px_0px_rgba(27,28,28,0.1)] overflow-hidden flex flex-col transition-all">
+        {/* Formatting Toolbar - Clear Background with Dashed Divider */}
+        <div className="bg-white border-b-2 border-dashed border-[#30312C]/20 px-14 sm:px-20 pt-10 pb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center space-x-1 flex-wrap gap-y-1">
+            {/* Bold */}
             <button
               type="button"
-              onClick={() => alert("New page added to notebook!")}
-              className="px-2 py-1 text-xs font-bold text-[#30312C] hover:bg-white rounded-lg transition-colors"
+              onClick={() => toggleFormat("bold")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.bold
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Bold"
             >
-              + Add Page
+              <Bold className="w-4 h-4" />
             </button>
-          </div>
 
-          {/* Drawing Tools */}
-          <div className="flex items-center space-x-1 bg-[#FAF7EE] p-1 rounded-xl border border-[#30312C]">
-            {[
-              { id: "pen", label: "✏️ Pen" },
-              { id: "sticky", label: "🟨 Sticky Note" },
-              { id: "text", label: "📝 Text" },
-              { id: "select", label: "🖐️ Move" },
-            ].map((tool) => (
-              <button
-                key={tool.id}
-                type="button"
-                onClick={() => setSelectedTool(tool.id as any)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-body font-semibold transition-all ${
-                  selectedTool === tool.id
-                    ? "bg-primary text-white border border-[#30312C]"
-                    : "text-[#30312C] hover:bg-white"
-                }`}
-              >
-                {tool.label}
-              </button>
-            ))}
+            {/* Italic */}
+            <button
+              type="button"
+              onClick={() => toggleFormat("italic")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.italic
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Italic"
+            >
+              <Italic className="w-4 h-4" />
+            </button>
+
+            {/* Underline */}
+            <button
+              type="button"
+              onClick={() => toggleFormat("underline")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.underline
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Underline"
+            >
+              <UnderlineIcon className="w-4 h-4" />
+            </button>
+
+            {/* Strikethrough */}
+            <button
+              type="button"
+              onClick={() => toggleFormat("strikethrough")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.strikethrough
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Strikethrough"
+            >
+              <Strikethrough className="w-4 h-4" />
+            </button>
+
+            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+            {/* Code */}
+            <button
+              type="button"
+              onClick={() => toggleFormat("code")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.code
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Code Inline"
+            >
+              <CodeIcon className="w-4 h-4" />
+            </button>
+
+            {/* Highlight */}
+            <button
+              type="button"
+              onClick={() => toggleFormat("highlight")}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                activeFormats.highlight
+                  ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
+                  : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
+              }`}
+              title="Highlight"
+            >
+              <Highlighter className="w-4 h-4 text-amber-600" />
+            </button>
+
+            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+            {/* Headings */}
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+              title="Heading 1"
+            >
+              <Heading1 className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+              title="Heading 2"
+            >
+              <Heading2 className="w-4 h-4" />
+            </button>
+
+            <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
+
+            {/* Bullet List */}
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+              title="Bullet List"
+            >
+              <List className="w-4 h-4" />
+            </button>
+
+            {/* Numbered List */}
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+              title="Numbered List"
+            >
+              <ListOrdered className="w-4 h-4" />
+            </button>
+
+            {/* Task Checklist */}
+            <button
+              type="button"
+              className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
+              title="Task List"
+            >
+              <CheckSquare className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Working Workspace Canvas */}
-        <div className="flex-1 p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-[radial-gradient(#30312C_1px,transparent_1px)] [background-size:20px_20px] bg-opacity-[0.03]">
-          {/* Left / Center: Interactive Note Area */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="bg-white border-1.5 border-[#30312C] rounded-xl p-5 shadow-[2px_2px_0px_#30312C] space-y-3">
-              <div className="flex items-center justify-between border-b border-[#30312C]/10 pb-2">
-                <span className="font-header font-bold text-xs text-primary">Interactive Working Area</span>
-                <span className="font-body text-xs text-[#807d74]">Tool Active: {selectedTool.toUpperCase()}</span>
-              </div>
-              <textarea
-                rows={12}
-                value={notesText}
-                onChange={(e) => setNotesText(e.target.value)}
-                className="w-full font-body text-sm text-[#30312C] leading-relaxed focus:outline-none bg-transparent resize-none"
-              />
-            </div>
-          </div>
-
-          {/* Right: Sticky Notes & Brainstorming Board */}
-          <div className="space-y-4">
-            {/* Sticky Note 1 */}
-            <div className="bg-[#fdd355] border-1.5 border-[#30312C] rounded-xl p-4 shadow-[3px_3px_0px_#30312C] transform -rotate-1 hover:rotate-0 transition-transform">
-              <div className="flex items-center justify-between text-xs font-header font-bold text-[#30312C] mb-2">
-                <span>📌 Action Items</span>
-                <span>Today</span>
-              </div>
-              <p className="font-body text-xs text-[#30312C] leading-relaxed">
-                Review Figma + New Sketch button dimensions & typography tokens with team.
-              </p>
-            </div>
-
-            {/* Sticky Note 2 */}
-            <div className="bg-[#FAF7EE] border-1.5 border-[#30312C] rounded-xl p-4 shadow-[3px_3px_0px_#30312C] transform rotate-1 hover:rotate-0 transition-transform">
-              <div className="flex items-center justify-between text-xs font-header font-bold text-[#2c5e91] mb-2">
-                <span>💡 Design Note</span>
-                <span>Idea</span>
-              </div>
-              <p className="font-body text-xs text-[#30312C] leading-relaxed">
-                Ensure Bricolage Grotesque & Be Vietnam Pro render crisply on high-DPI displays.
-              </p>
-            </div>
-          </div>
+        {/* Editable Area */}
+        <div className="px-14 sm:px-20 pb-12 pt-6 flex-1 bg-white">
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Start typing your document..."
+            className="w-full h-full min-h-[420px] bg-transparent font-body text-base text-[#30312C] leading-relaxed focus:outline-none resize-none"
+            style={{
+              fontWeight: activeFormats.bold ? "bold" : "normal",
+              fontStyle: activeFormats.italic ? "italic" : "normal",
+              textDecoration: [
+                activeFormats.underline ? "underline" : "",
+                activeFormats.strikethrough ? "line-through" : "",
+              ]
+                .filter(Boolean)
+                .join(" "),
+              backgroundColor: activeFormats.highlight ? "#fef08a" : "transparent",
+            }}
+          />
         </div>
       </div>
     </div>
