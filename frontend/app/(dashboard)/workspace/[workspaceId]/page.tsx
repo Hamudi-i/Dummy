@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS, NotebookItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { toast } from "@/components/ui/sonner";
+import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
+import { archiveItem } from "@/lib/archive-store";
 
 export default function SingleWorkspacePage() {
   const params = useParams();
@@ -19,6 +21,7 @@ export default function SingleWorkspacePage() {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedNotebook, setSelectedNotebook] = useState<NotebookItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("book-open");
@@ -166,9 +169,7 @@ export default function SingleWorkspacePage() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          toast.info("Notebook Settings", {
-                            description: `Configuring settings for "${nb.title}"`,
-                          });
+                          setSelectedNotebook(nb);
                         }}
                         className="w-7 h-7 rounded-lg border border-[#1B1C1C]/25 bg-[#EFE8DC] hover:bg-accent text-[#30312C] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0 z-20"
                         title="Notebook Settings"
@@ -295,6 +296,48 @@ export default function SingleWorkspacePage() {
           </div>
         </div>
       )}
+      {/* Item Settings Modal */}
+      <ItemSettingsModal
+        isOpen={Boolean(selectedNotebook)}
+        onClose={() => setSelectedNotebook(null)}
+        item={
+          selectedNotebook
+            ? {
+                id: selectedNotebook.id,
+                title: selectedNotebook.title,
+                description: selectedNotebook.description,
+                icon: selectedNotebook.icon,
+                type: "notebook",
+              }
+            : null
+        }
+        onSave={(updated) => {
+          setNotebooks((prev) =>
+            prev.map((n) =>
+              n.id === updated.id
+                ? { ...n, title: updated.title, description: updated.description || n.description }
+                : n
+            )
+          );
+        }}
+        onArchive={(id) => {
+          const itemToArchive = notebooks.find((n) => n.id === id);
+          if (itemToArchive) {
+            archiveItem({
+              id: itemToArchive.id,
+              title: itemToArchive.title,
+              description: itemToArchive.description,
+              icon: itemToArchive.icon,
+              type: "notebook",
+              workspaceId: currentWorkspace.id,
+            });
+            setNotebooks((prev) => prev.filter((n) => n.id !== id));
+          }
+        }}
+        onDelete={(id) => {
+          setNotebooks((prev) => prev.filter((n) => n.id !== id));
+        }}
+      />
     </div>
   );
 }

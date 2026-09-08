@@ -4,10 +4,14 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { INITIAL_WORKSPACES, WorkspaceItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
+import { archiveItem } from "@/lib/archive-store";
+import { toast } from "@/components/ui/sonner";
 
 export default function WorkspacesOverviewPage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>(INITIAL_WORKSPACES);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSettingsItem, setSelectedSettingsItem] = useState<WorkspaceItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("palette");
@@ -124,7 +128,7 @@ export default function WorkspacesOverviewPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    alert(`Settings for ${ws.title}`);
+                    setSelectedSettingsItem(ws);
                   }}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[#30312C] hover:bg-[#30312C]/10 transition-colors cursor-pointer"
                   title="Workspace Options"
@@ -178,14 +182,14 @@ export default function WorkspacesOverviewPage() {
           <span>© Co-Lab 2024</span>
           <button
             type="button"
-            onClick={() => alert("Privacy Policy")}
+            onClick={() => toast.info("Privacy Policy", { description: "Co-Lab respects your creative data privacy." })}
             className="underline hover:text-primary transition-colors cursor-pointer"
           >
             Privacy
           </button>
           <button
             type="button"
-            onClick={() => alert("Terms of Service")}
+            onClick={() => toast.info("Terms of Service", { description: "Co-Lab terms of service and workspace guidelines." })}
             className="underline hover:text-primary transition-colors cursor-pointer"
           >
             Terms
@@ -274,6 +278,47 @@ export default function WorkspacesOverviewPage() {
           </div>
         </div>
       )}
+      {/* Item Settings Modal */}
+      <ItemSettingsModal
+        isOpen={Boolean(selectedSettingsItem)}
+        onClose={() => setSelectedSettingsItem(null)}
+        item={
+          selectedSettingsItem
+            ? {
+                id: selectedSettingsItem.id,
+                title: selectedSettingsItem.title,
+                description: selectedSettingsItem.description,
+                icon: selectedSettingsItem.icon,
+                type: "workspace",
+              }
+            : null
+        }
+        onSave={(updated) => {
+          setWorkspaces((prev) =>
+            prev.map((w) =>
+              w.id === updated.id
+                ? { ...w, title: updated.title, description: updated.description || w.description }
+                : w
+            )
+          );
+        }}
+        onArchive={(id) => {
+          const itemToArchive = workspaces.find((w) => w.id === id);
+          if (itemToArchive) {
+            archiveItem({
+              id: itemToArchive.id,
+              title: itemToArchive.title,
+              description: itemToArchive.description,
+              icon: itemToArchive.icon,
+              type: "workspace",
+            });
+            setWorkspaces((prev) => prev.filter((w) => w.id !== id));
+          }
+        }}
+        onDelete={(id) => {
+          setWorkspaces((prev) => prev.filter((w) => w.id !== id));
+        }}
+      />
     </div>
   );
 }

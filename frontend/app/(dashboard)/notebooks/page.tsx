@@ -4,10 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { INITIAL_NOTEBOOKS, INITIAL_WORKSPACES, NotebookItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
+import { archiveItem } from "@/lib/archive-store";
 
 export default function NotebooksPage() {
   const [notebooks, setNotebooks] = useState<NotebookItem[]>(INITIAL_NOTEBOOKS);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSettingsItem, setSelectedSettingsItem] = useState<NotebookItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("book-open");
@@ -144,7 +147,7 @@ export default function NotebooksPage() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          alert(`Notebook Settings for ${nb.title}`);
+                          setSelectedSettingsItem(nb);
                         }}
                         className="w-7 h-7 rounded-lg border border-[#1B1C1C]/25 bg-[#EFE8DC] hover:bg-accent text-[#30312C] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0 z-20"
                         title="Notebook Settings"
@@ -271,6 +274,48 @@ export default function NotebooksPage() {
           </div>
         </div>
       )}
+      {/* Item Settings Modal */}
+      <ItemSettingsModal
+        isOpen={Boolean(selectedSettingsItem)}
+        onClose={() => setSelectedSettingsItem(null)}
+        item={
+          selectedSettingsItem
+            ? {
+                id: selectedSettingsItem.id,
+                title: selectedSettingsItem.title,
+                description: selectedSettingsItem.description,
+                icon: selectedSettingsItem.icon,
+                type: "notebook",
+              }
+            : null
+        }
+        onSave={(updated) => {
+          setNotebooks((prev) =>
+            prev.map((n) =>
+              n.id === updated.id
+                ? { ...n, title: updated.title, description: updated.description || n.description }
+                : n
+            )
+          );
+        }}
+        onArchive={(id) => {
+          const itemToArchive = notebooks.find((n) => n.id === id);
+          if (itemToArchive) {
+            archiveItem({
+              id: itemToArchive.id,
+              title: itemToArchive.title,
+              description: itemToArchive.description,
+              icon: itemToArchive.icon,
+              type: "notebook",
+              workspaceId: itemToArchive.workspaceId,
+            });
+            setNotebooks((prev) => prev.filter((n) => n.id !== id));
+          }
+        }}
+        onDelete={(id) => {
+          setNotebooks((prev) => prev.filter((n) => n.id !== id));
+        }}
+      />
     </div>
   );
 }
