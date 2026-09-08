@@ -5,20 +5,28 @@ import Link from "next/link";
 import { INITIAL_WORKSPACES } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { getDrafts, removeDraft, DraftItem } from "@/lib/drafts-store";
+import { ConfirmDeleteModal } from "@/components/modals/ConfirmDeleteModal";
+import { toast } from "@/components/ui/sonner";
 import { Pencil, Trash2, ArrowRight, Clock, AlertTriangle } from "lucide-react";
 
 export default function DraftsPage() {
   const [drafts, setDrafts] = useState<DraftItem[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [deleteCandidate, setDeleteCandidate] = useState<{ notebookId: string; title: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
     setDrafts(getDrafts());
   }, []);
 
-  const handleDiscard = (notebookId: string) => {
-    removeDraft(notebookId);
+  const handleConfirmDiscard = () => {
+    if (!deleteCandidate) return;
+    removeDraft(deleteCandidate.notebookId);
     setDrafts(getDrafts());
+    toast.error("Draft Discarded", {
+      description: `Discarded unsaved draft for "${deleteCandidate.title}".`,
+    });
+    setDeleteCandidate(null);
   };
 
   return (
@@ -120,7 +128,7 @@ export default function DraftsPage() {
                     {/* Discard Draft Button */}
                     <button
                       type="button"
-                      onClick={() => handleDiscard(draft.notebookId)}
+                      onClick={() => setDeleteCandidate({ notebookId: draft.notebookId, title: draft.title })}
                       className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 font-header font-bold text-xs rounded-xl border border-red-300 transition-colors flex items-center space-x-1 cursor-pointer"
                       title="Discard draft"
                     >
@@ -165,6 +173,14 @@ export default function DraftsPage() {
           </div>
         </div>
       )}
+      {/* Global Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={Boolean(deleteCandidate)}
+        onClose={() => setDeleteCandidate(null)}
+        onConfirm={handleConfirmDiscard}
+        itemTitle={deleteCandidate?.title}
+        itemType="Draft"
+      />
     </div>
   );
 }

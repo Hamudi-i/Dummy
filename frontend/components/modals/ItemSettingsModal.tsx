@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { X, Pencil, Archive, Trash2, Check, AlertCircle } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { ConfirmDeleteModal } from "@/components/modals/ConfirmDeleteModal";
 
 export interface ItemSettingsModalProps {
   isOpen: boolean;
@@ -73,10 +74,10 @@ export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
   };
 
   const handleDelete = () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
+    setConfirmDelete(true);
+  };
+
+  const handleConfirmDelete = () => {
     if (onDelete) {
       onDelete(item.id);
     }
@@ -221,6 +222,14 @@ export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
             <span>Save Changes</span>
           </button>
         </div>
+        {/* Confirm Delete Modal */}
+        <ConfirmDeleteModal
+          isOpen={confirmDelete}
+          onClose={() => setConfirmDelete(false)}
+          onConfirm={handleConfirmDelete}
+          itemTitle={item.title}
+          itemType={item.type}
+        />
       </div>
     </div>,
     document.body
