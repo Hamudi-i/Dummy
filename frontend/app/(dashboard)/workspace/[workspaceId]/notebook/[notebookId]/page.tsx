@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { saveDraft, removeDraft, getDrafts } from "@/lib/drafts-store";
+import { toast } from "@/components/ui/sonner";
 import {
   Bold,
   Italic,
@@ -24,6 +26,8 @@ import {
   Pencil,
   CheckCircle2,
   Link as LinkIcon,
+  Check,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function NotebookEditorPage() {
@@ -50,6 +54,7 @@ export default function NotebookEditorPage() {
     highlight: false,
   });
 
+  const [isSaved, setIsSaved] = useState(true);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
@@ -57,7 +62,39 @@ export default function NotebookEditorPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Check if there is an unsaved draft for this notebook
+    const existingDrafts = getDrafts();
+    const activeDraft = existingDrafts.find((d) => d.notebookId === notebookId);
+    if (activeDraft && activeDraft.content) {
+      setContent(activeDraft.content);
+      setIsSaved(false);
+    }
+  }, [notebookId]);
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setContent(newText);
+    setIsSaved(false);
+    saveDraft({
+      id: `draft-${notebookId}`,
+      notebookId,
+      workspaceId,
+      title: currentNotebook.title,
+      description: currentNotebook.description,
+      icon: currentNotebook.icon,
+      content: newText,
+      lastEdited: "Just now",
+      isUnsaved: true,
+    });
+  };
+
+  const handleSave = () => {
+    setIsSaved(true);
+    removeDraft(notebookId);
+    toast.success("Notebook Saved!", {
+      description: `Changes saved to "${currentNotebook.title}".`,
+    });
+  };
 
   const toggleFormat = (format: string) => {
     setActiveFormats((prev) => ({ ...prev, [format]: !prev[format] }));
@@ -91,6 +128,12 @@ export default function NotebookEditorPage() {
                 <IconRenderer name={currentNotebook.icon} className="w-9 h-9 text-[#30312C]" />
               </span>
               <span>{currentNotebook.title}</span>
+              {!isSaved && (
+                <span className="px-2.5 py-0.5 text-[11px] font-header font-bold text-amber-900 bg-amber-100 border border-amber-400 rounded-full flex items-center space-x-1 translate-y-0.5">
+                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  <span>Unsaved Draft</span>
+                </span>
+              )}
             </h1>
             <svg
               viewBox="0 0 240 12"
@@ -109,26 +152,6 @@ export default function NotebookEditorPage() {
                 strokeOpacity="0.65"
               />
             </svg>
-          </div>
-
-          {/* Action Tools */}
-          <div className="flex items-center space-x-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => alert("Notebook exported!")}
-              className="h-10 px-4 bg-white hover:bg-[#FAF7EE] text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1.5"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsShareModalOpen(true)}
-              className="h-10 px-4 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer flex items-center space-x-1.5"
-            >
-              <Share2 className="w-4 h-4" />
-              <span>Share</span>
-            </button>
           </div>
         </div>
       </div>
@@ -178,8 +201,9 @@ export default function NotebookEditorPage() {
 
         {/* Editable White Document Container */}
         <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] overflow-hidden flex flex-col transition-all">
-          {/* Formatting Toolbar - Clear Background */}
-          <div className="bg-white px-8 sm:px-12 pt-7 pb-3 flex flex-wrap items-center justify-between gap-3">
+          {/* Formatting & Action Toolbar */}
+          <div className="bg-white px-8 sm:px-12 pt-7 pb-3 flex flex-wrap items-center justify-between gap-3 border-b border-[#30312C]/10">
+            {/* Left Side: Text Formatting Tools */}
             <div className="flex items-center space-x-1 flex-wrap gap-y-1">
               {/* Bold */}
               <button
@@ -315,6 +339,48 @@ export default function NotebookEditorPage() {
                 <CheckSquare className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Right Side: Document Actions (Save, Export, Share) */}
+            <div className="flex items-center space-x-2 shrink-0">
+              {/* Save Button */}
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={isSaved}
+                className={`h-9 px-3.5 font-header font-bold text-xs rounded-xl border border-[#30312C] transition-all flex items-center space-x-1.5 ${
+                  isSaved
+                    ? "bg-[#FAF7EE] text-[#737067] border-[#30312C]/30 cursor-default opacity-80"
+                    : "bg-[#30312C] text-white hover:bg-[#42443d] shadow-[1.5px_1.5px_0px_#30312C] cursor-pointer"
+                }`}
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{isSaved ? "Saved" : "Save Changes"}</span>
+              </button>
+
+              {/* Export Button */}
+              <button
+                type="button"
+                onClick={() =>
+                  toast.success("Export Complete", {
+                    description: `"${currentNotebook.title}" exported successfully!`,
+                  })
+                }
+                className="h-9 px-3.5 bg-[#FAF7EE] hover:bg-white text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export</span>
+              </button>
+
+              {/* Share Button */}
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="h-9 px-3.5 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer flex items-center space-x-1.5"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Share</span>
+              </button>
+            </div>
           </div>
 
           {/* Inset Dashed Divider Line (Does not touch outer edges) */}
@@ -326,7 +392,7 @@ export default function NotebookEditorPage() {
           <div className="px-8 sm:px-12 pb-10 pt-5 flex-1 bg-white flex flex-col">
             <textarea
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={handleContentChange}
               placeholder="Start typing your document..."
               className="w-full h-full min-h-[420px] bg-transparent font-body text-base text-[#30312C] leading-relaxed focus:outline-none resize-none"
               style={{
@@ -402,7 +468,9 @@ export default function NotebookEditorPage() {
                   type="button"
                   onClick={() => {
                     if (!inviteEmail) return;
-                    alert(`Invitation sent to ${inviteEmail}!`);
+                    toast.success("Invite Dispatched", {
+                      description: `Invitation sent to ${inviteEmail}`,
+                    });
                     setInviteEmail("");
                   }}
                   className="absolute right-1.5 px-4 py-1.5 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1px_1px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer"
@@ -501,6 +569,9 @@ export default function NotebookEditorPage() {
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                     setLinkCopied(true);
+                    toast.info("Link Copied", {
+                      description: "Notebook link copied to clipboard!",
+                    });
                     setTimeout(() => setLinkCopied(false), 2000);
                   }}
                   className="text-[#30312C] hover:text-primary font-header font-bold text-xs flex items-center space-x-2 transition-colors cursor-pointer"

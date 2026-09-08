@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS, NotebookItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
+import { toast } from "@/components/ui/sonner";
 
 export default function SingleWorkspacePage() {
   const params = useParams();
@@ -165,7 +166,9 @@ export default function SingleWorkspacePage() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          alert(`Notebook Settings for ${nb.title}`);
+                          toast.info("Notebook Settings", {
+                            description: `Configuring settings for "${nb.title}"`,
+                          });
                         }}
                         className="w-7 h-7 rounded-lg border border-[#1B1C1C]/25 bg-[#EFE8DC] hover:bg-accent text-[#30312C] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0 z-20"
                         title="Notebook Settings"
