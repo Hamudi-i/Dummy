@@ -24,6 +24,27 @@ export class DocumentSnapshotService {
         });
     }
 
+    static async getSnapshotById(id: string) {
+        const snapshot = await prisma.documentSnapshot.findUnique({
+            where: { id },
+            include: {
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true
+                    }
+                }
+            }
+        });
+        if (!snapshot) {
+            throw new NotFoundException("Snapshot not found");
+        }
+
+        return snapshot;
+    }
+
     static async createSnapshot(documentId: string, createdById?: string, summary?: string, customCrdtState?: Buffer) {
         const document = await prisma.document.findUnique({
             where: { id: documentId },
@@ -65,26 +86,6 @@ export class DocumentSnapshotService {
     }
 
     // Get single historical snapshot (include the binary blob)
-    static async getSnapshotById(id: string) {
-        const snapshot = await prisma.documentSnapshot.findUnique({
-            where: { id },
-            include: {
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatarUrl: true
-                    }
-                }
-            }
-        });
-        if (!snapshot) {
-            throw new NotFoundException("Snapshot not found");
-        }
-
-        return snapshot;
-    }
 
     // Restore document to this snapshot's state
     static async restoreSnapshot(documentId: string, snapshotId: string) {
