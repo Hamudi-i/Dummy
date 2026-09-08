@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const mainNavItems = [
     {
@@ -172,6 +174,7 @@ export const Sidebar: React.FC = () => {
         <div className="w-full flex justify-center mb-7">
           <button
             type="button"
+            onClick={() => setIsCreateModalOpen(true)}
             className="group h-[55px] w-[210px] bg-accent hover:bg-accent-hover text-[#45473e]/90 font-header font-bold text-[21px] tracking-wide rounded-full px-5 gap-2.5 flex items-center justify-center transition-all active:translate-y-[1px] cursor-pointer shadow-none"
           >
             <svg
@@ -242,6 +245,11 @@ export const Sidebar: React.FC = () => {
           })}
         </nav>
       </div>
+      {/* Create Workspace Modal */}
+      <CreateWorkspaceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </aside>
   );
 };
