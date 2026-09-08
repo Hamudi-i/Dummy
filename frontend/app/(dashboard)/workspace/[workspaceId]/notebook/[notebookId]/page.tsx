@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
@@ -19,6 +20,10 @@ import {
   Heading2,
   Share2,
   Download,
+  Eye,
+  Pencil,
+  CheckCircle2,
+  Link as LinkIcon,
 } from "lucide-react";
 
 export default function NotebookEditorPage() {
@@ -44,6 +49,15 @@ export default function NotebookEditorPage() {
     code: false,
     highlight: false,
   });
+
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleFormat = (format: string) => {
     setActiveFormats((prev) => ({ ...prev, [format]: !prev[format] }));
@@ -109,7 +123,7 @@ export default function NotebookEditorPage() {
             </button>
             <button
               type="button"
-              onClick={() => alert("Share link copied!")}
+              onClick={() => setIsShareModalOpen(true)}
               className="h-10 px-4 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer flex items-center space-x-1.5"
             >
               <Share2 className="w-4 h-4" />
@@ -330,6 +344,175 @@ export default function NotebookEditorPage() {
           </div>
         </div>
       </div>
+
+      {/* Share Modal Backdrop - Portal to document.body for 100% full-site blur including Navbar & Sidebar */}
+      {isShareModalOpen &&
+        mounted &&
+        createPortal(
+          <div
+            onClick={() => setIsShareModalOpen(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fadeIn"
+          >
+            {/* Heavily Rounded White Modal Card with Black Border, Center Top Tape, & Strong Black Shadow */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-[48px] p-8 max-w-lg w-full shadow-[8px_8px_0px_#30312C] space-y-5 relative animate-scaleUp cursor-default"
+            >
+              {/* Tilted Center Top Tape Accent */}
+              <div
+                className="absolute -top-3.5 left-1/2 w-16 h-6 bg-white/80 border border-black/15 shadow-[0px_3px_6px_rgba(0,0,0,0.15)] pointer-events-none z-30 rounded-xs"
+                style={{ transform: "translateX(-50%) rotate(-4deg)" }}
+              />
+
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <h3 className="font-header font-extrabold text-2xl text-[#30312C] tracking-tight">
+                    Share with the Collective
+                  </h3>
+                  <div className="flex items-center space-x-1.5 text-xs font-body text-[#66645e]">
+                    <Eye className="w-3.5 h-3.5 text-[#30312C]" />
+                    <span>Anyone with the link can view</span>
+                  </div>
+                </div>
+
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsShareModalOpen(false)}
+                  className="w-8 h-8 rounded-full border border-[#30312C] flex items-center justify-center text-[#30312C] hover:bg-white transition-colors cursor-pointer font-bold text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Email Invite Input */}
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-[#66645e]">
+                  <Pencil className="w-4 h-4" />
+                </div>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="Invite others by email..."
+                  className="w-full pl-10 pr-24 py-2.5 bg-white border-1.5 border-[#30312C] rounded-2xl font-body text-xs text-[#30312C] focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!inviteEmail) return;
+                    alert(`Invitation sent to ${inviteEmail}!`);
+                    setInviteEmail("");
+                  }}
+                  className="absolute right-1.5 px-4 py-1.5 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1px_1px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer"
+                >
+                  Invite
+                </button>
+              </div>
+
+              {/* Current Members List */}
+              <div className="space-y-3 pt-1">
+                <span className="font-body text-xs text-[#807d74] font-medium tracking-wide">
+                  Current Members
+                </span>
+
+                <div className="space-y-3">
+                  {/* Member 1 (Owner) */}
+                  <div className="flex items-center justify-between p-2 rounded-xl hover:bg-white/60 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-[#2c5e91] text-white font-header font-bold text-xs flex items-center justify-center border border-[#30312C]">
+                        N
+                      </div>
+                      <div>
+                        <h4 className="font-header font-bold text-xs text-[#30312C]">
+                          Natty (You)
+                        </h4>
+                        <p className="font-body text-[11px] text-[#737067]">
+                          Owner • natty@colab.design
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Clean Unbordered Owner Text with Circled Check */}
+                    <div className="flex items-center space-x-1.5 text-xs font-header font-bold text-[#30312C]">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                      <span>Owner</span>
+                    </div>
+                  </div>
+
+                  {/* Member 2 */}
+                  <div className="flex items-center justify-between p-2 rounded-xl hover:bg-white/60 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-[#fdd355] text-[#30312C] font-header font-bold text-xs flex items-center justify-center border border-[#30312C]">
+                        M
+                      </div>
+                      <div>
+                        <h4 className="font-header font-bold text-xs text-[#30312C]">
+                          Maya Lin
+                        </h4>
+                        <p className="font-body text-[11px] text-[#737067]">
+                          maya@colab.design
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Permission Dropdown */}
+                    <select className="bg-white border border-[#30312C] font-header font-bold text-xs text-[#30312C] rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer">
+                      <option value="sketch">Can sketch & edit</option>
+                      <option value="view">Can view only</option>
+                      <option value="remove">Remove</option>
+                    </select>
+                  </div>
+
+                  {/* Member 3 */}
+                  <div className="flex items-center justify-between p-2 rounded-xl hover:bg-white/60 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-emerald-500 text-white font-header font-bold text-xs flex items-center justify-center border border-[#30312C]">
+                        L
+                      </div>
+                      <div>
+                        <h4 className="font-header font-bold text-xs text-[#30312C]">
+                          Leo Vance
+                        </h4>
+                        <p className="font-body text-[11px] text-[#737067]">
+                          leo@colab.design
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Permission Dropdown */}
+                    <select className="bg-white border border-[#30312C] font-header font-bold text-xs text-[#30312C] rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer">
+                      <option value="view">Can view only</option>
+                      <option value="sketch">Can sketch & edit</option>
+                      <option value="remove">Remove</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dashed Line Divider */}
+              <div className="border-t-2 border-dashed border-[#30312C]/20 pt-1" />
+
+              {/* Bottom Copy Link Section (Unbuttoned, pure icon + text) */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setLinkCopied(true);
+                    setTimeout(() => setLinkCopied(false), 2000);
+                  }}
+                  className="text-[#30312C] hover:text-primary font-header font-bold text-xs flex items-center space-x-2 transition-colors cursor-pointer"
+                >
+                  <LinkIcon className="w-4 h-4 text-[#30312C]" />
+                  <span>{linkCopied ? "Link copied to clipboard!" : "Copy link"}</span>
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
