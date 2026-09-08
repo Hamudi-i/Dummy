@@ -85,4 +85,39 @@ export class DocumentSnapshotService {
 
         return snapshot;
     }
+
+    // Restore document to this snapshot's state
+    static async restoreSnapshot(documentId: string, snapshotId: string) {
+        const snapshot = await this.getSnapshotById(snapshotId);
+        if (snapshot.documentId !== documentId) {
+            throw new BadRequestException("Snapshot does not belong to this document");
+        }
+
+        return prisma.document.update({
+            where: { id: documentId },
+            data: {
+                crdtState: snapshot.crdtState
+            },
+            select: {
+                id: true,
+                title: true,
+                updatedAt: true
+            }
+        })
+    }
+
+    static async deleteSnapshot(id: string) {
+        const snapshot = await prisma.documentSnapshot.findUnique({
+            where: { id }
+        });
+        if (!snapshot) {
+            throw new NotFoundException("Snapshot not found");
+        }
+
+        return prisma.documentSnapshot.delete({
+            where: { id }
+        });
+    }
 }
+
+export default DocumentSnapshotService;
