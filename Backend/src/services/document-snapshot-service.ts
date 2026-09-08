@@ -24,13 +24,65 @@ export class DocumentSnapshotService {
         });
     }
 
-    static async createDocumentSnapshot(documentId: string, createdById: string, summary: string) {
-        const document = prisma.document.findUnique({
-            where: { id: documentId }
+    static async createSnapshot(documentId: string, createdById?: string, summary?: string, customCrdtState?: Buffer) {
+        const document = await prisma.document.findUnique({
+            where: { id: documentId },
+            select: { id: true, crdtState: true }
         });
 
         if (!document) {
-            throw new NotFoundException("Dcoument not found");
+            throw new NotFoundException("Document not found");
         }
+
+        // use provided binary state, or capture the document's current state
+        const stateToSave = customCrdtState || document.crdtState;
+        if (!stateToSave) {
+            throw new BadRequestException("No document state availabele to snapshot");
+        }
+
+        return prisma.documentSnapshot.create({
+            data: {
+                documentId,
+                createdById,
+                summary: summary || "Auto-saved version",
+                crdtState: new Uint8Array(stateToSave)
+            },
+            select: {
+                id: true,
+                documentId: true,
+                summary: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Get single historical snapshot (include the binary blob)
+    static async getSnapshotById(id: string) {
+        const snapshot = await prisma.documentSnapshot.findUnique({
+            where: { id },
+            include: {
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true
+                    }
+                }
+            }
+        });
+        if (!snapshot) {
+            throw new NotFoundException("Snapshot not found");
+        }
+
+        return snapshot;
     }
 }
