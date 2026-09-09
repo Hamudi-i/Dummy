@@ -168,7 +168,7 @@ export default function NotebooksPage() {
                 </div>
 
                 {/* Bottom Cover Section: Pages Count & Last Edited */}
-                <div className="pt-2 border-t border-[#1B1C1C]/15 flex items-center justify-between text-xs font-body relative z-10">
+                <div className="pt-2 border-t bottom-2 border-[#1B1C1C]/15 flex items-center justify-between text-xs font-body relative z-10">
                   <span className="font-semibold text-[#66645e]">
                     Edited {nb.lastEdited}
                   </span>
@@ -218,12 +218,12 @@ export default function NotebooksPage() {
         item={
           selectedSettingsItem
             ? {
-                id: selectedSettingsItem.id,
-                title: selectedSettingsItem.title,
-                description: selectedSettingsItem.description,
-                icon: selectedSettingsItem.icon,
-                type: "notebook",
-              }
+              id: selectedSettingsItem.id,
+              title: selectedSettingsItem.title,
+              description: selectedSettingsItem.description,
+              icon: selectedSettingsItem.icon,
+              type: "notebook",
+            }
             : null
         }
         onSave={(updated) => {
