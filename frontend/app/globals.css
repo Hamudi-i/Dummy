@@ -26,6 +26,31 @@
   }
 }
 
+/* Image selection & alignment rules */
+.prose img.ProseMirror-selectednode {
+  outline: none;
+  border-color: #2c5e91 !important;
+  box-shadow: 0 0 0 4px #2c5e91, 5px 5px 0px #30312C !important;
+}
+
+.prose [style*="text-align: left"] img,
+.prose img[style*="text-align: left"] {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.prose [style*="text-align: center"] img,
+.prose img[style*="text-align: center"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.prose [style*="text-align: right"] img,
+.prose img[style*="text-align: right"] {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
 /* =========================================================================
    TYPOGRAPHY CLASSES
    ========================================================================= */

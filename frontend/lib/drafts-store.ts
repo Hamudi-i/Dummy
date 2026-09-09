@@ -87,3 +87,24 @@ export const removeDraft = (notebookId: string) => {
   const drafts = getDrafts().filter((d) => d.notebookId !== notebookId);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
 };
+
+const SAVED_NOTEBOOKS_PREFIX = "colab_saved_notebook_";
+
+export const getSavedNotebookContent = (notebookId: string, defaultContent: string): string => {
+  if (typeof window === "undefined") return defaultContent;
+  try {
+    const saved = localStorage.getItem(`${SAVED_NOTEBOOKS_PREFIX}${notebookId}`);
+    return saved !== null ? saved : defaultContent;
+  } catch (e) {
+    return defaultContent;
+  }
+};
+
+export const saveNotebookContent = (notebookId: string, content: string) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${SAVED_NOTEBOOKS_PREFIX}${notebookId}`, content);
+  } catch (e) {
+    console.error("Failed to save notebook content", e);
+  }
+};

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
-import { saveDraft, removeDraft, getDrafts } from "@/lib/drafts-store";
+import { saveDraft, removeDraft, getDrafts, getSavedNotebookContent, saveNotebookContent } from "@/lib/drafts-store";
 import { toast } from "@/components/ui/sonner";
 import { TiptapCanvas } from "@/components/editor/TiptapCanvas";
 import {
@@ -28,9 +28,12 @@ export default function NotebookEditorPage() {
   const currentNotebook =
     INITIAL_NOTEBOOKS.find((n) => n.id === notebookId) || INITIAL_NOTEBOOKS[0];
 
-  const [content, setContent] = useState(
-    "<h1>📐 Component Specifications & Guidelines</h1><ul><li><strong>Primary Accent:</strong> #fdd355</li><li><strong>Brand Blue:</strong> #2c5e91</li><li><strong>Border Rules:</strong> Solid 1.8px #30312C sketch borders</li><li><strong>Typography:</strong> Bricolage Grotesque for headers and Be Vietnam Pro for body.</li></ul><p>Type here to start editing your notebook canvas...</p>"
-  );
+  const DEFAULT_NOTEBOOK_CONTENT =
+    notebookId === "nb-components"
+      ? "<h1>📐 Component Specifications & Guidelines</h1><ul><li><strong>Primary Accent:</strong> #fdd355</li><li><strong>Brand Blue:</strong> #2c5e91</li><li><strong>Border Rules:</strong> Solid 1.8px #30312C sketch borders</li><li><strong>Typography:</strong> Bricolage Grotesque for headers and Be Vietnam Pro for body.</li></ul><p>Type here to start editing your notebook canvas...</p>"
+      : `<h1>${currentNotebook.title}</h1><p><em>${currentNotebook.description}</em></p><hr /><p>Type here to start editing your notebook canvas...</p>`;
+
+  const [content, setContent] = useState(DEFAULT_NOTEBOOK_CONTENT);
 
   const [isSaved, setIsSaved] = useState(true);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -40,12 +43,17 @@ export default function NotebookEditorPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Check if there is an unsaved draft for this notebook
+    // Check if there is an unsaved WIP draft for this notebook
     const existingDrafts = getDrafts();
     const activeDraft = existingDrafts.find((d) => d.notebookId === notebookId);
     if (activeDraft && activeDraft.content) {
       setContent(activeDraft.content);
       setIsSaved(false);
+    } else {
+      // Otherwise load persistent saved content
+      const saved = getSavedNotebookContent(notebookId, DEFAULT_NOTEBOOK_CONTENT);
+      setContent(saved);
+      setIsSaved(true);
     }
   }, [notebookId]);
 
@@ -67,6 +75,7 @@ export default function NotebookEditorPage() {
 
   const handleSave = () => {
     setIsSaved(true);
+    saveNotebookContent(notebookId, content);
     removeDraft(notebookId);
     toast.success("Notebook Saved!", {
       description: `Changes saved to "${currentNotebook.title}".`,
