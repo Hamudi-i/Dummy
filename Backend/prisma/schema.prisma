@@ -138,7 +138,6 @@ model DocumentSnapshot {
   @@map("document_snapshots")
 }
 
-//TODO Create CRUD on Document Update
 model DocumentUpdate {
   id          BigInt    @id @default(autoincrement())
   documentId  String    @map("document_id")
