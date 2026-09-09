@@ -122,7 +122,6 @@ model Document {
   @@map("documents")
 }
 
-//TODO Create CRUD on Document Snapshot
 model DocumentSnapshot {
   id          String    @id @default(uuid())
   documentId  String    @map("document_id")
