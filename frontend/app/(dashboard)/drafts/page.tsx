@@ -149,7 +149,7 @@ export default function DraftsPage() {
 
       {/* Grid of Hyper-Realistic Loose-Leaf Paper Sheet Draft Cards */}
       {mounted && filteredDrafts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 max-w-6xl mx-auto pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-7 max-w-6xl mx-auto pt-2">
           {filteredDrafts.map((draft, idx) => {
             const tilts = ["-rotate-1", "rotate-1", "-rotate-1.5", "rotate-1.5"];
             const currentTilt = tilts[idx % tilts.length];
@@ -160,7 +160,7 @@ export default function DraftsPage() {
             return (
               <div
                 key={draft.id}
-                className={`bg-[#FAF7EE] bg-[linear-gradient(to_bottom,transparent_23px,rgba(48,49,44,0.06)_24px)] bg-[size:100%_24px] border-2 border-[#30312C] rounded-2xl p-6 shadow-[5px_5px_0px_#30312C,8px_8px_0px_rgba(48,49,44,0.12)] hover:shadow-[8px_8px_0px_#30312C,11px_11px_0px_rgba(48,49,44,0.18)] ${currentTilt} hover:rotate-0 hover:-translate-y-1 transition-all duration-300 relative flex flex-col justify-between group overflow-visible`}
+                className={`bg-[#FAF7EE] bg-[linear-gradient(to_bottom,transparent_23px,rgba(48,49,44,0.06)_24px)] bg-[size:100%_24px] border-2 border-[#30312C] rounded-2xl p-5 shadow-[5px_5px_0px_#30312C,8px_8px_0px_rgba(48,49,44,0.12)] hover:shadow-[8px_8px_0px_#30312C,11px_11px_0px_rgba(48,49,44,0.18)] ${currentTilt} hover:rotate-0 hover:-translate-y-1 transition-all duration-300 relative flex flex-col justify-between group overflow-visible min-h-[320px]`}
               >
                 {/* Center Top Translucent Washi Tape Accent */}
                 <div
@@ -168,30 +168,27 @@ export default function DraftsPage() {
                   style={{ transform: "translateX(-50%) rotate(-2deg)" }}
                 />
 
-                {/* Top Right Folded Paper Corner (Dog-Ear) */}
-                <div className="absolute top-0 right-0 w-7 h-7 bg-gradient-to-bl from-[#EFE8DC] via-[#E0D7C6] to-[#FAF7EE] border-b border-l border-[#30312C]/40 rounded-bl-lg shadow-2xs pointer-events-none z-10" />
-
                 {/* Left Margin Binder Hole Punch Accents */}
-                <div className="absolute left-2.5 top-1/2 -translate-y-1/2 flex flex-col justify-between h-[65%] pointer-events-none z-10">
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col justify-between h-[65%] pointer-events-none z-10">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#EFE8DC] border border-[#30312C]/40 shadow-inner" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#EFE8DC] border border-[#30312C]/40 shadow-inner" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#EFE8DC] border border-[#30312C]/40 shadow-inner" />
                 </div>
 
                 {/* Paper Content Area with Red Notebook Margin Line */}
-                <div className="pl-4 sm:pl-5 border-l-2 border-red-300/60 space-y-4 relative z-10 flex-1 flex flex-col justify-between">
+                <div className="pl-3.5 sm:pl-4 border-l-2 border-red-300/60 space-y-3.5 relative z-10 flex-1 flex flex-col justify-between">
                   {/* Paper Header: Notebook Title & Icon */}
-                  <div className="flex items-start justify-between border-b border-dashed border-[#30312C]/25 pb-3.5 gap-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-white border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] flex items-center justify-center text-[#30312C] shrink-0">
-                        <IconRenderer name={draft.icon} className="w-5 h-5 text-[#30312C]" />
+                  <div className="flex items-start justify-between border-b border-dashed border-[#30312C]/25 pb-3 gap-2.5">
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-white border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] flex items-center justify-center text-[#30312C] shrink-0">
+                        <IconRenderer name={draft.icon} className="w-4 h-4 text-[#30312C]" />
                       </div>
 
-                      <div className="space-y-0.5">
-                        <h3 className="font-header text-lg sm:text-xl font-extrabold text-[#30312C] leading-snug group-hover:text-primary transition-colors">
+                      <div className="space-y-0.5 truncate">
+                        <h3 className="font-header text-base sm:text-lg font-extrabold text-[#30312C] leading-snug group-hover:text-primary transition-colors truncate">
                           {draft.title}
                         </h3>
-                        <span className="font-body text-[11px] text-[#737067]">
+                        <span className="font-body text-[11px] text-[#737067] block truncate">
                           {parentWorkspace?.title || "Workspace"}
                         </span>
                       </div>
@@ -199,11 +196,11 @@ export default function DraftsPage() {
                   </div>
 
                   {/* Paper Note Body: Auto-saved Excerpt */}
-                  <div className="bg-white/90 border border-[#30312C]/20 rounded-xl p-4 shadow-2xs space-y-2 relative my-2">
+                  <div className="bg-white/90 border border-[#30312C]/20 rounded-xl p-3.5 shadow-2xs space-y-2 relative my-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-header font-extrabold uppercase text-[#807d74] tracking-wider flex items-center space-x-1">
                         <FileText className="w-3.5 h-3.5 text-[#30312C]" />
-                        <span>Canvas Note Excerpt</span>
+                        <span>Excerpt</span>
                       </span>
 
                       <span className="text-[10px] font-body text-[#737067] bg-[#FAF7EE] px-2 py-0.5 rounded-md border border-[#30312C]/15 font-semibold">
@@ -217,33 +214,32 @@ export default function DraftsPage() {
                   </div>
 
                   {/* Paper Footer Actions */}
-                  <div className="pt-3 border-t border-[#30312C]/15 flex items-center justify-between gap-2">
-                    <div className="flex items-center space-x-1.5 text-xs font-body text-[#737067]">
-                      <Clock className="w-3.5 h-3.5 text-[#30312C]" />
-                      <span>Edited {draft.lastEdited}</span>
+                  <div className="pt-2.5 border-t border-[#30312C]/15 flex items-center justify-between gap-1.5">
+                    <div className="flex items-center space-x-1 text-[11px] font-body text-[#737067] truncate">
+                      <Clock className="w-3 h-3 text-[#30312C] shrink-0" />
+                      <span className="truncate">{draft.lastEdited}</span>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1.5 shrink-0">
                       {/* Discard Draft Button */}
                       <button
                         type="button"
                         onClick={() =>
                           setDeleteCandidate({ notebookId: draft.notebookId, title: draft.title })
                         }
-                        className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 font-header font-bold text-xs rounded-xl border border-red-300 hover:border-red-400 transition-all flex items-center space-x-1 cursor-pointer"
+                        className="p-1.5 bg-white hover:bg-red-50 text-red-600 rounded-lg border border-red-300 hover:border-red-400 transition-all flex items-center cursor-pointer"
                         title="Discard draft"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span>Discard</span>
                       </button>
 
                       {/* Resume Editing Button */}
                       <Link
                         href={`/workspace/${draft.workspaceId}/notebook/${draft.notebookId}`}
-                        className="px-4 py-2 bg-[#fdd355] hover:bg-[#ffe082] text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[2px_2px_0px_#30312C] hover:shadow-[3px_3px_0px_#30312C] transition-all flex items-center space-x-1.5 cursor-pointer"
+                        className="px-3 py-1.5 bg-[#fdd355] hover:bg-[#ffe082] text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:shadow-[2px_2px_0px_#30312C] transition-all flex items-center space-x-1 cursor-pointer"
                       >
-                        <span>Resume Canvas</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>Resume</span>
+                        <ArrowRight className="w-3 h-3" />
                       </Link>
                     </div>
                   </div>
