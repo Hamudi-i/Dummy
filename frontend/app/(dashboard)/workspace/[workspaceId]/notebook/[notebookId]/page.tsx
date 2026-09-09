@@ -6,27 +6,14 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
-import { saveDraft, removeDraft, getDrafts } from "@/lib/drafts-store";
+import { saveDraft, removeDraft, getDrafts, getSavedNotebookContent, saveNotebookContent } from "@/lib/drafts-store";
 import { toast } from "@/components/ui/sonner";
+import { TiptapCanvas } from "@/components/editor/TiptapCanvas";
 import {
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  Code as CodeIcon,
-  Highlighter,
-  List,
-  ListOrdered,
-  CheckSquare,
-  Heading1,
-  Heading2,
-  Share2,
-  Download,
   Eye,
   Pencil,
   CheckCircle2,
   Link as LinkIcon,
-  Check,
   AlertTriangle,
 } from "lucide-react";
 
@@ -41,18 +28,12 @@ export default function NotebookEditorPage() {
   const currentNotebook =
     INITIAL_NOTEBOOKS.find((n) => n.id === notebookId) || INITIAL_NOTEBOOKS[0];
 
-  const [content, setContent] = useState(
-    "📐 Component Specifications & Guidelines\n\n- Primary Accent: #fdd355\n- Brand Blue: #2c5e91\n- Border Rules: Solid 1.8px #30312C sketch borders\n- Typography: Bricolage Grotesque for headers and Be Vietnam Pro for body.\n\nType here to start editing your notebook canvas..."
-  );
+  const DEFAULT_NOTEBOOK_CONTENT =
+    notebookId === "nb-components"
+      ? "<h1>📐 Component Specifications & Guidelines</h1><ul><li><strong>Primary Accent:</strong> #fdd355</li><li><strong>Brand Blue:</strong> #2c5e91</li><li><strong>Border Rules:</strong> Solid 1.8px #30312C sketch borders</li><li><strong>Typography:</strong> Bricolage Grotesque for headers and Be Vietnam Pro for body.</li></ul><p>Type here to start editing your notebook canvas...</p>"
+      : `<h1>${currentNotebook.title}</h1><p><em>${currentNotebook.description}</em></p><hr /><p>Type here to start editing your notebook canvas...</p>`;
 
-  const [activeFormats, setActiveFormats] = useState<{ [key: string]: boolean }>({
-    bold: false,
-    italic: false,
-    underline: false,
-    strikethrough: false,
-    code: false,
-    highlight: false,
-  });
+  const [content, setContent] = useState(DEFAULT_NOTEBOOK_CONTENT);
 
   const [isSaved, setIsSaved] = useState(true);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -62,18 +43,22 @@ export default function NotebookEditorPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Check if there is an unsaved draft for this notebook
+    // Check if there is an unsaved WIP draft for this notebook
     const existingDrafts = getDrafts();
     const activeDraft = existingDrafts.find((d) => d.notebookId === notebookId);
     if (activeDraft && activeDraft.content) {
       setContent(activeDraft.content);
       setIsSaved(false);
+    } else {
+      // Otherwise load persistent saved content
+      const saved = getSavedNotebookContent(notebookId, DEFAULT_NOTEBOOK_CONTENT);
+      setContent(saved);
+      setIsSaved(true);
     }
   }, [notebookId]);
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value;
-    setContent(newText);
+  const handleContentChange = (newHtml: string) => {
+    setContent(newHtml);
     setIsSaved(false);
     saveDraft({
       id: `draft-${notebookId}`,
@@ -82,7 +67,7 @@ export default function NotebookEditorPage() {
       title: currentNotebook.title,
       description: currentNotebook.description,
       icon: currentNotebook.icon,
-      content: newText,
+      content: newHtml,
       lastEdited: "Just now",
       isUnsaved: true,
     });
@@ -90,14 +75,11 @@ export default function NotebookEditorPage() {
 
   const handleSave = () => {
     setIsSaved(true);
+    saveNotebookContent(notebookId, content);
     removeDraft(notebookId);
     toast.success("Notebook Saved!", {
       description: `Changes saved to "${currentNotebook.title}".`,
     });
-  };
-
-  const toggleFormat = (format: string) => {
-    setActiveFormats((prev) => ({ ...prev, [format]: !prev[format] }));
   };
 
   return (
@@ -120,7 +102,7 @@ export default function NotebookEditorPage() {
           <span className="font-semibold text-[#30312C]">{currentNotebook.title}</span>
         </div>
 
-        {/* Title Header with Random Tilt & SVG Underline */}
+        {/* Title Header with SVG Underline & Collaborator Profile Badges */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative inline-block transform -rotate-1 sm:-rotate-1.5 origin-left">
             <h1 className="font-header text-4xl sm:text-[44px] font-extrabold text-[#30312C] tracking-tight relative z-10 leading-tight flex items-center space-x-3">
@@ -153,6 +135,35 @@ export default function NotebookEditorPage() {
               />
             </svg>
           </div>
+
+          {/* Collaborator Profile Badges (Aligned on header line, increased size) */}
+          <div className="flex items-center space-x-3 shrink-0">
+            {/* Avatar Circle 1 */}
+            <div className="relative group cursor-pointer" title="Natty (Active Collaborator)">
+              <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                <div className="w-full h-full bg-[#2c5e91] text-white font-header font-extrabold text-base sm:text-lg flex items-center justify-center">
+                  N
+                </div>
+              </div>
+              <span
+                className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"
+                title="Online & Editing"
+              />
+            </div>
+
+            {/* Avatar Circle 2 */}
+            <div className="relative group cursor-pointer" title="Maya (Design Lead)">
+              <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                <div className="w-full h-full bg-[#fdd355] text-[#30312C] font-header font-extrabold text-base sm:text-lg flex items-center justify-center">
+                  M
+                </div>
+              </div>
+              <span
+                className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"
+                title="Online & Editing"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -170,244 +181,21 @@ export default function NotebookEditorPage() {
           style={{ transform: "rotate(40deg)" }}
         />
 
-        {/* 2 Collaborator Profile Badges (Pushed Far Right) */}
-        <div className="absolute top-4 -right-22 sm:-right-32 md:-right-22 z-40 flex flex-col items-center space-y-3">
-          {/* Avatar Circle 1 */}
-          <div className="relative group cursor-pointer" title="Natty (Active Collaborator)">
-            <div className="w-9.5 h-9.5 rounded-full bg-[#FAF7EE] border-1.5 border-[#30312C] shadow-[2px_1.5px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-              <div className="w-full h-full bg-[#2c5e91] text-white font-header font-bold text-xs flex items-center justify-center">
-                N
-              </div>
-            </div>
-            <span
-              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#2c5e91] shadow-xs"
-              title="Online & Editing"
-            />
-          </div>
-
-          {/* Avatar Circle 2 */}
-          <div className="relative group cursor-pointer" title="Maya (Design Lead)">
-            <div className="w-9.5 h-9.5 rounded-full bg-[#FAF7EE] border-1.5 border-[#30312C] shadow-[2px_1.5px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-              <div className="w-full h-full bg-[#fdd355] text-[#30312C] font-header font-bold text-xs flex items-center justify-center">
-                M
-              </div>
-            </div>
-            <span
-              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#2c5e91] shadow-xs"
-              title="Online & Editing"
-            />
-          </div>
-        </div>
-
-        {/* Editable White Document Container */}
-        <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] overflow-hidden flex flex-col transition-all">
-          {/* Formatting & Action Toolbar */}
-          <div className="bg-white px-8 sm:px-12 pt-7 pb-3 flex flex-wrap items-center justify-between gap-3 border-b border-[#30312C]/10">
-            {/* Left Side: Text Formatting Tools */}
-            <div className="flex items-center space-x-1 flex-wrap gap-y-1">
-              {/* Bold */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("bold")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.bold
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Bold"
-              >
-                <Bold className="w-4 h-4" />
-              </button>
-
-              {/* Italic */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("italic")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.italic
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Italic"
-              >
-                <Italic className="w-4 h-4" />
-              </button>
-
-              {/* Underline */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("underline")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.underline
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Underline"
-              >
-                <UnderlineIcon className="w-4 h-4" />
-              </button>
-
-              {/* Strikethrough */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("strikethrough")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.strikethrough
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Strikethrough"
-              >
-                <Strikethrough className="w-4 h-4" />
-              </button>
-
-              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-              {/* Code */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("code")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.code
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Code Inline"
-              >
-                <CodeIcon className="w-4 h-4" />
-              </button>
-
-              {/* Highlight */}
-              <button
-                type="button"
-                onClick={() => toggleFormat("highlight")}
-                className={`p-2 rounded-lg border transition-all cursor-pointer ${
-                  activeFormats.highlight
-                    ? "bg-accent border-[#30312C] shadow-[1px_1px_0px_#30312C]"
-                    : "bg-white border-transparent hover:bg-[#FAF7EE] text-[#30312C]"
-                }`}
-                title="Highlight"
-              >
-                <Highlighter className="w-4 h-4 text-amber-600" />
-              </button>
-
-              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-              {/* Headings */}
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-                title="Heading 1"
-              >
-                <Heading1 className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-                title="Heading 2"
-              >
-                <Heading2 className="w-4 h-4" />
-              </button>
-
-              <span className="w-[1.5px] h-5 bg-[#30312C]/20 mx-1" />
-
-              {/* Bullet List */}
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-                title="Bullet List"
-              >
-                <List className="w-4 h-4" />
-              </button>
-
-              {/* Numbered List */}
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-                title="Numbered List"
-              >
-                <ListOrdered className="w-4 h-4" />
-              </button>
-
-              {/* Task Checklist */}
-              <button
-                type="button"
-                className="p-2 rounded-lg bg-white border border-transparent hover:bg-[#FAF7EE] text-[#30312C] transition-all cursor-pointer"
-                title="Task List"
-              >
-                <CheckSquare className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Right Side: Document Actions (Save, Export, Share) */}
-            <div className="flex items-center space-x-2 shrink-0">
-              {/* Save Button */}
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={isSaved}
-                className={`h-9 px-3.5 font-header font-bold text-xs rounded-xl border border-[#30312C] transition-all flex items-center space-x-1.5 ${
-                  isSaved
-                    ? "bg-[#FAF7EE] text-[#737067] border-[#30312C]/30 cursor-default opacity-80"
-                    : "bg-[#30312C] text-white hover:bg-[#42443d] shadow-[1.5px_1.5px_0px_#30312C] cursor-pointer"
-                }`}
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>{isSaved ? "Saved" : "Save Changes"}</span>
-              </button>
-
-              {/* Export Button */}
-              <button
-                type="button"
-                onClick={() =>
-                  toast.success("Export Complete", {
-                    description: `"${currentNotebook.title}" exported successfully!`,
-                  })
-                }
-                className="h-9 px-3.5 bg-[#FAF7EE] hover:bg-white text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1.5"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export</span>
-              </button>
-
-              {/* Share Button */}
-              <button
-                type="button"
-                onClick={() => setIsShareModalOpen(true)}
-                className="h-9 px-3.5 bg-primary text-white font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer flex items-center space-x-1.5"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Share</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Inset Dashed Divider Line (Does not touch outer edges) */}
-          <div className="px-8 sm:px-12">
-            <div className="border-b-2 border-dashed border-[#30312C]/20 w-full" />
-          </div>
-
-          {/* Editable Area */}
-          <div className="px-8 sm:px-12 pb-10 pt-5 flex-1 bg-white flex flex-col">
-            <textarea
-              value={content}
-              onChange={handleContentChange}
-              placeholder="Start typing your document..."
-              className="w-full h-full min-h-[420px] bg-transparent font-body text-base text-[#30312C] leading-relaxed focus:outline-none resize-none"
-              style={{
-                fontWeight: activeFormats.bold ? "bold" : "normal",
-                fontStyle: activeFormats.italic ? "italic" : "normal",
-                textDecoration: [
-                  activeFormats.underline ? "underline" : "",
-                  activeFormats.strikethrough ? "line-through" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" "),
-                backgroundColor: activeFormats.highlight ? "#fef08a" : "transparent",
-              }}
-            />
-          </div>
+        {/* Editable White Document Container with Tiptap Canvas */}
+        <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] flex flex-col transition-all overflow-visible">
+          <TiptapCanvas
+            docId={`notebook-${notebookId}`}
+            initialContent={content}
+            isSaved={isSaved}
+            onSave={handleSave}
+            onExport={() =>
+              toast.success("Export Complete", {
+                description: `"${currentNotebook.title}" exported successfully!`,
+              })
+            }
+            onShare={() => setIsShareModalOpen(true)}
+            onContentChange={handleContentChange}
+          />
         </div>
       </div>
 
