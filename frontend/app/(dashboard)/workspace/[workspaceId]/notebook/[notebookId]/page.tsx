@@ -182,7 +182,7 @@ export default function NotebookEditorPage() {
         />
 
         {/* Editable White Document Container with Tiptap Canvas */}
-        <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] overflow-hidden flex flex-col transition-all">
+        <div className="w-full bg-white min-h-[720px] lg:min-h-[820px] border-r-[4px] border-b-[5px] border-[#E5E7EB] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px] shadow-[8px_8px_6px_3px_rgba(27,28,28,0.25)] flex flex-col transition-all overflow-visible">
           <TiptapCanvas
             docId={`notebook-${notebookId}`}
             initialContent={content}

@@ -97,14 +97,14 @@ export function EditorToolbar({
 
   if (!editor) {
     return (
-      <div className="bg-white px-8 sm:px-12 pt-7 pb-3 flex items-center justify-between border-b border-[#30312C]/10 min-h-[64px]">
+      <div className="bg-white px-8 sm:px-12 pt-7 pb-4 flex items-center justify-between border-b-2 border-dashed border-[#30312C]/20 min-h-[64px] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px]">
         <div className="h-6 w-48 bg-[#FAF7EE] animate-pulse rounded-md" />
       </div>
     );
   }
 
   return (
-    <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md px-6 sm:px-10 pt-5 pb-3 flex flex-wrap items-center justify-between gap-3 border-b border-[#30312C]/15 select-none transition-all shadow-xs">
+    <div className="w-full bg-white px-8 sm:px-12 pt-7 pb-4 flex flex-wrap items-center justify-between gap-3 border-b-2 border-dashed border-[#30312C]/20 select-none transition-all rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px]">
       {/* Hidden File Input for Image Upload */}
       <input
         type="file"

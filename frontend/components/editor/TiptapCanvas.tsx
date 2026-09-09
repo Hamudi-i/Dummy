@@ -133,7 +133,7 @@ export function TiptapCanvas({
   }, [editor, initialContent]);
 
   return (
-    <div className="w-full bg-white flex flex-col min-h-[720px] lg:min-h-[820px]">
+    <div className="w-full bg-white flex flex-col min-h-[720px] lg:min-h-[820px] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px]">
       {/* Dynamic Toolbar */}
       <EditorToolbar
         editor={editor}
@@ -143,13 +143,8 @@ export function TiptapCanvas({
         onShare={onShare}
       />
 
-      {/* Inset Dashed Divider Line */}
-      <div className="px-6 sm:px-10">
-        <div className="border-b-2 border-dashed border-[#30312C]/20 w-full" />
-      </div>
-
       {/* Tiptap Rich Text Canvas Editor */}
-      <div className="px-6 sm:px-10 pb-10 pt-5 flex-1 bg-white cursor-text" onClick={() => editor?.chain().focus().run()}>
+      <div className="px-8 sm:px-12 pb-10 pt-6 flex-1 bg-white cursor-text rounded-b-[50px] sm:rounded-b-[70px]" onClick={() => editor?.chain().focus().run()}>
         <EditorContent editor={editor} />
       </div>
     </div>

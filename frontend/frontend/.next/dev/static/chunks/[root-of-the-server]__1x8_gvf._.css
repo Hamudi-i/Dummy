@@ -754,6 +754,10 @@
     top: 8px;
   }
 
+  .top-\[74px\] {
+    top: 74px;
+  }
+
   .-right-0\.5 {
     right: calc(var(--spacing) * -.5);
   }
@@ -1997,6 +2001,11 @@
 
   .rounded-tr-\[160px\] {
     border-top-right-radius: 160px;
+  }
+
+  .rounded-b-\[50px\] {
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
   }
 
   .rounded-b-\[80px\] {
@@ -3525,6 +3534,11 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
+  .shadow-sm {
+    --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, #0000001a), 0 1px 2px -1px var(--tw-shadow-color, #0000001a);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
   .shadow-xs {
     --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color, #0000000d);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -4102,6 +4116,11 @@
 
     .sm\:rounded-tr-\[70px\] {
       border-top-right-radius: 70px;
+    }
+
+    .sm\:rounded-b-\[70px\] {
+      border-bottom-right-radius: 70px;
+      border-bottom-left-radius: 70px;
     }
 
     .sm\:rounded-br-\[70px\] {
