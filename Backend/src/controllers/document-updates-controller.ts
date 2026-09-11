@@ -5,6 +5,7 @@ import { DocumentUpdateService } from "../services/document-update-service";
  * Document Updates & Snapshots: 
  * document-updates-controller.ts and document-snapshots-controller.ts
  *  take a documentId but don't verify if the requester belongs to that document's workspace. Any logged-in user with a document UUID could read or prune updates
+ * 
 */
 export class DocumentUpdateController {
     static async getUpdates(req: Request, res: Response, next: NextFunction): Promise<void> {
