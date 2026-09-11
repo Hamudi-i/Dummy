@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUserProfile } from "@/lib/user-store";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
@@ -10,6 +11,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { profile } = useUserProfile();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,16 +179,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
         {/* Circular Profile Icon */}
         <Link
           href="/settings"
-          className="relative w-10 h-10 rounded-full border-1.5 border-[#30312C] bg-accent overflow-hidden flex items-center justify-center hover:scale-105 transition-transform shadow-[0_2px_0px_#30312C]"
+          className="relative w-10 h-10 rounded-full border-1.5 border-[#30312C] bg-[#2c5e91] text-white overflow-hidden flex items-center justify-center hover:scale-105 transition-transform shadow-[0_2px_0px_#30312C]"
           title="Profile & Settings"
         >
-          <Image
-            src="/fox.png"
-            alt="User Profile"
-            width={40}
-            height={40}
-            className="w-full h-full object-cover"
-          />
+          {profile.profilePic ? (
+            <img
+              src={profile.profilePic}
+              alt={profile.fullName || "User Profile"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="font-header font-extrabold text-base">
+              {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "U"}
+            </span>
+          )}
         </Link>
       </div>
     </header>

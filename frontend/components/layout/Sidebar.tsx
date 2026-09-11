@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
+import { useUserProfile } from "@/lib/user-store";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { profile } = useUserProfile();
 
   const mainNavItems = [
     {
@@ -153,20 +155,26 @@ export const Sidebar: React.FC = () => {
       <div className="flex flex-col items-center w-full">
         {/* Profile Circle & Info (Tight Psychological Grouping) */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-16 h-16 rounded-full border-2 border-[#30312C] bg-accent overflow-hidden p-0.5 shadow-[2px_2px_0px_#30312C]">
-            <Image
-              src="/fox.png"
-              alt="My Studio Profile"
-              width={64}
-              height={64}
-              className="w-full h-full object-cover rounded-full"
-            />
-          </div>
-          <h2 className="font-header text-[20.5px] font-extrabold text-[#30312C] mt-3 leading-tight tracking-tight">
-            My studio
+          <Link href="/settings" className="relative group cursor-pointer">
+            <div className="w-16 h-16 rounded-full border-2 border-[#30312C] bg-[#2c5e91] text-white overflow-hidden p-0.5 shadow-[2px_2px_0px_#30312C] flex items-center justify-center transition-transform group-hover:scale-105">
+              {profile.profilePic ? (
+                <img
+                  src={profile.profilePic}
+                  alt={profile.fullName}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span className="font-header font-extrabold text-2xl">
+                  {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "U"}
+                </span>
+              )}
+            </div>
+          </Link>
+          <h2 className="font-header text-[19px] font-extrabold text-[#30312C] mt-2.5 leading-tight tracking-tight">
+            {profile.fullName || "My studio"}
           </h2>
-          <span className="font-body text-[13.5px] italic font-medium text-[#66645e] mt-0.5">
-            creative space
+          <span className="font-body text-[13px] italic font-medium text-[#66645e] mt-0.5">
+            @{profile.username || "colab_user"}
           </span>
         </div>
 

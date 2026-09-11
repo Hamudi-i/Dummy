@@ -1,6 +1,7 @@
 import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { GlobalShortcutsHandler } from "@/components/layout/GlobalShortcutsHandler";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="h-screen w-screen bg-[#F8F5EC] relative overflow-hidden font-body text-[#30312C]">
+      <GlobalShortcutsHandler />
       {/* Top Navbar (High z-index z-40 over Sidebar and Main) */}
       <div className="fixed top-0 left-0 w-full z-40">
         <Navbar />

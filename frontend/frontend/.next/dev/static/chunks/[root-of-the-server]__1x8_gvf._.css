@@ -986,6 +986,10 @@
     margin-top: calc(var(--spacing) * 2);
   }
 
+  .mt-2\.5 {
+    margin-top: calc(var(--spacing) * 2.5);
+  }
+
   .mt-3 {
     margin-top: calc(var(--spacing) * 3);
   }
@@ -3040,6 +3044,10 @@
 
   .text-\[18px\] {
     font-size: 18px;
+  }
+
+  .text-\[19px\] {
+    font-size: 19px;
   }
 
   .text-\[20\.5px\] {
