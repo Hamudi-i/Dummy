@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   User,
@@ -15,16 +15,26 @@ import {
   Bell,
 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { useUserProfile } from "@/lib/user-store";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<"account" | "security" | "notifications">("account");
+  const { profile, updateProfile } = useUserProfile();
 
   // Account Customization States
-  const [fullName, setFullName] = useState("Natty Aman");
-  const [username, setUsername] = useState("natty_colab");
-  const [email, setEmail] = useState("natty@colab.studio");
-  const [bio, setBio] = useState("Product Designer & Developer building collaborative tools.");
-  const [profilePic, setProfilePic] = useState<string | null>("/fox.png");
+  const [fullName, setFullName] = useState(profile.fullName);
+  const [username, setUsername] = useState(profile.username);
+  const [email, setEmail] = useState(profile.email);
+  const [bio, setBio] = useState(profile.bio);
+  const [profilePic, setProfilePic] = useState<string | null>(profile.profilePic);
+
+  useEffect(() => {
+    setFullName(profile.fullName);
+    setUsername(profile.username);
+    setEmail(profile.email);
+    setBio(profile.bio);
+    setProfilePic(profile.profilePic);
+  }, [profile]);
 
   // Security States
   const [currentPassword, setCurrentPassword] = useState("");
@@ -39,17 +49,32 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
+      reader.onloadend = async () => {
+        const resultSrc = reader.result as string;
+        setProfilePic(resultSrc);
+        await updateProfile({ profilePic: resultSrc });
         toast.success("Profile Picture Updated!", {
-          description: "Click Save Account Changes to finalize.",
+          description: "New avatar preview updated across your workspace.",
         });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSaveAccount = () => {
+  const handleRemoveImage = async () => {
+    setProfilePic(null);
+    await updateProfile({ profilePic: null });
+    toast.info("Profile Picture Removed");
+  };
+
+  const handleSaveAccount = async () => {
+    await updateProfile({
+      fullName,
+      username,
+      email,
+      bio,
+      profilePic,
+    });
     toast.success("Account Updated", {
       description: `Saved profile changes for @${username}.`,
     });
@@ -214,10 +239,7 @@ export default function SettingsPage() {
                   {profilePic && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setProfilePic(null);
-                        toast.info("Profile Picture Removed");
-                      }}
+                      onClick={handleRemoveImage}
                       className="text-xs font-header font-bold text-rose-700 hover:underline cursor-pointer"
                     >
                       Remove

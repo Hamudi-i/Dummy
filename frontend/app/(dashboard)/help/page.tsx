@@ -55,12 +55,14 @@ const FAQS: FAQItem[] = [
 ];
 
 const SHORTCUTS = [
-  { key: "Cmd + S", action: "Save changes to notebook" },
-  { key: "Cmd + N", action: "Create a new sketch / notebook" },
-  { key: "Cmd + Shift + P", action: "Open Share Modal" },
-  { key: "Cmd + B", action: "Toggle Bold formatting" },
-  { key: "Cmd + I", action: "Toggle Italic formatting" },
-  { key: "Cmd + /", action: "Toggle Keyboard Shortcuts Help" },
+  { key: "Cmd / Ctrl + S", action: "Save changes to notebook" },
+  { key: "Cmd / Ctrl + N", action: "Create a new sketch / notebook" },
+  { key: "Cmd / Ctrl + Shift + P", action: "Open Share Modal" },
+  { key: "Cmd / Ctrl + K", action: "Focus Quick Search input" },
+  { key: "Cmd / Ctrl + B", action: "Toggle Bold text formatting" },
+  { key: "Cmd / Ctrl + I", action: "Toggle Italic text formatting" },
+  { key: "Cmd / Ctrl + U", action: "Toggle Underline text formatting" },
+  { key: "Cmd / Ctrl + /", action: "Open Keyboard Shortcuts & Help" },
 ];
 
 export default function HelpPage() {
