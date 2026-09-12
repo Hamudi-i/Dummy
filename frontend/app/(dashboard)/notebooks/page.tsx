@@ -1,20 +1,48 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { INITIAL_NOTEBOOKS, INITIAL_WORKSPACES, NotebookItem } from "@/lib/mock-data";
+import { INITIAL_WORKSPACES, NotebookItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
 import { CreateNotebookModal } from "@/components/modals/CreateNotebookModal";
 import { archiveItem } from "@/lib/archive-store";
+import { api } from "@/lib/api";
+import { toast } from "@/components/ui/sonner";
 
 export default function NotebooksPage() {
-  const [notebooks, setNotebooks] = useState<NotebookItem[]>(INITIAL_NOTEBOOKS);
+  const [notebooks, setNotebooks] = useState<NotebookItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSettingsItem, setSelectedSettingsItem] = useState<NotebookItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("book-open");
+  const [workspaceOptions, setWorkspaceOptions] = useState<{ id: string; title: string }[]>([]);
+
+  useEffect(() => {
+    api.getWorkspaces().then(async (workspaces) => {
+      setWorkspaceOptions(workspaces.map((workspace) => ({ id: workspace.id, title: workspace.name })));
+      const documentGroups = await Promise.all(workspaces.map((workspace) => api.getDocuments(workspace.id).then((documents) =>
+        documents.map((doc) => ({ id: doc.id, workspaceId: workspace.id, title: doc.title, description: doc.description || "Interactive notebook canvas.", icon: doc.icon || "book-open", pageCount: doc.pageCount || 1, lastEdited: "recently", status: doc.status === "draft" ? "draft" as const : "active" as const }))
+      )));
+      setNotebooks(documentGroups.flat());
+    });
+  }, []);
+
+  const moveNotebook = async (id: string, direction: "up" | "down") => {
+    const index = notebooks.findIndex((notebook) => notebook.id === id);
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (index < 0 || target < 0 || target >= notebooks.length) return;
+    const reordered = [...notebooks];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    setNotebooks(reordered);
+    try {
+      await Promise.all(reordered.map((notebook, sortOrder) => api.updateDocument(notebook.id, { sortOrder })));
+    } catch (error) {
+      setNotebooks(notebooks);
+      toast.error("Could not save notebook order", { description: error instanceof Error ? error.message : "Please try again." });
+    }
+  };
 
   const handleCreateNotebook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,9 +225,12 @@ export default function NotebooksPage() {
       <CreateNotebookModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onNotebookCreated={(newNb) => {
+        defaultWorkspaceId={workspaceOptions[0]?.id}
+        workspaces={workspaceOptions}
+        onNotebookCreated={async (newNb) => {
+          const saved = await api.createDocument(newNb.workspaceId, { title: newNb.title, icon: newNb.icon, description: newNb.description });
           const notebookItem: NotebookItem = {
-            id: newNb.id,
+            id: saved.id,
             workspaceId: newNb.workspaceId,
             title: newNb.title,
             description: newNb.description,
@@ -209,6 +240,7 @@ export default function NotebooksPage() {
             status: "active",
           };
           setNotebooks([notebookItem, ...notebooks]);
+          return saved;
         }}
       />
       {/* Item Settings Modal */}
@@ -226,7 +258,8 @@ export default function NotebooksPage() {
             }
             : null
         }
-        onSave={(updated) => {
+        onSave={async (updated) => {
+          await api.updateDocument(updated.id, { title: updated.title, description: updated.description });
           setNotebooks((prev) =>
             prev.map((n) =>
               n.id === updated.id
@@ -235,23 +268,15 @@ export default function NotebooksPage() {
             )
           );
         }}
-        onArchive={(id) => {
-          const itemToArchive = notebooks.find((n) => n.id === id);
-          if (itemToArchive) {
-            archiveItem({
-              id: itemToArchive.id,
-              title: itemToArchive.title,
-              description: itemToArchive.description,
-              icon: itemToArchive.icon,
-              type: "notebook",
-              workspaceId: itemToArchive.workspaceId,
-            });
-            setNotebooks((prev) => prev.filter((n) => n.id !== id));
-          }
-        }}
-        onDelete={(id) => {
+        onArchive={async (id) => {
+          await api.archiveDocument(id);
           setNotebooks((prev) => prev.filter((n) => n.id !== id));
         }}
+        onDelete={async (id) => {
+          await api.deleteDocument(id);
+          setNotebooks((prev) => prev.filter((n) => n.id !== id));
+        }}
+        onMove={moveNotebook}
       />
     </div>
   );

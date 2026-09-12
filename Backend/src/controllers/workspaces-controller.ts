@@ -2,6 +2,20 @@ import { Request, Response, NextFunction } from "express";
 import { WorkspaceService } from "../services/workspace-service";
 
 export class WorkspaceController {
+    static async getArchivedWorkspaces(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try { const data = await WorkspaceService.getArchivedWorkspaces((req as any).currentUser.userId); res.status(200).json({ count: data.length, data }); }
+        catch (error) { next(error); }
+    }
+
+    static async archiveWorkspace(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try { res.status(200).json(await WorkspaceService.setArchiveStatus(req.params.id as string, (req as any).currentUser.userId, true)); }
+        catch (error) { next(error); }
+    }
+
+    static async restoreWorkspace(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try { res.status(200).json(await WorkspaceService.setArchiveStatus(req.params.id as string, (req as any).currentUser.userId, false)); }
+        catch (error) { next(error); }
+    }
     static async getAllWorkspaces(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).currentUser.userId;

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth-service";
+import { OAuthService } from "../services/oauth-service";
 
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -28,6 +29,20 @@ export class AuthController {
     } catch (error) {
       next(error);
     }
+  }
+
+  static async startOAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try { res.redirect(OAuthService.authorizationUrl(OAuthService.provider(req.params.provider as string))); }
+    catch (error) { next(error); }
+  }
+
+  static async finishOAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const provider = OAuthService.provider(req.params.provider as string);
+      OAuthService.verifyState(provider, String(req.query.state || req.body?.state || ""));
+      const profile = await OAuthService.profile(provider, String(req.query.code || req.body?.code || ""));
+      res.redirect(OAuthService.redirectWithSession(await AuthService.loginWithOAuth({ ...profile, provider })));
+    } catch (error) { next(error); }
   }
 }
 

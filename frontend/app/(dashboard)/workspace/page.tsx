@@ -1,21 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { INITIAL_WORKSPACES, WorkspaceItem } from "@/lib/mock-data";
+import { WorkspaceItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
 import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
-import { archiveItem } from "@/lib/archive-store";
+import { api } from "@/lib/api";
 import { toast } from "@/components/ui/sonner";
 
 export default function WorkspacesOverviewPage() {
-  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>(INITIAL_WORKSPACES);
+  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSettingsItem, setSelectedSettingsItem] = useState<WorkspaceItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("palette");
+
+  useEffect(() => {
+    api.getWorkspaces().then((items) => setWorkspaces(items.map((ws) => ({
+      id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: ws.icon || "palette", color: ws.color || "#2c5e91",
+      notebookCount: ws.documents?.filter((doc) => !doc.isArchived).length || 0, lastUpdated: "recently", badgeLabel: "Workspace",
+      badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+    })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
+  }, []);
+
+  const moveWorkspace = async (id: string, direction: "up" | "down") => {
+    const index = workspaces.findIndex((workspace) => workspace.id === id);
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (index < 0 || target < 0 || target >= workspaces.length) return;
+    const reordered = [...workspaces];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    setWorkspaces(reordered);
+    try {
+      await Promise.all(reordered.map((workspace, sortOrder) => api.updateWorkspace(workspace.id, { sortOrder })));
+    } catch (error) {
+      setWorkspaces(workspaces);
+      toast.error("Could not save workspace order", { description: error instanceof Error ? error.message : "Please try again." });
+    }
+  };
 
   const handleCreateWorkspace = (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,10 +225,11 @@ export default function WorkspacesOverviewPage() {
       <CreateWorkspaceModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onWorkspaceCreated={(newWs) => {
+        onWorkspaceCreated={async (newWs) => {
+          const saved = await api.createWorkspace({ name: newWs.title, description: newWs.description, icon: newWs.icon });
           const workspaceItem: WorkspaceItem = {
-            id: newWs.id,
-            title: newWs.title,
+            id: saved.id,
+            title: saved.name,
             description: newWs.description,
             icon: newWs.icon,
             color: "#fdd355",
@@ -216,6 +240,7 @@ export default function WorkspacesOverviewPage() {
             previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
           };
           setWorkspaces([workspaceItem, ...workspaces]);
+          return saved;
         }}
       />
       {/* Item Settings Modal */}
@@ -233,7 +258,8 @@ export default function WorkspacesOverviewPage() {
               }
             : null
         }
-        onSave={(updated) => {
+        onSave={async (updated) => {
+          await api.updateWorkspace(updated.id, { name: updated.title, description: updated.description });
           setWorkspaces((prev) =>
             prev.map((w) =>
               w.id === updated.id
@@ -243,21 +269,13 @@ export default function WorkspacesOverviewPage() {
           );
         }}
         onArchive={(id) => {
-          const itemToArchive = workspaces.find((w) => w.id === id);
-          if (itemToArchive) {
-            archiveItem({
-              id: itemToArchive.id,
-              title: itemToArchive.title,
-              description: itemToArchive.description,
-              icon: itemToArchive.icon,
-              type: "workspace",
-            });
-            setWorkspaces((prev) => prev.filter((w) => w.id !== id));
-          }
+          toast.info("Workspace archiving is not available in the backend yet.");
         }}
-        onDelete={(id) => {
+        onDelete={async (id) => {
+          await api.deleteWorkspace(id);
           setWorkspaces((prev) => prev.filter((w) => w.id !== id));
         }}
+        onMove={moveWorkspace}
       />
     </div>
   );

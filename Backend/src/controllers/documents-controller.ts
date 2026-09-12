@@ -6,7 +6,8 @@ export class DocumentController {
         try {
             const workspaceId = req.params.workspaceId as string;
             const userId = (req as any).currentUser.userId;
-            const document = await DocumentService.getWorkspaceDocuments(workspaceId, userId);
+            const isArchived = req.query.archived === "true";
+            const document = await DocumentService.getWorkspaceDocuments(workspaceId, userId, { isArchived });
             res.status(200).json(document);
         } catch (error) {
             next(error);

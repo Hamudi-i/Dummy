@@ -2,6 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user-service";
 
 export class UserController {
+  static async getCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try { res.status(200).json(await UserService.getUserById((req as any).currentUser.userId)); }
+    catch (error) { next(error); }
+  }
+
+  static async updateCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try { res.status(200).json(await UserService.updateUser((req as any).currentUser.userId, req.body)); }
+    catch (error) { next(error); }
+  }
+
+  static async changeCurrentPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      await UserService.changePassword((req as any).currentUser.userId, req.body.currentPassword, req.body.newPassword);
+      res.status(204).end();
+    } catch (error) { next(error); }
+  }
   static async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const users = await UserService.getAllUsers();
