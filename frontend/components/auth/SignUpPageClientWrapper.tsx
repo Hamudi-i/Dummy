@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ActiveModal, ToastMessage } from '@/app/types';
-import { TopNav } from '@/components/layout/TopNav';
 import { Footer } from '@/components/layout/Footer';
 import { SignUpCard } from '@/components/auth/SignUpCard';
 import { HandDrawnModal } from '@/components/modals/HandDrawnModal';
@@ -79,7 +78,7 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
     }
   };
 
-  const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {
+  const handleSocialLogin = (provider: 'Google') => {
     addToast(
       `${provider} Sign Up`,
       `Creating your Co-Lab account via ${provider}...`
@@ -101,20 +100,13 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
       {/* Toast Notification Container */}
       <ToastContainer toasts={toasts} />
 
-      {/* Top Navigation */}
-      <TopNav
-        onOpenDocs={() => setActiveModal('docs')}
-        onOpenTeam={() => setActiveModal('team')}
-        onSearch={handleSearch}
-      />
-
       {/* Main Canvas Area */}
-      <main className="w-full flex-1 flex flex-col items-center justify-center px-4 py-1 relative z-10">
+      <main className="w-full flex-1 flex flex-col items-center justify-center px-4 py-4 relative z-10">
         {/* Side Illustrations */}
         {sideIllustrations}
 
         {/* Center Main Stage */}
-        <div className="w-full max-w-[490px] flex flex-col items-center justify-center relative -mt-8 sm:-mt-12">
+        <div className="w-full max-w-[490px] flex flex-col items-center justify-center relative my-auto">
           {/* Main Logo & Subtitle */}
           {brandHeader}
 

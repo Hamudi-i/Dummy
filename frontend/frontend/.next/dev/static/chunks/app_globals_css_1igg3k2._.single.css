@@ -161,6 +161,7 @@
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
     --color-primary: #2c5e91;
+    --color-primary-hover: #214870;
     --color-accent: #fdd355;
     --color-accent-hover: #fcc833;
     --color-accent-light: #fcf8ef;
@@ -795,6 +796,10 @@
     margin-top: calc(var(--spacing) * 3.5);
   }
 
+  .mt-5 {
+    margin-top: calc(var(--spacing) * 5);
+  }
+
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
@@ -833,6 +838,10 @@
 
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
+  }
+
+  .mb-2\.5 {
+    margin-bottom: calc(var(--spacing) * 2.5);
   }
 
   .mb-3 {
@@ -1033,6 +1042,14 @@
     height: 36px;
   }
 
+  .h-\[37px\] {
+    height: 37px;
+  }
+
+  .h-\[40px\] {
+    height: 40px;
+  }
+
   .h-\[42px\] {
     height: 42px;
   }
@@ -1059,6 +1076,10 @@
 
   .h-\[120px\] {
     height: 120px;
+  }
+
+  .h-\[130px\] {
+    height: 130px;
   }
 
   .h-\[285px\] {
@@ -1301,6 +1322,10 @@
     width: 460px;
   }
 
+  .w-\[490px\] {
+    width: 490px;
+  }
+
   .w-\[calc\(100\%-24px\)\] {
     width: calc(100% - 24px);
   }
@@ -1395,6 +1420,16 @@
 
   .-translate-x-1\/2 {
     --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+
+  .-translate-x-full {
+    --tw-translate-x: -100%;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+
+  .translate-x-0 {
+    --tw-translate-x: 0px;
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
 
@@ -2459,6 +2494,14 @@
     fill: var(--color-emerald-100);
   }
 
+  .stroke-\[2\.3\] {
+    stroke-width: 2.3px;
+  }
+
+  .stroke-\[2\] {
+    stroke-width: 2px;
+  }
+
   .object-contain {
     object-fit: contain;
   }
@@ -2603,6 +2646,10 @@
     padding-block: calc(var(--spacing) * 3.5);
   }
 
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+
   .py-5 {
     padding-block: calc(var(--spacing) * 5);
   }
@@ -2717,6 +2764,10 @@
 
   .pb-12 {
     padding-bottom: calc(var(--spacing) * 12);
+  }
+
+  .pl-0 {
+    padding-left: 0;
   }
 
   .pl-2 {
@@ -2845,10 +2896,6 @@
 
   .text-\[19px\] {
     font-size: 19px;
-  }
-
-  .text-\[20\.5px\] {
-    font-size: 20.5px;
   }
 
   .text-\[21px\] {
@@ -3098,6 +3145,10 @@
     color: #737067;
   }
 
+  .opacity-0 {
+    opacity: 0;
+  }
+
   .opacity-25 {
     opacity: .25;
   }
@@ -3120,6 +3171,10 @@
 
   .opacity-90 {
     opacity: .9;
+  }
+
+  .opacity-100 {
+    opacity: 1;
   }
 
   .opacity-\[0\.035\] {
@@ -3447,6 +3502,14 @@
       scale: 1.01;
     }
 
+    .group-hover\:rotate-\[-4deg\]:is(:where(.group):hover *) {
+      rotate: -4deg;
+    }
+
+    .group-hover\:rotate-\[4deg\]:is(:where(.group):hover *) {
+      rotate: 4deg;
+    }
+
     .group-hover\:rotate-\[360deg\]:is(:where(.group):hover *) {
       rotate: 360deg;
     }
@@ -3616,6 +3679,10 @@
       background-color: #f2ece0;
     }
 
+    .hover\:bg-\[\#F9F7F1\]:hover {
+      background-color: #f9f7f1;
+    }
+
     .hover\:bg-\[\#FAF7EE\]:hover {
       background-color: #faf7ee;
     }
@@ -3667,6 +3734,10 @@
       background-color: var(--color-neutral-100);
     }
 
+    .hover\:bg-primary-hover:hover {
+      background-color: var(--color-primary-hover);
+    }
+
     .hover\:bg-red-50:hover {
       background-color: var(--color-red-50);
     }
@@ -3703,6 +3774,10 @@
 
     .hover\:text-\[\#30312C\]:hover {
       color: #30312c;
+    }
+
+    .hover\:text-black:hover {
+      color: var(--color-black);
     }
 
     .hover\:text-primary:hover {
@@ -3777,6 +3852,13 @@
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
 
+  .active\:scale-95:active {
+    --tw-scale-x: 95%;
+    --tw-scale-y: 95%;
+    --tw-scale-z: 95%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+
   .disabled\:opacity-50:disabled {
     opacity: .5;
   }
@@ -3794,6 +3876,10 @@
       grid-column: span 2 / span 2;
     }
 
+    .sm\:-mt-2 {
+      margin-top: calc(var(--spacing) * -2);
+    }
+
     .sm\:-mt-12 {
       margin-top: calc(var(--spacing) * -12);
     }
@@ -3804,6 +3890,10 @@
 
     .sm\:h-\[50px\] {
       height: 50px;
+    }
+
+    .sm\:h-\[58px\] {
+      height: 58px;
     }
 
     .sm\:w-1\/2 {
@@ -3951,6 +4041,10 @@
   @media (min-width: 48rem) {
     .md\:h-\[54px\] {
       height: 54px;
+    }
+
+    .md\:h-\[64px\] {
+      height: 64px;
     }
 
     .md\:w-\[190px\] {
