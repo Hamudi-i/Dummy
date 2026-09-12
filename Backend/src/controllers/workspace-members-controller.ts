@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { WorkspaceMemberService } from "../services/workspace-member-service"
 
+/* FIXME
+ * Workspace Member Management: In 
+ * workspace-members-controller.ts, updateRole and removeMember don't check if the acting user is an OWNER or ADMIN.
+ */
+
 export class WorkspaceMembersController {
     static async getMembersByWorkspace(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
