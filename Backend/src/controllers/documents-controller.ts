@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { DocumentService } from "../services/document-service";
 
+
 export class DocumentController {
     static async getWorkspaceDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
