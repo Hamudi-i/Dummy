@@ -1,3 +1,4 @@
+import http from "http";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -11,6 +12,7 @@ import workspaceInviteRoutes from "./routes/workspace-invite-route";
 import documentRouters from "./routes/documents-route";
 import documentSnapshotRoutes from "./routes/document-snapshots-route";
 import documentUpdateRoutes from "./routes/document-updates-route";
+import { createCollaborationServer } from "./websocket/collaboration-server";
 
 
 dotenv.config();
@@ -68,8 +70,35 @@ app.use("/api/documents", documentUpdateRoutes);
 // Centralized error handling
 app.use(exceptionFilter);
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running on http://localhost:${port}`);
+// Create HTTP server wrapping Express
+const server = http.createServer(app);
+
+// Initialize Hocuspocus collaboration server
+const collaborationServer = createCollaborationServer();
+
+// Handle WebSocket upgrade requests on the same port
+server.on("upgrade", async (request, socket, head) => {
+  try {
+    await collaborationServer.hocuspocus.hooks("onUpgrade", {
+      request,
+      socket,
+      head,
+      instance: collaborationServer.hocuspocus,
+    });
+    (collaborationServer as any).crossws.handleUpgrade(request, socket, head);
+  } catch (error) {
+    if (error) {
+      console.error("[server] WebSocket upgrade error:", error);
+    }
+    socket.destroy();
+  }
 });
 
+server.listen(port, () => {
+  console.log(`[server]: Server is running on http://localhost:${port}`);
+  console.log(`[server]: Collaboration WebSocket listening on ws://localhost:${port}/collaboration`);
+});
+
+export { server, collaborationServer };
 export default app;
+
