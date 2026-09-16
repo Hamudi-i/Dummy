@@ -5,16 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
-import { useUserProfile } from "@/lib/user-store";
+import { useUserProfile, UserProfile } from "@/lib/user-store";
 
 interface SidebarProps {
   isCollapsed?: boolean;
+  className?: string;
+  profileOverride?: UserProfile;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, className, profileOverride }) => {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { profile } = useUserProfile();
+  const { profile: storeProfile } = useUserProfile();
+  const profile = profileOverride || storeProfile;
 
   const mainNavItems = [
     {
@@ -159,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false }) => {
         isCollapsed
           ? "-translate-x-full w-[256px] opacity-0 pointer-events-none"
           : "translate-x-0 w-[256px] opacity-100"
-      }`}
+      } ${className || ""}`}
     >
       {/* Top Section */}
       <div className="flex flex-col items-center w-full">
