@@ -25,21 +25,6 @@ export default function WorkspacesOverviewPage() {
     })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
   }, []);
 
-  const moveWorkspace = async (id: string, direction: "up" | "down") => {
-    const index = workspaces.findIndex((workspace) => workspace.id === id);
-    const target = direction === "up" ? index - 1 : index + 1;
-    if (index < 0 || target < 0 || target >= workspaces.length) return;
-    const reordered = [...workspaces];
-    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
-    setWorkspaces(reordered);
-    try {
-      await Promise.all(reordered.map((workspace, sortOrder) => api.updateWorkspace(workspace.id, { sortOrder })));
-    } catch (error) {
-      setWorkspaces(workspaces);
-      toast.error("Could not save workspace order", { description: error instanceof Error ? error.message : "Please try again." });
-    }
-  };
-
   const handleCreateWorkspace = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -108,7 +93,26 @@ export default function WorkspacesOverviewPage() {
         </p>
       </div>
 
-      {/* Workspaces Grid */}
+      {/* Workspaces Grid / Empty State */}
+      {workspaces.length === 0 ? (
+        <div className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-3xl p-12 max-w-md mx-auto shadow-[6px_6px_0px_#30312C] text-center space-y-4 transform -rotate-1 relative">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/80 border border-black/15 shadow-[0px_2px_4px_rgba(0,0,0,0.12)] pointer-events-none rounded-xs" />
+          <div className="w-14 h-14 rounded-2xl bg-amber-100 border-2 border-[#30312C] flex items-center justify-center text-3xl mx-auto shadow-[2.5px_2.5px_0px_#30312C]">
+            ✏️
+          </div>
+          <h2 className="font-header text-2xl font-extrabold text-[#30312C]">No Workspaces Yet</h2>
+          <p className="font-body text-xs text-[#66645e] leading-relaxed">
+            Create your first workspace to start collecting notebooks, sketches, and ideas.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-5 py-2.5 bg-accent text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[2.5px_2.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer"
+          >
+            <span>+ Create Your First Workspace</span>
+          </button>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 sm:gap-8 max-w-6xl mx-auto pl-2 sm:pl-4">
         {workspaces.map((ws, idx) => {
           const defaultRotations = ["-rotate-1.5", "rotate-1", "-rotate-1", "rotate-1.5"];
@@ -198,6 +202,7 @@ export default function WorkspacesOverviewPage() {
           );
         })}
       </div>
+      )}
 
       {/* Bottom Divider & Footer */}
       <div className="pt-10 pb-4 space-y-6">
@@ -268,14 +273,10 @@ export default function WorkspacesOverviewPage() {
             )
           );
         }}
-        onArchive={(id) => {
-          toast.info("Workspace archiving is not available in the backend yet.");
-        }}
         onDelete={async (id) => {
           await api.deleteWorkspace(id);
           setWorkspaces((prev) => prev.filter((w) => w.id !== id));
         }}
-        onMove={moveWorkspace}
       />
     </div>
   );

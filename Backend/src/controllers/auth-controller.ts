@@ -3,7 +3,7 @@ import { AuthService } from "../services/auth-service";
 import { OAuthService } from "../services/oauth-service";
 
 export class AuthController {
-  static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async registerUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await AuthService.register(req.body);
       res.status(201).json(result);
@@ -12,7 +12,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async loginWithEmailAndPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await AuthService.login(req.body);
       res.status(200).json(result);
@@ -21,7 +21,7 @@ export class AuthController {
     }
   }
 
-  static async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAuthenticatedUserProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const currentUser = (req as any).currentUser;
       const profile = await AuthService.getProfile(currentUser.userId);
@@ -31,12 +31,12 @@ export class AuthController {
     }
   }
 
-  static async startOAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async redirectToOAuthProvider(req: Request, res: Response, next: NextFunction): Promise<void> {
     try { res.redirect(OAuthService.authorizationUrl(OAuthService.provider(req.params.provider as string))); }
     catch (error) { next(error); }
   }
 
-  static async finishOAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async completeOAuthSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const provider = OAuthService.provider(req.params.provider as string);
       OAuthService.verifyState(provider, String(req.query.state || req.body?.state || ""));

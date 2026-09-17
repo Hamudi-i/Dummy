@@ -4,7 +4,7 @@ import { DocumentDraftController } from "../controllers/document-drafts-controll
 
 const router = express.Router();
 router.use(Authenticate);
-router.get("/:documentId/draft", DocumentDraftController.get);
-router.put("/:documentId/draft", DocumentDraftController.save);
-router.delete("/:documentId/draft", DocumentDraftController.remove);
+router.get("/:documentId/draft", DocumentDraftController.getDocumentDraft);
+router.put("/:documentId/draft", DocumentDraftController.saveDocumentDraft);
+router.delete("/:documentId/draft", DocumentDraftController.deleteDocumentDraft);
 export default router;

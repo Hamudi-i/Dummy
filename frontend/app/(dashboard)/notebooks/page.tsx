@@ -29,21 +29,6 @@ export default function NotebooksPage() {
     });
   }, []);
 
-  const moveNotebook = async (id: string, direction: "up" | "down") => {
-    const index = notebooks.findIndex((notebook) => notebook.id === id);
-    const target = direction === "up" ? index - 1 : index + 1;
-    if (index < 0 || target < 0 || target >= notebooks.length) return;
-    const reordered = [...notebooks];
-    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
-    setNotebooks(reordered);
-    try {
-      await Promise.all(reordered.map((notebook, sortOrder) => api.updateDocument(notebook.id, { sortOrder })));
-    } catch (error) {
-      setNotebooks(notebooks);
-      toast.error("Could not save notebook order", { description: error instanceof Error ? error.message : "Please try again." });
-    }
-  };
-
   const handleCreateNotebook = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -276,7 +261,6 @@ export default function NotebooksPage() {
           await api.deleteDocument(id);
           setNotebooks((prev) => prev.filter((n) => n.id !== id));
         }}
-        onMove={moveNotebook}
       />
     </div>
   );

@@ -36,7 +36,6 @@ model User {
   mentionNotifications Boolean    @default(true) @map("mention_notifications")
   password     String?            @map("password_hash")
   role         String             @default("USER")
-  starterDataInitialized Boolean  @default(false) @map("starter_data_initialized")
   createdAt    DateTime           @default(now()) @map("created_at")
   updatedAt    DateTime           @updatedAt @map("updated_at")
 

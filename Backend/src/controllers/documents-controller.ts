@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { DocumentService } from "../services/document-service";
 
 export class DocumentController {
-    static async getWorkspaceDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async listWorkspaceDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const workspaceId = req.params.workspaceId as string;
             const userId = (req as any).currentUser.userId;
@@ -25,7 +25,7 @@ export class DocumentController {
         }
     }
 
-    static async createDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async createWorkspaceDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const workspaceId = req.params.workspaceId as string;
             const authorId = (req as any).currentUser.userId;
@@ -36,7 +36,7 @@ export class DocumentController {
         }
     }
 
-    static async updateDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async updateDocumentMetadata(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
             const userId = (req as any).currentUser.userId;
@@ -47,7 +47,7 @@ export class DocumentController {
         }
     }
 
-    static async archiveDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async archiveDocumentById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
             const userId = (req as any).currentUser.userId;
@@ -60,7 +60,7 @@ export class DocumentController {
 
     // Un-archive document 
     // /api/do
-    static async restoreDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async restoreDocumentById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
             const userId = (req as any).currentUser.userId;
@@ -71,7 +71,7 @@ export class DocumentController {
         }
     }
 
-    static async deleteDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async deleteDocumentById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
             const userId = (req as any).currentUser.userId;

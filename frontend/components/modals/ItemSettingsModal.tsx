@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IconRenderer } from "@/components/ui/IconRenderer";
-import { X, Pencil, Archive, Trash2, Check, AlertCircle, ArrowDown, ArrowUp } from "lucide-react";
+import { X, Pencil, Archive, Trash2, Check, AlertCircle } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { ConfirmDeleteModal } from "@/components/modals/ConfirmDeleteModal";
 
@@ -20,7 +20,6 @@ export interface ItemSettingsModalProps {
   onSave?: (updatedItem: { id: string; title: string; description?: string }) => void;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onMove?: (id: string, direction: "up" | "down") => Promise<void> | void;
 }
 
 export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
@@ -30,7 +29,6 @@ export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
   onSave,
   onArchive,
   onDelete,
-  onMove,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState("");
@@ -171,21 +169,16 @@ export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
           </span>
 
           <div className="grid grid-cols-2 gap-2.5">
-            <button type="button" onClick={() => onMove?.(item.id, "up")} disabled={!onMove} className="px-3.5 py-2.5 bg-white hover:bg-neutral-100 disabled:opacity-40 text-[#30312C] font-header font-bold text-xs rounded-2xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center justify-center space-x-2">
-              <ArrowUp className="w-4 h-4" /><span>Move Up</span>
-            </button>
-            <button type="button" onClick={() => onMove?.(item.id, "down")} disabled={!onMove} className="px-3.5 py-2.5 bg-white hover:bg-neutral-100 disabled:opacity-40 text-[#30312C] font-header font-bold text-xs rounded-2xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center justify-center space-x-2">
-              <ArrowDown className="w-4 h-4" /><span>Move Down</span>
-            </button>
-            {/* Archive Button */}
-            <button
-              type="button"
-              onClick={handleArchive}
-              className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-header font-bold text-xs rounded-2xl border border-amber-300 shadow-[1.5px_1.5px_0px_#78350f] transition-all cursor-pointer flex items-center justify-center space-x-2"
-            >
-              <Archive className="w-4 h-4 text-amber-700" />
-              <span>Archive</span>
-            </button>
+            {onArchive && (
+              <button
+                type="button"
+                onClick={handleArchive}
+                className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-header font-bold text-xs rounded-2xl border border-amber-300 shadow-[1.5px_1.5px_0px_#78350f] transition-all cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <Archive className="w-4 h-4 text-amber-700" />
+                <span>Archive</span>
+              </button>
+            )}
 
             {/* Delete Button */}
             <button
