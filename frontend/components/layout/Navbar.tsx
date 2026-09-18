@@ -3,15 +3,25 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useUserProfile } from "@/lib/user-store";
+import { BookOpen, Book } from "lucide-react";
+import { useUserProfile, UserProfile } from "@/lib/user-store";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
+  profileOverride?: UserProfile;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onSearch,
+  isSidebarOpen = true,
+  onToggleSidebar,
+  profileOverride,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { profile } = useUserProfile();
+  const { profile: storeProfile } = useUserProfile();
+  const profile = profileOverride || storeProfile;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,75 +32,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
 
   return (
     <header className="w-full h-[74px] bg-accent-light rounded-b-[80px] px-8 sm:px-12 md:px-16 flex items-center justify-between z-30 shadow-[0_6px_20px_rgba(48,49,44,0.12)] select-none">
-      {/* Left: Book SVG (#2c5e91) + CO-LAB Logo */}
+      {/* Left: Retractable Lucide Book Icon + CO-LAB Logo */}
       <div className="flex items-center space-x-3 sm:space-x-4">
-        {/* Notebook / Book SVG */}
-        <Link href="/workspace" className="flex items-center group">
-          <svg
-            width="36"
-            height="28"
-            viewBox="0 0 38 28"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="filter drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)] group-hover:scale-105 transition-transform"
-          >
-            {/* Book Spine Shadow */}
-            <path
-              d="M 19 24 C 14 21 8 21 2 23 L 3 7 C 9 5 14 6 19 9 Z"
-              fill="#2c5e91"
-              stroke="#30312C"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M 19 24 C 24 21 30 21 36 23 L 35 7 C 29 5 24 6 19 9 Z"
-              fill="#2c5e91"
-              stroke="#30312C"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Center Spine */}
-            <path
-              d="M 19 9 L 19 25"
-              stroke="#1a3b5c"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-            {/* Left/Right Page Markings */}
-            <path
-              d="M 6 11 C 10 10 14 10.5 17 12.5 M 6 15 C 10 14 14 14.5 17 16.5 M 6 19 C 10 18 14 18.5 17 20.5"
-              stroke="#ffffff"
-              strokeWidth="1"
-              strokeOpacity="0.7"
-              strokeLinecap="round"
-            />
-            <path
-              d="M 21 12.5 C 24 10.5 28 10 32 11 M 21 16.5 C 24 14.5 28 14 32 15 M 21 20.5 C 24 18.5 28 18 32 19"
-              stroke="#ffffff"
-              strokeWidth="1"
-              strokeOpacity="0.7"
-              strokeLinecap="round"
-            />
-            {/* Bookmark ribbon */}
-            <path
-              d="M 19 10 Q 17 17 16 27 L 18 25 L 20 27 Z"
-              fill="#fdd355"
-              stroke="#30312C"
-              strokeWidth="0.8"
-            />
-          </svg>
-        </Link>
+        {/* Retractable Sidebar Toggle Button (Smooth Black & White Lucide Icon) */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="flex items-center justify-center p-2 rounded-xl text-[#30312C] hover:bg-[#30312C]/10 hover:text-black active:scale-95 transition-all cursor-pointer group"
+          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+          aria-label="Toggle Sidebar"
+        >
+          {isSidebarOpen ? (
+            <BookOpen className="w-6 h-6 stroke-[2] transition-transform group-hover:scale-105" />
+          ) : (
+            <Book className="w-6 h-6 stroke-[2] transition-transform group-hover:scale-105" />
+          )}
+        </button>
 
-        {/* CO-LAB Logo Image */}
+        {/* CO-LAB Logo Image (Larger & Moved Up) */}
         <Link href="/workspace" className="flex items-center">
           <Image
             src="/logo.png"
             alt="CO-LAB Logo"
-            width={195}
-            height={58}
-            className="h-12 sm:h-[50px] md:h-[54px] w-auto object-contain"
+            width={230}
+            height={68}
+            className="h-14 sm:h-[58px] md:h-[64px] -mt-1 sm:-mt-2 w-auto object-contain transition-transform hover:scale-105"
             priority
           />
         </Link>

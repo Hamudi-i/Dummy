@@ -10,7 +10,7 @@ export const BrandHeader: React.FC = () => {
           <img
             src="/logo.png"
             alt="Co-Lab Logo"
-            className="w-[460px] h-[120px] mr-8 object-contain filter drop-shadow-[0_2px_1px_rgba(0,0,0,0.04)]"
+            className="w-[490px] h-[130px] -mt-3 mr-8 object-contain filter drop-shadow-[0_2px_1px_rgba(0,0,0,0.04)]"
           />
         </div>
       </div>

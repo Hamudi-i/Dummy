@@ -5,12 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
-import { useUserProfile } from "@/lib/user-store";
+import { useUserProfile, UserProfile } from "@/lib/user-store";
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isCollapsed?: boolean;
+  className?: string;
+  profileOverride?: UserProfile;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, className, profileOverride }) => {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { profile } = useUserProfile();
+  const { profile: storeProfile } = useUserProfile();
+  const profile = profileOverride || storeProfile;
 
   const mainNavItems = [
     {
@@ -150,7 +157,13 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="fixed top-0 left-0 w-[256px] h-screen bg-sidebar-bg border-r border-[#30312C]/20 flex flex-col justify-between pt-[96px] pb-6 px-4 shrink-0 select-none shadow-[6px_0_24px_rgba(48,49,44,0.09),2px_0_6px_rgba(0,0,0,0.04)] z-20 overflow-y-auto">
+    <aside
+      className={`fixed top-0 left-0 h-screen bg-sidebar-bg border-r border-[#30312C]/20 flex flex-col justify-between pt-[96px] pb-6 px-4 shrink-0 select-none shadow-[6px_0_24px_rgba(48,49,44,0.09),2px_0_6px_rgba(0,0,0,0.04)] z-20 overflow-y-auto transition-all duration-300 ease-in-out ${
+        isCollapsed
+          ? "-translate-x-full w-[256px] opacity-0 pointer-events-none"
+          : "translate-x-0 w-[256px] opacity-100"
+      } ${className || ""}`}
+    >
       {/* Top Section */}
       <div className="flex flex-col items-center w-full">
         {/* Profile Circle & Info (Tight Psychological Grouping) */}
