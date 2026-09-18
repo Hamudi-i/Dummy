@@ -10,7 +10,7 @@ import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import { CollaborationCursor } from "./collaboration-cursor";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import * as Y from "yjs";
 import { EditorToolbar } from "./EditorToolbar";
@@ -27,7 +27,9 @@ interface TiptapCanvasProps {
     name: string;
     color: string;
   };
-  wsUrl?: string; // Optional Hocuspocus WebSocket URL from backend
+  token?: string;
+  wsUrl?: string; // Hocuspocus WebSocket URL from backend
+  onCollaboratorsChange?: (users: Array<{ name: string; color: string }>) => void;
 }
 
 export function TiptapCanvas({
@@ -39,87 +41,162 @@ export function TiptapCanvas({
   onShare,
   onContentChange,
   user = { name: "Natty", color: "#2c5e91" },
+  token,
   wsUrl,
+  onCollaboratorsChange,
 }: TiptapCanvasProps) {
-  const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
   const isInitialSyncRef = React.useRef(true);
 
   // Maintain a persistent Yjs document for CRDT state
   const ydoc = useMemo(() => new Y.Doc(), [docId]);
 
-  // Connect to Hocuspocus server when wsUrl is provided by backend
+  // Connect to Hocuspocus server when wsUrl and token are available
+  const provider = useMemo(() => {
+    if (!wsUrl || !token || typeof window === "undefined") return null;
+
+    try {
+      const p = new HocuspocusProvider({
+        url: wsUrl,
+        name: docId,
+        document: ydoc,
+        token,
+        onAuthenticationFailed: (data) => {
+          console.warn("[collaboration] Authentication failed:", data);
+        },
+      });
+      return p;
+    } catch (e) {
+      console.warn("[collaboration] Provider init error:", e);
+      return null;
+    }
+  }, [wsUrl, token, docId, ydoc]);
+
   useEffect(() => {
-    if (!wsUrl) return;
+    return () => {
+      provider?.destroy();
+    };
+  }, [provider]);
 
-    const hocuspocusProvider = new HocuspocusProvider({
-      url: wsUrl,
-      name: docId,
-      document: ydoc,
-    });
+  // Track live connected peers via Yjs awareness
+  useEffect(() => {
+    if (!provider || !provider.awareness) return;
 
-    setProvider(hocuspocusProvider);
+    const awareness = provider.awareness;
+    const handleAwareness = () => {
+      const states = awareness.getStates();
+      const userMap = new Map<string, { name: string; color: string }>();
+      states.forEach((state) => {
+        if (state.user?.name) {
+          userMap.set(state.user.name, {
+            name: state.user.name,
+            color: state.user.color || "#2c5e91",
+          });
+        }
+      });
+      if (onCollaboratorsChange) {
+        onCollaboratorsChange(Array.from(userMap.values()));
+      }
+    };
+
+    awareness.on("change", handleAwareness);
+    handleAwareness();
 
     return () => {
-      hocuspocusProvider.destroy();
+      awareness.off("change", handleAwareness);
     };
-  }, [wsUrl, docId, ydoc]);
+  }, [provider, onCollaboratorsChange]);
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        // Disable built-in undoRedo only when Yjs provider is active
-        undoRedo: provider ? false : undefined,
-      }),
-      Underline,
-      Highlight.configure({
-        multicolor: true,
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
-      TextAlign.configure({
-        types: ["heading", "paragraph", "image"],
-      }),
-      Image.configure({
-        inline: false,
-        allowBase64: true,
-        HTMLAttributes: {
-          class:
-            "max-w-[400px] sm:max-w-[480px] max-h-[360px] w-auto h-auto object-contain rounded-2xl border-2 border-[#30312C] shadow-[3.5px_3.5px_0px_#30312C] my-4 mx-auto block transition-all cursor-pointer hover:scale-[1.01] ProseMirror-selectednode:ring-4 ProseMirror-selectednode:ring-primary ProseMirror-selectednode:border-primary ProseMirror-selectednode:shadow-[5px_5px_0px_#30312C]",
-        },
-      }),
-      ...(provider
-        ? [
+  const editor = useEditor(
+    {
+      immediatelyRender: false,
+      extensions: [
+        StarterKit.configure({
+          // Disable built-in undoRedo when Yjs collaboration provider is active
+          undoRedo: provider ? false : undefined,
+        }),
+        Underline,
+        Highlight.configure({
+          multicolor: true,
+        }),
+        TaskList,
+        TaskItem.configure({
+          nested: true,
+        }),
+        TextAlign.configure({
+          types: ["heading", "paragraph", "image"],
+        }),
+        Image.configure({
+          inline: false,
+          allowBase64: true,
+          HTMLAttributes: {
+            class:
+              "max-w-[400px] sm:max-w-[480px] max-h-[360px] w-auto h-auto object-contain rounded-2xl border-2 border-[#30312C] shadow-[3.5px_3.5px_0px_#30312C] my-4 mx-auto block transition-all cursor-pointer hover:scale-[1.01] ProseMirror-selectednode:ring-4 ProseMirror-selectednode:ring-primary ProseMirror-selectednode:border-primary ProseMirror-selectednode:shadow-[5px_5px_0px_#30312C]",
+          },
+        }),
+        ...(provider
+          ? [
             Collaboration.configure({
               document: ydoc,
             }),
             CollaborationCursor.configure({
               provider,
-              user,
+              user: {
+                name: user.name,
+                color: user.color,
+              },
             }),
           ]
-        : []),
-    ],
-    content: initialContent,
-    onUpdate: ({ editor, transaction }) => {
-      // Ignore programmatic initial content loads or transactions without document changes
-      if (isInitialSyncRef.current || !transaction.docChanged) return;
-      const html = editor.getHTML();
-      onContentChange(html);
-    },
-    editorProps: {
-      attributes: {
-        class:
-          "prose max-w-none focus:outline-none min-h-[440px] text-[#30312C] font-body text-base leading-relaxed p-2",
+          : []),
+      ],
+      content: provider ? undefined : initialContent,
+      onUpdate: ({ editor, transaction }) => {
+        // Ignore programmatic initial content loads or transactions without document changes
+        if (isInitialSyncRef.current || !transaction.docChanged) return;
+        const html = editor.getHTML();
+        onContentChange(html);
+      },
+      editorProps: {
+        attributes: {
+          class:
+            "prose max-w-none focus:outline-none min-h-[440px] text-[#30312C] font-body text-base leading-relaxed p-2",
+        },
       },
     },
-  });
+    [provider, docId, user?.name, user?.color]
+  );
 
-  // Keep TipTap canvas content synced when draft or saved content is loaded
+  // When collaborative provider syncs with Hocuspocus:
+  // If the CRDT state is empty on server, seed with initialContent
   useEffect(() => {
-    if (!editor || !initialContent) return;
+    if (!provider || !editor) return;
+
+    const handleSynced = () => {
+      const fragment = ydoc.getXmlFragment("default");
+      if (fragment.length === 0 && initialContent && editor.isEmpty) {
+        isInitialSyncRef.current = true;
+        editor.commands.setContent(initialContent);
+        setTimeout(() => {
+          isInitialSyncRef.current = false;
+        }, 150);
+      } else {
+        isInitialSyncRef.current = false;
+      }
+    };
+
+    if (provider.isSynced) {
+      handleSynced();
+    } else {
+      provider.on("synced", handleSynced);
+    }
+
+    return () => {
+      provider.off("synced", handleSynced);
+    };
+  }, [provider, editor, initialContent, ydoc]);
+
+  // Fallback for non-collaborative local editing
+  useEffect(() => {
+    if (provider || !editor || !initialContent) return;
     if (editor.getHTML() !== initialContent && !editor.isFocused) {
       isInitialSyncRef.current = true;
       editor.commands.setContent(initialContent);
@@ -130,7 +207,7 @@ export function TiptapCanvas({
     } else {
       isInitialSyncRef.current = false;
     }
-  }, [editor, initialContent]);
+  }, [provider, editor, initialContent]);
 
   return (
     <div className="w-full bg-white flex flex-col min-h-[720px] lg:min-h-[820px] rounded-tl-[60px] sm:rounded-tl-[80px] rounded-tr-[50px] sm:rounded-tr-[70px] rounded-br-[50px] sm:rounded-br-[70px] rounded-bl-[60px] sm:rounded-bl-[80px]">

@@ -4,7 +4,7 @@ import { WorkspaceInviteService } from "../services/workspace-invite-service";
 export class WorkspaceInviteController {
     static async getWorkspaceInvites(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const workspaceId = req.params.id as string;
+            const workspaceId = (req.params.workspaceId || req.params.id) as string;
             const invite = await WorkspaceInviteService.getWorkspaceInvites(workspaceId);
             res.status(200).json(invite);
         } catch (error) {
