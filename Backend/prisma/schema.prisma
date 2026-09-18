@@ -44,29 +44,18 @@ model User {
   documents     Document[]         @relation("DocumentAuthor")
   snapshots     DocumentSnapshot[] @relation("SnapshotAuthor")
   invitesSent   WorkspaceInvite[]  @relation("InvitedBy")
-  supportRequests SupportRequest[]
-  events          UserEvent[]
   oauthIdentities OAuthIdentity[]
 
   @@map("users")
 }
 
 model Workspace {
-  id        String            @id @default(uuid())
-  name      String
-  slug      String            @unique
-  description String?         @db.Text
-  icon        String?
-  color       String?
-  badgeLabel  String?         @map("badge_label")
-  badgeStyle  String?         @map("badge_style") @db.Text
-  previewGradient String?     @map("preview_gradient")
-  rotation    String?
-  isArchived  Boolean         @default(false) @map("is_archived")
-  archivedAt  DateTime?       @map("archived_at")
-  sortOrder   Int             @default(0) @map("sort_order")
-  createdAt DateTime          @default(now()) @map("created_at")
-  updatedAt DateTime          @updatedAt @map("updated_at")
+  id          String            @id @default(uuid())
+  name        String
+  slug        String            @unique
+  description String?           @db.Text
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   // Relations
   members   WorkspaceMember[]
@@ -184,37 +173,6 @@ model DocumentDraft {
   document    Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@map("document_drafts")
-}
-
-model SupportRequest {
-  id          String    @id @default(uuid())
-  userId      String?   @map("user_id")
-  email       String?
-  subject     String?
-  message     String    @db.Text
-  status      String    @default("open")
-  createdAt   DateTime  @default(now()) @map("created_at")
-
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId, createdAt])
-  @@map("support_requests")
-}
-
-// Auditable destination for UI interactions that do not belong to a domain model
-// (for example search terms, export actions, or OAuth-provider selection).
-model UserEvent {
-  id          String    @id @default(uuid())
-  userId      String?   @map("user_id")
-  eventType   String    @map("event_type")
-  payload     Json?
-  createdAt   DateTime  @default(now()) @map("created_at")
-
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId, createdAt])
-  @@index([eventType, createdAt])
-  @@map("user_events")
 }
 
 model OAuthIdentity {

@@ -26,7 +26,18 @@ export default function SingleWorkspacePage() {
 
   useEffect(() => {
     api.getWorkspace(workspaceId).then((workspace) => {
-      setCurrentWorkspace({ id: workspace.id, title: workspace.name, description: workspace.description || "Collaborative workspace for notes and sketches.", icon: workspace.icon || "palette", color: workspace.color || "#2c5e91", notebookCount: workspace.documents?.length || 0, lastUpdated: "recently", badgeLabel: workspace.badgeLabel || "Workspace", badgeStyle: workspace.badgeStyle || "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: workspace.previewGradient || "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]", rotation: workspace.rotation || undefined });
+      setCurrentWorkspace({
+        id: workspace.id,
+        title: workspace.name,
+        description: workspace.description || "Collaborative workspace for notes and sketches.",
+        icon: "palette",
+        color: "#2c5e91",
+        notebookCount: workspace.documents?.length || 0,
+        lastUpdated: "recently",
+        badgeLabel: "Workspace",
+        badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30",
+        previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+      });
       return api.getDocuments(workspaceId);
     }).then((documents) => setNotebooks(documents.map((doc) => ({
       id: doc.id, workspaceId, title: doc.title, description: doc.description || "Interactive notebook canvas.", icon: doc.icon || "book-open", pageCount: doc.pageCount || 1, lastEdited: "recently", status: doc.status === "draft" ? "draft" : "active",
@@ -253,12 +264,12 @@ export default function SingleWorkspacePage() {
         item={
           selectedNotebook
             ? {
-                id: selectedNotebook.id,
-                title: selectedNotebook.title,
-                description: selectedNotebook.description,
-                icon: selectedNotebook.icon,
-                type: "notebook",
-              }
+              id: selectedNotebook.id,
+              title: selectedNotebook.title,
+              description: selectedNotebook.description,
+              icon: selectedNotebook.icon,
+              type: "notebook",
+            }
             : null
         }
         onSave={async (updated) => {
