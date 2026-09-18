@@ -169,15 +169,16 @@ export const ItemSettingsModal: React.FC<ItemSettingsModalProps> = ({
           </span>
 
           <div className="grid grid-cols-2 gap-2.5">
-            {/* Archive Button */}
-            <button
-              type="button"
-              onClick={handleArchive}
-              className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-header font-bold text-xs rounded-2xl border border-amber-300 shadow-[1.5px_1.5px_0px_#78350f] transition-all cursor-pointer flex items-center justify-center space-x-2"
-            >
-              <Archive className="w-4 h-4 text-amber-700" />
-              <span>Archive</span>
-            </button>
+            {onArchive && (
+              <button
+                type="button"
+                onClick={handleArchive}
+                className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-header font-bold text-xs rounded-2xl border border-amber-300 shadow-[1.5px_1.5px_0px_#78350f] transition-all cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <Archive className="w-4 h-4 text-amber-700" />
+                <span>Archive</span>
+              </button>
+            )}
 
             {/* Delete Button */}
             <button

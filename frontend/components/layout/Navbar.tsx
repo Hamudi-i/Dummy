@@ -4,21 +4,24 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Book } from "lucide-react";
-import { useUserProfile } from "@/lib/user-store";
+import { useUserProfile, UserProfile } from "@/lib/user-store";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  profileOverride?: UserProfile;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onSearch,
   isSidebarOpen = true,
   onToggleSidebar,
+  profileOverride,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { profile } = useUserProfile();
+  const { profile: storeProfile } = useUserProfile();
+  const profile = profileOverride || storeProfile;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

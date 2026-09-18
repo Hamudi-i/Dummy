@@ -78,11 +78,9 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
     }
   };
 
-  const handleSocialLogin = (provider: 'Google') => {
-    addToast(
-      `${provider} Sign Up`,
-      `Creating your Co-Lab account via ${provider}...`
-    );
+  const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    window.location.assign(`${apiUrl}/api/auth/oauth/${provider.toLowerCase()}`);
   };
 
   const handleSearch = (query: string) => {

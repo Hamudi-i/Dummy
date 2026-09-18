@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { INITIAL_WORKSPACES } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
-import { getDrafts, removeDraft, DraftItem } from "@/lib/drafts-store";
+import { api } from "@/lib/api";
 import { ConfirmDeleteModal } from "@/components/modals/ConfirmDeleteModal";
 import { toast } from "@/components/ui/sonner";
 import {
@@ -15,6 +14,17 @@ import {
   FileText,
   Layers,
 } from "lucide-react";
+
+interface DraftItem {
+  id: string;
+  notebookId: string;
+  workspaceId: string;
+  workspaceTitle: string;
+  title: string;
+  icon: string;
+  content: string;
+  lastEdited: string;
+}
 
 function cleanSnippetText(rawContent?: string): string {
   if (!rawContent) return "Empty draft content...";
@@ -29,6 +39,7 @@ function countWords(str: string): number {
 
 export default function DraftsPage() {
   const [drafts, setDrafts] = useState<DraftItem[]>([]);
+  const [workspaces, setWorkspaces] = useState<{ id: string; title: string }[]>([]);
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWorkspaceFilter, setSelectedWorkspaceFilter] = useState("all");
@@ -39,17 +50,34 @@ export default function DraftsPage() {
 
   useEffect(() => {
     setMounted(true);
-    setDrafts(getDrafts());
+    api.getWorkspaces().then(async (accountWorkspaces) => {
+      setWorkspaces(accountWorkspaces.map((workspace) => ({ id: workspace.id, title: workspace.name })));
+      const draftGroups = await Promise.all(accountWorkspaces.map(async (workspace) => {
+        const documents = await api.getDocuments(workspace.id);
+        const drafts = await Promise.all(documents.map(async (document) => {
+          try {
+            const draft = await api.getDocumentDraft(document.id);
+            return { id: draft.id, notebookId: document.id, workspaceId: workspace.id, workspaceTitle: workspace.name, title: document.title, icon: document.icon || "book-open", content: draft.content, lastEdited: new Date(draft.updatedAt).toLocaleString() };
+          } catch {
+            return null;
+          }
+        }));
+        return drafts.filter((draft): draft is DraftItem => draft !== null);
+      }));
+      setDrafts(draftGroups.flat());
+    }).catch((error) => toast.error("Could not load drafts", { description: error.message }));
   }, []);
 
-  const handleConfirmDiscard = () => {
+  const handleConfirmDiscard = async () => {
     if (!deleteCandidate) return;
-    removeDraft(deleteCandidate.notebookId);
-    setDrafts(getDrafts());
-    toast.error("Draft Discarded", {
-      description: `Discarded unsaved draft for "${deleteCandidate.title}".`,
-    });
-    setDeleteCandidate(null);
+    try {
+      await api.deleteDocumentDraft(deleteCandidate.notebookId);
+      setDrafts((current) => current.filter((draft) => draft.notebookId !== deleteCandidate.notebookId));
+      toast.error("Draft Discarded", { description: `Discarded unsaved draft for "${deleteCandidate.title}".` });
+      setDeleteCandidate(null);
+    } catch (error) {
+      toast.error("Could not discard draft", { description: error instanceof Error ? error.message : "Please try again." });
+    }
   };
 
   const filteredDrafts = useMemo(() => {
@@ -129,7 +157,7 @@ export default function DraftsPage() {
               <span>All Workspaces</span>
             </button>
 
-            {INITIAL_WORKSPACES.map((ws) => (
+            {workspaces.map((ws) => (
               <button
                 key={ws.id}
                 type="button"
@@ -153,7 +181,6 @@ export default function DraftsPage() {
           {filteredDrafts.map((draft, idx) => {
             const tilts = ["-rotate-1", "rotate-1", "-rotate-1.5", "rotate-1.5"];
             const currentTilt = tilts[idx % tilts.length];
-            const parentWorkspace = INITIAL_WORKSPACES.find((w) => w.id === draft.workspaceId);
             const cleanSnippet = cleanSnippetText(draft.content);
             const wordCount = countWords(cleanSnippet);
 
@@ -189,7 +216,7 @@ export default function DraftsPage() {
                           {draft.title}
                         </h3>
                         <span className="font-body text-[11px] text-[#737067] block truncate">
-                          {parentWorkspace?.title || "Workspace"}
+                          {draft.workspaceTitle}
                         </span>
                       </div>
                     </div>

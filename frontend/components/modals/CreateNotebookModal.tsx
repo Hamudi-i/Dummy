@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { IconRenderer } from "@/components/ui/IconRenderer";
-import { INITIAL_WORKSPACES } from "@/lib/mock-data";
 import { X, Plus, BookPlus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 
@@ -12,19 +11,21 @@ export interface CreateNotebookModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultWorkspaceId?: string;
+  workspaces?: { id: string; title: string }[];
   onNotebookCreated?: (newNotebook: {
     id: string;
     workspaceId: string;
     title: string;
     description: string;
     icon: string;
-  }) => void;
+  }) => Promise<{ id: string }> | { id: string };
 }
 
 export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({
   isOpen,
   onClose,
   defaultWorkspaceId = "ws-design-system",
+  workspaces = [],
   onNotebookCreated,
 }) => {
   const router = useRouter();
@@ -46,7 +47,7 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({
 
   if (!isOpen || !mounted) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       toast.error("Title Required", {
@@ -64,9 +65,7 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({
       icon: icon || "book-open",
     };
 
-    if (onNotebookCreated) {
-      onNotebookCreated(newNotebook);
-    }
+    const savedNotebook = onNotebookCreated ? await onNotebookCreated(newNotebook) : newNotebook;
 
     toast.success("Notebook Canvas Created!", {
       description: `Opening notebook "${newNotebook.title}"...`,
@@ -75,7 +74,7 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({
     setTitle("");
     setDescription("");
     onClose();
-    router.push(`/workspace/${workspaceId}/notebook/${newId}`);
+    router.push(`/workspace/${workspaceId}/notebook/${savedNotebook.id}`);
   };
 
   return createPortal(
@@ -131,7 +130,7 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({
               onChange={(e) => setWorkspaceId(e.target.value)}
               className="w-full px-4 py-2.5 bg-white border-1.5 border-[#30312C] rounded-2xl font-header font-bold text-xs text-[#30312C] focus:outline-none cursor-pointer shadow-xs"
             >
-              {INITIAL_WORKSPACES.map((ws) => (
+              {(workspaces.length ? workspaces : []).map((ws) => (
                 <option key={ws.id} value={ws.id}>
                   {ws.title}
                 </option>

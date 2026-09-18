@@ -1,25 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS, NotebookItem } from "@/lib/mock-data";
+import { NotebookItem, WorkspaceItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { toast } from "@/components/ui/sonner";
 import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
 import { CreateNotebookModal } from "@/components/modals/CreateNotebookModal";
-import { archiveItem } from "@/lib/archive-store";
+import { api } from "@/lib/api";
 
 export default function SingleWorkspacePage() {
   const params = useParams();
   const workspaceId = (params?.workspaceId as string) || "ws-design-system";
 
-  const currentWorkspace =
-    INITIAL_WORKSPACES.find((w) => w.id === workspaceId) || INITIAL_WORKSPACES[0];
+  const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceItem | null>(null);
 
-  const [notebooks, setNotebooks] = useState<NotebookItem[]>(
-    INITIAL_NOTEBOOKS.filter((n) => n.workspaceId === currentWorkspace.id || n.workspaceId === "ws-design-system")
-  );
+  const [notebooks, setNotebooks] = useState<NotebookItem[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNotebook, setSelectedNotebook] = useState<NotebookItem | null>(null);
@@ -27,13 +24,22 @@ export default function SingleWorkspacePage() {
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("book-open");
 
+  useEffect(() => {
+    api.getWorkspace(workspaceId).then((workspace) => {
+      setCurrentWorkspace({ id: workspace.id, title: workspace.name, description: workspace.description || "Collaborative workspace for notes and sketches.", icon: workspace.icon || "palette", color: workspace.color || "#2c5e91", notebookCount: workspace.documents?.length || 0, lastUpdated: "recently", badgeLabel: workspace.badgeLabel || "Workspace", badgeStyle: workspace.badgeStyle || "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: workspace.previewGradient || "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]", rotation: workspace.rotation || undefined });
+      return api.getDocuments(workspaceId);
+    }).then((documents) => setNotebooks(documents.map((doc) => ({
+      id: doc.id, workspaceId, title: doc.title, description: doc.description || "Interactive notebook canvas.", icon: doc.icon || "book-open", pageCount: doc.pageCount || 1, lastEdited: "recently", status: doc.status === "draft" ? "draft" : "active",
+    })))).catch((error) => toast.error("Could not load this workspace", { description: error.message }));
+  }, [workspaceId]);
+
   const handleCreateNotebook = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
     const newNotebook: NotebookItem = {
       id: `nb-${Date.now()}`,
-      workspaceId: currentWorkspace.id,
+      workspaceId: currentWorkspace?.id || workspaceId,
       title: newTitle.trim(),
       description: newDesc.trim() || "Interactive notebook canvas for notes and drawings.",
       icon: newIcon || "book-open",
@@ -47,6 +53,10 @@ export default function SingleWorkspacePage() {
     setNewDesc("");
     setIsModalOpen(false);
   };
+
+  if (!currentWorkspace) {
+    return <div className="py-12 text-center font-body text-[#737067]">Loading your workspace…</div>;
+  }
 
   return (
     <div className="space-y-8 animate-fadeIn select-none pt-6 sm:pt-8">
@@ -220,9 +230,10 @@ export default function SingleWorkspacePage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultWorkspaceId={currentWorkspace.id}
-        onNotebookCreated={(newNb) => {
+        onNotebookCreated={async (newNb) => {
+          const saved = await api.createDocument(currentWorkspace.id, { title: newNb.title, icon: newNb.icon, description: newNb.description });
           const notebookItem: NotebookItem = {
-            id: newNb.id,
+            id: saved.id,
             workspaceId: newNb.workspaceId,
             title: newNb.title,
             description: newNb.description,
@@ -232,6 +243,7 @@ export default function SingleWorkspacePage() {
             status: "active",
           };
           setNotebooks([notebookItem, ...notebooks]);
+          return saved;
         }}
       />
       {/* Item Settings Modal */}
@@ -249,7 +261,8 @@ export default function SingleWorkspacePage() {
               }
             : null
         }
-        onSave={(updated) => {
+        onSave={async (updated) => {
+          await api.updateDocument(updated.id, { title: updated.title, description: updated.description });
           setNotebooks((prev) =>
             prev.map((n) =>
               n.id === updated.id
@@ -258,21 +271,12 @@ export default function SingleWorkspacePage() {
             )
           );
         }}
-        onArchive={(id) => {
-          const itemToArchive = notebooks.find((n) => n.id === id);
-          if (itemToArchive) {
-            archiveItem({
-              id: itemToArchive.id,
-              title: itemToArchive.title,
-              description: itemToArchive.description,
-              icon: itemToArchive.icon,
-              type: "notebook",
-              workspaceId: currentWorkspace.id,
-            });
-            setNotebooks((prev) => prev.filter((n) => n.id !== id));
-          }
+        onArchive={async (id) => {
+          await api.archiveDocument(id);
+          setNotebooks((prev) => prev.filter((n) => n.id !== id));
         }}
-        onDelete={(id) => {
+        onDelete={async (id) => {
+          await api.deleteDocument(id);
           setNotebooks((prev) => prev.filter((n) => n.id !== id));
         }}
       />

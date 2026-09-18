@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { saveDraft, removeDraft, getDrafts, getSavedNotebookContent, saveNotebookContent } from "@/lib/drafts-store";
+import { api } from "@/lib/api";
 import { toast } from "@/components/ui/sonner";
 import { TiptapCanvas } from "@/components/editor/TiptapCanvas";
 import {
@@ -43,6 +44,9 @@ export default function NotebookEditorPage() {
 
   useEffect(() => {
     setMounted(true);
+    api.getDocument(notebookId).then((document) => {
+      if (document.plainText) setContent(document.plainText);
+    }).catch((error) => toast.error("Could not load notebook", { description: error.message }));
     // Check if there is an unsaved WIP draft for this notebook
     const existingDrafts = getDrafts();
     const activeDraft = existingDrafts.find((d) => d.notebookId === notebookId);
@@ -73,7 +77,13 @@ export default function NotebookEditorPage() {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      await api.updateDocument(notebookId, { plainText: content });
+    } catch (error) {
+      toast.error("Notebook was not saved", { description: error instanceof Error ? error.message : "Please try again." });
+      return;
+    }
     setIsSaved(true);
     saveNotebookContent(notebookId, content);
     removeDraft(notebookId);
