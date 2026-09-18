@@ -3,6 +3,7 @@ import * as Y from "yjs";
 import jwt from "jsonwebtoken";
 import prisma from "../infrastructure/prisma";
 
+// TODO Implement websocket features
 export interface CollaborationUserContext {
     user: {
         id: string;

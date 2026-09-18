@@ -1387,7 +1387,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
         }
     }["CreateWorkspaceModal.useEffect"], []);
     if (!isOpen || !mounted) return null;
-    const handleSubmit = (e)=>{
+    const handleSubmit = async (e)=>{
         e.preventDefault();
         if (!title.trim()) {
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("Title Required", {
@@ -1402,16 +1402,14 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
             description: description.trim() || "Creative workspace for notes, sketches, and visual brainstorming.",
             icon: icon || "palette"
         };
-        if (onWorkspaceCreated) {
-            onWorkspaceCreated(newWorkspace);
-        }
+        const savedWorkspace = onWorkspaceCreated ? await onWorkspaceCreated(newWorkspace) : newWorkspace;
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("Workspace Created!", {
             description: `Created "${newWorkspace.title}". Opening your new workspace...`
         });
         setTitle("");
         setDescription("");
         onClose();
-        router.push(`/workspace/${newId}`);
+        router.push(`/workspace/${savedWorkspace.id}`);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2d$dom$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createPortal"])(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         onClick: onClose,
@@ -1427,7 +1425,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                     }
                 }, void 0, false, {
                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                    lineNumber: 80,
+                    lineNumber: 78,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1442,12 +1440,12 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                         className: "w-6 h-6 text-[#30312C]"
                                     }, void 0, false, {
                                         fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                        lineNumber: 89,
+                                        lineNumber: 87,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 88,
+                                    lineNumber: 86,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1457,7 +1455,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                             children: "Create Workspace"
                                         }, void 0, false, {
                                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                            lineNumber: 92,
+                                            lineNumber: 90,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1465,19 +1463,19 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                             children: "Start a new collaborative canvas & notebook space"
                                         }, void 0, false, {
                                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                            lineNumber: 95,
+                                            lineNumber: 93,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 91,
+                                    lineNumber: 89,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 87,
+                            lineNumber: 85,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1488,18 +1486,18 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                 className: "w-5 h-5"
                             }, void 0, false, {
                                 fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                lineNumber: 106,
+                                lineNumber: 104,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 101,
+                            lineNumber: 99,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                    lineNumber: 86,
+                    lineNumber: 84,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1514,7 +1512,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     children: "Choose Workspace Icon"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 114,
+                                    lineNumber: 112,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1535,23 +1533,23 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                                 className: "w-5 h-5 text-[#30312C]"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                                lineNumber: 129,
+                                                lineNumber: 127,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, iconKey, false, {
                                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                            lineNumber: 119,
+                                            lineNumber: 117,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 117,
+                                    lineNumber: 115,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 113,
+                            lineNumber: 111,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1562,7 +1560,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     children: "Workspace Title *"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 137,
+                                    lineNumber: 135,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1574,13 +1572,13 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     className: "w-full px-4 py-2.5 bg-white border-1.5 border-[#30312C] rounded-2xl font-body text-xs text-[#30312C] focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 140,
+                                    lineNumber: 138,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 136,
+                            lineNumber: 134,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1591,7 +1589,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     children: "Description"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 152,
+                                    lineNumber: 150,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -1602,13 +1600,13 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     className: "w-full p-3 bg-white border-1.5 border-[#30312C] rounded-2xl font-body text-xs text-[#30312C] focus:outline-none focus:ring-1 focus:ring-primary shadow-xs resize-none"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 155,
+                                    lineNumber: 153,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 151,
+                            lineNumber: 149,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1621,7 +1619,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 166,
+                                    lineNumber: 164,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1632,43 +1630,43 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated })=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                            lineNumber: 177,
+                                            lineNumber: 175,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Create Workspace"
                                         }, void 0, false, {
                                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                            lineNumber: 178,
+                                            lineNumber: 176,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                                    lineNumber: 173,
+                                    lineNumber: 171,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                            lineNumber: 165,
+                            lineNumber: 163,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-                    lineNumber: 111,
+                    lineNumber: 109,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-            lineNumber: 75,
+            lineNumber: 73,
             columnNumber: 7
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/components/modals/CreateWorkspaceModal.tsx",
-        lineNumber: 70,
+        lineNumber: 68,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0)), document.body);
 };
@@ -1866,33 +1864,112 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "use strict";
 
 __turbopack_context__.s([
+    "api",
+    ()=>api,
     "fetchWithAuth",
     ()=>fetchWithAuth
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
-const BASE_URL = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const BASE_URL = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 async function fetchWithAuth(endpoint, options = {}) {
-    const token = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('accessToken') : "TURBOPACK unreachable";
-    const headers = {
-        'Content-Type': 'application/json',
-        ...token ? {
-            Authorization: `Bearer ${token}`
-        } : {},
-        ...options.headers
-    };
+    const token = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem("accessToken") : "TURBOPACK unreachable";
     const response = await fetch(`${BASE_URL}${endpoint}`, {
         ...options,
-        headers
+        headers: {
+            "Content-Type": "application/json",
+            ...token ? {
+                Authorization: `Bearer ${token}`
+            } : {},
+            ...options.headers
+        }
     });
-    // Handle teammate's 401 requirement
-    if (response.status === 401 && ("TURBOPACK compile-time value", "object") !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+    if (response.status === 401 && ("TURBOPACK compile-time value", "object") !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
     }
     return response;
 }
+async function request(endpoint, options) {
+    const response = await fetchWithAuth(endpoint, options);
+    const body = await response.json().catch(()=>({}));
+    if (!response.ok) throw new Error(body.message || "The request could not be completed.");
+    return body;
+}
+const api = {
+    getWorkspaces: ()=>request("/api/workspaces").then((r)=>r.data),
+    getWorkspace: (id)=>request(`/api/workspaces/${id}`),
+    createWorkspace: (data)=>request("/api/workspaces", {
+            method: "POST",
+            body: JSON.stringify(data)
+        }),
+    updateWorkspace: (id, data)=>request(`/api/workspaces/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(data)
+        }),
+    deleteWorkspace: (id)=>request(`/api/workspaces/${id}`, {
+            method: "DELETE"
+        }),
+    getDocuments: (workspaceId)=>request(`/api/workspaces/${workspaceId}/documents`),
+    getDocument: (id)=>request(`/api/documents/${id}`),
+    createDocument: (workspaceId, data)=>request(`/api/workspaces/${workspaceId}/documents`, {
+            method: "POST",
+            body: JSON.stringify(data)
+        }),
+    updateDocument: (id, data)=>request(`/api/documents/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(data)
+        }),
+    archiveDocument: (id)=>request(`/api/documents/${id}/archive`, {
+            method: "PATCH"
+        }),
+    restoreDocument: (id)=>request(`/api/documents/${id}/unarchive`, {
+            method: "PATCH"
+        }),
+    deleteDocument: (id)=>request(`/api/documents/${id}`, {
+            method: "DELETE"
+        }),
+    getDocumentDraft: (id)=>request(`/api/documents/${id}/draft`),
+    saveDocumentDraft: (id, content, isUnsaved = true)=>request(`/api/documents/${id}/draft`, {
+            method: "PUT",
+            body: JSON.stringify({
+                content,
+                isUnsaved
+            })
+        }),
+    deleteDocumentDraft: (id)=>request(`/api/documents/${id}/draft`, {
+            method: "DELETE"
+        }),
+    getWorkspaceMembers: (workspaceId)=>request(`/api/workspaces/${workspaceId}/members`).then((r)=>r.data),
+    addWorkspaceMember: (workspaceId, userId, role = "MEMBER")=>request(`/api/workspaces/${workspaceId}/members`, {
+            method: "POST",
+            body: JSON.stringify({
+                userId,
+                role
+            })
+        }),
+    updateWorkspaceMemberRole: (workspaceId, userId, role)=>request(`/api/workspaces/${workspaceId}/members/${userId}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                role
+            })
+        }),
+    removeWorkspaceMember: (memberId)=>request(`/api/workspaces/members/${memberId}`, {
+            method: "DELETE"
+        }),
+    getWorkspaceInvites: (workspaceId)=>request(`/api/${workspaceId}/invites`),
+    createWorkspaceInvite: (workspaceId, email, role = "MEMBER")=>request(`/api/${workspaceId}/invites`, {
+            method: "POST",
+            body: JSON.stringify({
+                email,
+                role
+            })
+        }),
+    revokeWorkspaceInvite: (inviteId)=>request(`/api/invites/${inviteId}`, {
+            method: "DELETE"
+        })
+};
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }

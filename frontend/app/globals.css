@@ -17,11 +17,16 @@
 
   body {
     font-family: var(--font-be-vietnam);
-    background-color: #F8F5EC;
-    color: #30312C;
+    background-color: #f8f5ec;
+    color: #30312c;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-bricolage);
   }
 }
@@ -30,7 +35,9 @@
 .prose img.ProseMirror-selectednode {
   outline: none;
   border-color: #2c5e91 !important;
-  box-shadow: 0 0 0 4px #2c5e91, 5px 5px 0px #30312C !important;
+  box-shadow:
+    0 0 0 4px #2c5e91,
+    5px 5px 0px #30312c !important;
 }
 
 .prose [style*="text-align: left"] img,
@@ -54,8 +61,12 @@
 /* =========================================================================
    TYPOGRAPHY CLASSES
    ========================================================================= */
-.font-header { font-family: var(--font-bricolage); }
-.font-body { font-family: var(--font-be-vietnam); }
+.font-header {
+  font-family: var(--font-bricolage);
+}
+.font-body {
+  font-family: var(--font-be-vietnam);
+}
 
 /* Compatibility aliases resolving exclusively to Be Vietnam Pro (Body) */
 .font-hand,
@@ -72,14 +83,14 @@
   font-family: var(--font-bricolage);
   font-size: 26.5px;
   font-weight: 700;
-  color: #30312C;
+  color: #30312c;
   letter-spacing: -0.01em;
   line-height: 1.25;
 }
 
 .subtitle-text {
   font-family: var(--font-bricolage);
-  color: #30312C;
+  color: #30312c;
   font-size: 19px;
   letter-spacing: -0.01em;
   font-weight: 600;
@@ -94,17 +105,17 @@
   padding-left: 2.25rem;
   padding-right: 0.5rem;
   font-size: 15.5px;
-  font-family: 'Comic Neue', cursive;
-  background-color: #FFFFFF;
-  color: #30312C;
+  font-family: "Comic Neue", cursive;
+  background-color: #ffffff;
+  color: #30312c;
   border-radius: 6px;
-  border: 1.4px solid #30312C;
+  border: 1.4px solid #30312c;
   transition: all 0.2s ease-in-out;
 }
 .input-sketch:focus {
   outline: none;
-  border-color: #4B7DB9;
-  box-shadow: 0 0 0 1px #4B7DB9;
+  border-color: #4b7db9;
+  box-shadow: 0 0 0 1px #4b7db9;
 }
 
 .input-sketch-compact {
@@ -113,30 +124,30 @@
   padding-left: 2.15rem;
   padding-right: 0.5rem;
   font-size: 14px;
-  font-family: 'Comic Neue', cursive;
-  background-color: #FFFFFF;
-  color: #30312C;
+  font-family: "Comic Neue", cursive;
+  background-color: #ffffff;
+  color: #30312c;
   border-radius: 6px;
-  border: 1.4px solid #30312C;
+  border: 1.4px solid #30312c;
   transition: all 0.2s ease-in-out;
 }
 .input-sketch-compact:focus {
   outline: none;
-  border-color: #4B7DB9;
-  box-shadow: 0 0 0 1px #4B7DB9;
+  border-color: #4b7db9;
+  box-shadow: 0 0 0 1px #4b7db9;
 }
 
 .btn-pencil-primary {
   width: 100%;
   height: 40px;
-  color: #1D2127;
-  font-family: 'Comic Neue', cursive;
+  color: #1d2127;
+  font-family: "Comic Neue", cursive;
   font-weight: 700;
   font-size: 16px;
   letter-spacing: 0.05em;
   border-radius: 6px;
-  border: 1.5px solid #30312C;
-  box-shadow: 0 2px 0px #30312C;
+  border: 1.5px solid #30312c;
+  box-shadow: 0 2px 0px #30312c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,14 +164,14 @@
 .btn-pencil-compact {
   width: 100%;
   height: 35px;
-  color: #1D2127;
-  font-family: 'Comic Neue', cursive;
+  color: #1d2127;
+  font-family: "Comic Neue", cursive;
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.05em;
   border-radius: 6px;
-  border: 1.5px solid #30312C;
-  box-shadow: 0 2px 0px #30312C;
+  border: 1.5px solid #30312c;
+  box-shadow: 0 2px 0px #30312c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,18 +188,18 @@
 .social-btn {
   width: 44px;
   height: 43px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
-  border: 1.3px solid #30312C;
+  border: 1.3px solid #30312c;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 1px 0px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.15s ease-in-out;
 }
 .social-btn:hover {
-  background-color: #F9F7F1;
+  background-color: #f9f7f1;
   transform: scale(1.05);
 }
 .social-btn:active {
@@ -198,18 +209,18 @@
 .social-btn-compact {
   width: 40px;
   height: 37px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
-  border: 1.3px solid #30312C;
+  border: 1.3px solid #30312c;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 1px 0px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.15s ease-in-out;
 }
 .social-btn-compact:hover {
-  background-color: #F9F7F1;
+  background-color: #f9f7f1;
   transform: scale(1.05);
 }
 .social-btn-compact:active {
@@ -222,10 +233,10 @@
 .card-container {
   width: 352px;
   min-height: 440px;
-  background-color: #D8B995;
+  background-color: #d8b995;
   border-radius: 18px;
   padding: 6px;
-  border: 2.2px solid #30312C;
+  border: 2.2px solid #30312c;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -240,9 +251,9 @@
 
 .card-inner {
   flex: 1;
-  background-color: #FBF8EF;
+  background-color: #fbf8ef;
   border-radius: 13px;
-  border: 1.5px solid #30312C;
+  border: 1.5px solid #30312c;
   padding: 1.5rem 1.25rem 1.5rem 1.25rem;
   display: flex;
   flex-direction: column;
@@ -265,13 +276,19 @@
   display: none;
 }
 @media (min-width: 1024px) {
-  .illustration-side-left { display: block; }
+  .illustration-side-left {
+    display: block;
+  }
 }
 @media (min-width: 1280px) {
-  .illustration-side-left { width: 410px; }
+  .illustration-side-left {
+    width: 410px;
+  }
 }
 @media (min-width: 1536px) {
-  .illustration-side-left { width: 470px; }
+  .illustration-side-left {
+    width: 470px;
+  }
 }
 
 .illustration-side-right {
@@ -286,13 +303,21 @@
   display: none;
 }
 @media (min-width: 1024px) {
-  .illustration-side-right { display: block; }
+  .illustration-side-right {
+    display: block;
+  }
 }
 @media (min-width: 1280px) {
-  .illustration-side-right { right: 3.5rem; width: 350px; }
+  .illustration-side-right {
+    right: 3.5rem;
+    width: 350px;
+  }
 }
 @media (min-width: 1536px) {
-  .illustration-side-right { right: 2rem; width: 400px; }
+  .illustration-side-right {
+    right: 2rem;
+    width: 400px;
+  }
 }
 
 .illustration-img {
@@ -307,28 +332,37 @@
    TEXTURES & KEYFRAMES
    ========================================================================= */
 .pencil-blue-texture {
-  background-color: #5587C2;
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, 0.12),
-    rgba(255, 255, 255, 0.12) 1.5px,
-    transparent 1.5px,
-    transparent 4px
-  ),
-  repeating-linear-gradient(
-    45deg,
-    rgba(30, 60, 110, 0.15),
-    rgba(30, 60, 110, 0.15) 1.5px,
-    transparent 1.5px,
-    transparent 4.5px
-  );
+  background-color: #5587c2;
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.12) 1.5px,
+      transparent 1.5px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(30, 60, 110, 0.15),
+      rgba(30, 60, 110, 0.15) 1.5px,
+      transparent 1.5px,
+      transparent 4.5px
+    );
 }
 
 @keyframes subtle-wobble {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-0.5deg); }
-  75% { transform: rotate(0.5deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-0.5deg);
+  }
+  75% {
+    transform: rotate(0.5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .hover-wobble:hover {
@@ -336,13 +370,23 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .animate-fadeIn {
@@ -354,9 +398,18 @@
 }
 
 @keyframes bounceOnce {
-  0% { transform: translateY(-10px); opacity: 0; }
-  60% { transform: translateY(2px); opacity: 1; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(2px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .animate-bounceOnce {
@@ -390,7 +443,7 @@
   font-family: var(--font-bricolage);
   font-size: 1.875rem;
   font-weight: 800;
-  color: #30312C;
+  color: #30312c;
   margin-top: 1.25rem;
   margin-bottom: 0.75rem;
 }
@@ -399,7 +452,7 @@
   font-family: var(--font-bricolage);
   font-size: 1.35rem;
   font-weight: 700;
-  color: #30312C;
+  color: #30312c;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -464,4 +517,37 @@
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* =========================================================================
+   TIPTAP COLLABORATION CURSOR STYLES
+   ========================================================================= */
+.collaboration-cursor__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid #0d0d0d;
+  border-right: 0;
+  word-break: normal;
+  pointer-events: none;
+}
+
+.collaboration-cursor__label {
+  position: absolute;
+  top: -1.4em;
+  left: -2px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  user-select: none;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border-bottom-left-radius: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 1px 1px 0px #30312c;
+  font-family: var(--font-bricolage), sans-serif;
+  letter-spacing: 0.01em;
 }
