@@ -1,21 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { INITIAL_WORKSPACES, WorkspaceItem } from "@/lib/mock-data";
+import { WorkspaceItem } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { ItemSettingsModal } from "@/components/modals/ItemSettingsModal";
 import { CreateWorkspaceModal } from "@/components/modals/CreateWorkspaceModal";
-import { archiveItem } from "@/lib/archive-store";
+import { api } from "@/lib/api";
 import { toast } from "@/components/ui/sonner";
 
 export default function WorkspacesOverviewPage() {
-  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>(INITIAL_WORKSPACES);
+  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSettingsItem, setSelectedSettingsItem] = useState<WorkspaceItem | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newIcon, setNewIcon] = useState("palette");
+
+  useEffect(() => {
+    api.getWorkspaces().then((items) => setWorkspaces(items.map((ws) => ({
+      id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: ws.icon || "palette", color: ws.color || "#2c5e91",
+      notebookCount: ws.documents?.filter((doc) => !doc.isArchived).length || 0, lastUpdated: "recently", badgeLabel: "Workspace",
+      badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+    })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
+  }, []);
 
   const handleCreateWorkspace = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +93,26 @@ export default function WorkspacesOverviewPage() {
         </p>
       </div>
 
-      {/* Workspaces Grid */}
+      {/* Workspaces Grid / Empty State */}
+      {workspaces.length === 0 ? (
+        <div className="bg-[#FAF7EE] border-2 border-[#30312C] rounded-3xl p-12 max-w-md mx-auto shadow-[6px_6px_0px_#30312C] text-center space-y-4 transform -rotate-1 relative">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-16 h-5 bg-white/80 border border-black/15 shadow-[0px_2px_4px_rgba(0,0,0,0.12)] pointer-events-none rounded-xs" />
+          <div className="w-14 h-14 rounded-2xl bg-amber-100 border-2 border-[#30312C] flex items-center justify-center text-3xl mx-auto shadow-[2.5px_2.5px_0px_#30312C]">
+            ✏️
+          </div>
+          <h2 className="font-header text-2xl font-extrabold text-[#30312C]">No Workspaces Yet</h2>
+          <p className="font-body text-xs text-[#66645e] leading-relaxed">
+            Create your first workspace to start collecting notebooks, sketches, and ideas.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-5 py-2.5 bg-accent text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[2.5px_2.5px_0px_#30312C] hover:brightness-105 transition-all cursor-pointer"
+          >
+            <span>+ Create Your First Workspace</span>
+          </button>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 sm:gap-8 max-w-6xl mx-auto pl-2 sm:pl-4">
         {workspaces.map((ws, idx) => {
           const defaultRotations = ["-rotate-1.5", "rotate-1", "-rotate-1", "rotate-1.5"];
@@ -175,6 +202,7 @@ export default function WorkspacesOverviewPage() {
           );
         })}
       </div>
+      )}
 
       {/* Bottom Divider & Footer */}
       <div className="pt-10 pb-4 space-y-6">
@@ -202,10 +230,11 @@ export default function WorkspacesOverviewPage() {
       <CreateWorkspaceModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onWorkspaceCreated={(newWs) => {
+        onWorkspaceCreated={async (newWs) => {
+          const saved = await api.createWorkspace({ name: newWs.title, description: newWs.description, icon: newWs.icon });
           const workspaceItem: WorkspaceItem = {
-            id: newWs.id,
-            title: newWs.title,
+            id: saved.id,
+            title: saved.name,
             description: newWs.description,
             icon: newWs.icon,
             color: "#fdd355",
@@ -216,6 +245,7 @@ export default function WorkspacesOverviewPage() {
             previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
           };
           setWorkspaces([workspaceItem, ...workspaces]);
+          return saved;
         }}
       />
       {/* Item Settings Modal */}
@@ -233,7 +263,8 @@ export default function WorkspacesOverviewPage() {
               }
             : null
         }
-        onSave={(updated) => {
+        onSave={async (updated) => {
+          await api.updateWorkspace(updated.id, { name: updated.title, description: updated.description });
           setWorkspaces((prev) =>
             prev.map((w) =>
               w.id === updated.id
@@ -242,20 +273,8 @@ export default function WorkspacesOverviewPage() {
             )
           );
         }}
-        onArchive={(id) => {
-          const itemToArchive = workspaces.find((w) => w.id === id);
-          if (itemToArchive) {
-            archiveItem({
-              id: itemToArchive.id,
-              title: itemToArchive.title,
-              description: itemToArchive.description,
-              icon: itemToArchive.icon,
-              type: "workspace",
-            });
-            setWorkspaces((prev) => prev.filter((w) => w.id !== id));
-          }
-        }}
-        onDelete={(id) => {
+        onDelete={async (id) => {
+          await api.deleteWorkspace(id);
           setWorkspaces((prev) => prev.filter((w) => w.id !== id));
         }}
       />

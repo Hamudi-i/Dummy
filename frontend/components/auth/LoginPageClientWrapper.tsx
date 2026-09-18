@@ -64,17 +64,15 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
       addToast('Welcome to Co-Lab!', 'Logged in successfully!');
       
       // Redirect to main app/dashboard
-      router.push('/dashboard');
+      router.push('/workspace');
     } catch (err: any) {
       addToast('Login Failed', err.message || 'Unable to sign in. Please try again.', 'error');
     }
   };
 
-  const handleSocialLogin = (provider: 'Google') => {
-    addToast(
-      `${provider} Authentication`,
-      `Connecting to Co-Lab workspace via ${provider}...`
-    );
+  const handleSocialLogin = (provider: 'Google' | 'GitHub' | 'Apple') => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    window.location.assign(`${apiUrl}/api/auth/oauth/${provider.toLowerCase()}`);
   };
 
   const handleSearch = (query: string) => {

@@ -4,13 +4,54 @@ End-to-end deployment of this starter pack:
 
 - Database: Supabase (managed PostgreSQL)
 - Backend API (this repo): Render
-- Frontend (React SPA): Vercel
+- Frontend (Next.js): Vercel
 
 ```
 Browser  ->  Vercel (React SPA)  ->  Render (Express API)  ->  Supabase (Postgres)
 ```
 
-The backend keeps TypeORM unchanged; Supabase is just Postgres behind a connection string.
+The backend uses Prisma with PostgreSQL; Supabase is just Postgres behind a connection string.
+
+## OAuth: Google, GitHub, and Apple
+
+The social-login buttons work only after each provider has an OAuth application
+configured. Do this after both the backend and frontend have public HTTPS URLs.
+
+Example deployment URLs:
+
+```
+Frontend: https://co-lab.vercel.app
+Backend:  https://co-lab-api.onrender.com
+```
+
+In the Render **Environment** page, add these values (using your own URLs):
+
+```
+BACKEND_URL=https://co-lab-api.onrender.com
+FRONTEND_URL=https://co-lab.vercel.app
+CORS_ORIGINS=https://co-lab.vercel.app
+```
+
+Then create OAuth apps in each provider dashboard and add the matching redirect
+URL below. Copy each provider's client ID and secret into the corresponding
+Render environment variables. Never put a client secret in the frontend.
+
+| Provider | Provider dashboard action | Redirect / callback URL | Backend variables |
+| --- | --- | --- | --- |
+| Google | Google Cloud Console → APIs & Services → Credentials → Create Credentials → OAuth client ID → Web application | `https://co-lab-api.onrender.com/api/auth/oauth/google/callback` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
+| GitHub | GitHub → Settings → Developer settings → OAuth Apps → New OAuth App | `https://co-lab-api.onrender.com/api/auth/oauth/github/callback` | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
+| Apple | Apple Developer → Certificates, Identifiers & Profiles → Identifiers / Keys → Sign in with Apple | `https://co-lab-api.onrender.com/api/auth/oauth/apple/callback` | `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` |
+
+For Apple, `APPLE_CLIENT_ID` is the Services ID. Download the generated `.p8`
+key, paste its contents into `APPLE_PRIVATE_KEY` as one line, and replace every
+line break with the literal characters `\\n`. Apple requires HTTPS, so it cannot
+be fully tested with the plain `http://localhost` URLs.
+
+After saving the variables, redeploy or restart the Render service. In Google,
+GitHub, and Apple, update the redirect URL whenever the backend domain changes.
+For local development, use `http://localhost:5000` for `BACKEND_URL`,
+`http://localhost:3000` for `FRONTEND_URL`, and register the same callback paths
+with those local base URLs where the provider permits it.
 
 ---
 
@@ -64,7 +105,9 @@ Note: Render's free tier spins down after ~15 min idle; the first request then t
 
 ## 3. Vercel (frontend)
 
-See the frontend repo's `DEPLOYMENT.md`. In short: import the frontend repo, set `VITE_API=https://<service>.onrender.com/ebev1`, deploy.
+Import the `frontend/` directory into Vercel, then add `NEXT_PUBLIC_API_URL` with your
+backend URL, for example `https://co-lab-api.onrender.com`. Deploy it and copy the
+generated Vercel URL into the backend's `FRONTEND_URL` and `CORS_ORIGINS` values.
 
 After the frontend is live, set `CORS_ORIGINS` on Render to the Vercel URL and redeploy the backend.
 

@@ -15,7 +15,7 @@ export interface CreateWorkspaceModalProps {
     title: string;
     description: string;
     icon: string;
-  }) => void;
+  }) => Promise<{ id: string }> | { id: string };
 }
 
 export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
@@ -35,7 +35,7 @@ export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
 
   if (!isOpen || !mounted) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       toast.error("Title Required", {
@@ -52,9 +52,7 @@ export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
       icon: icon || "palette",
     };
 
-    if (onWorkspaceCreated) {
-      onWorkspaceCreated(newWorkspace);
-    }
+    const savedWorkspace = onWorkspaceCreated ? await onWorkspaceCreated(newWorkspace) : newWorkspace;
 
     toast.success("Workspace Created!", {
       description: `Created "${newWorkspace.title}". Opening your new workspace...`,
@@ -63,7 +61,7 @@ export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
     setTitle("");
     setDescription("");
     onClose();
-    router.push(`/workspace/${newId}`);
+    router.push(`/workspace/${savedWorkspace.id}`);
   };
 
   return createPortal(

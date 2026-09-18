@@ -6,10 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 router.use(Authenticate);
 
-router.get("/:documentId/snapshots", DocumentSnapshotController.getDocumentSnapshots);
-router.get("/:documentId/snapshots/:id", DocumentSnapshotController.getSnapshotById);
-router.post("/:documentId/snapshots", DocumentSnapshotController.createSnapshot);
-router.post("/:documentId/snapshots/:id/restore", DocumentSnapshotController.restoreSnapshot);
-router.delete("/:documentId/snapshots/:id", DocumentSnapshotController.deleteSnapshot);
+router.get("/:documentId/snapshots", DocumentSnapshotController.listDocumentSnapshots);
+router.get("/:documentId/snapshots/:id", DocumentSnapshotController.getDocumentSnapshotById);
+router.post("/:documentId/snapshots", DocumentSnapshotController.createDocumentSnapshot);
+router.post("/:documentId/snapshots/:id/restore", DocumentSnapshotController.restoreDocumentSnapshot);
+router.delete("/:documentId/snapshots/:id", DocumentSnapshotController.deleteDocumentSnapshot);
 
 export default router;

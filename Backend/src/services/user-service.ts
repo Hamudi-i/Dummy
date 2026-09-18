@@ -9,6 +9,11 @@ export class UserService {
         id: true,
         email: true,
         name: true,
+        username: true,
+        bio: true,
+        avatarUrl: true,
+        emailNotifications: true,
+        mentionNotifications: true,
         role: true,
         createdAt: true,
         updatedAt: true,
@@ -24,6 +29,11 @@ export class UserService {
         id: true,
         email: true,
         name: true,
+        username: true,
+        bio: true,
+        avatarUrl: true,
+        emailNotifications: true,
+        mentionNotifications: true,
         role: true,
         createdAt: true,
         updatedAt: true,
@@ -44,6 +54,11 @@ export class UserService {
         id: true,
         email: true,
         name: true,
+        username: true,
+        bio: true,
+        avatarUrl: true,
+        emailNotifications: true,
+        mentionNotifications: true,
         role: true,
         createdAt: true,
         updatedAt: true,
@@ -90,11 +105,17 @@ export class UserService {
     });
   }
 
-  static async updateUser(id: string, data: { name?: string; role?: string; password?: string }) {
+  static async updateUser(id: string, data: { email?: string; name?: string; username?: string | null; bio?: string | null; avatarUrl?: string | null; emailNotifications?: boolean; mentionNotifications?: boolean; role?: string; password?: string }) {
     await this.getUserById(id);
 
-    const updateData: { name?: string; role?: string; password?: string } = {};
+    const updateData: { email?: string; name?: string; username?: string | null; bio?: string | null; avatarUrl?: string | null; emailNotifications?: boolean; mentionNotifications?: boolean; role?: string; password?: string } = {};
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.email !== undefined) updateData.email = data.email.toLowerCase().trim();
+    if (data.username !== undefined) updateData.username = data.username?.trim() || null;
+    if (data.bio !== undefined) updateData.bio = data.bio;
+    if (data.avatarUrl !== undefined) updateData.avatarUrl = data.avatarUrl;
+    if (data.emailNotifications !== undefined) updateData.emailNotifications = data.emailNotifications;
+    if (data.mentionNotifications !== undefined) updateData.mentionNotifications = data.mentionNotifications;
     if (data.role !== undefined) updateData.role = data.role;
     if (data.password) updateData.password = Util.hashPassword(data.password);
 
@@ -105,11 +126,25 @@ export class UserService {
         id: true,
         email: true,
         name: true,
+        username: true,
+        bio: true,
+        avatarUrl: true,
+        emailNotifications: true,
+        mentionNotifications: true,
         role: true,
         createdAt: true,
         updatedAt: true,
       },
     });
+  }
+
+  static async changePassword(id: string, currentPassword: string, newPassword: string) {
+    if (!currentPassword || !newPassword) throw new BadRequestException("Current and new passwords are required");
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user?.password || !Util.comparePassword(currentPassword, user.password)) {
+      throw new BadRequestException("Current password is incorrect");
+    }
+    await prisma.user.update({ where: { id }, data: { password: Util.hashPassword(newPassword) } });
   }
 
   static async deleteUser(id: string) {

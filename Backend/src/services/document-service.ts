@@ -28,6 +28,11 @@ export class DocumentService {
                 id: true,
                 title: true,
                 icon: true,
+                description: true,
+                pageCount: true,
+                status: true,
+                sortOrder: true,
+                plainText: true,
                 isArchived: true,
                 updatedAt: true,
                 author: {
@@ -39,7 +44,7 @@ export class DocumentService {
                     },
                 },
             },
-            orderBy: { updatedAt: "desc" },
+            orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
         });
     }
 
@@ -80,6 +85,10 @@ export class DocumentService {
             title?: string;
             icon?: string;
             plainText?: string;
+            description?: string;
+            pageCount?: number;
+            status?: string;
+            sortOrder?: number;
         }
     ) {
         const workspace = await prisma.workspace.findUnique({
@@ -102,6 +111,7 @@ export class DocumentService {
         }
 
         const slug = Util.generateSlug(data.title || "Untitled");
+        const sortOrder = await prisma.document.count({ where: { workspaceId } });
 
         return prisma.document.create({
             data: {
@@ -111,6 +121,10 @@ export class DocumentService {
                 title: data.title?.trim() || "Untitled",
                 icon: data.icon,
                 plainText: data.plainText,
+                description: data.description,
+                pageCount: data.pageCount,
+                status: data.status,
+                sortOrder: data.sortOrder ?? sortOrder,
             },
             select: {
                 id: true,
@@ -118,6 +132,10 @@ export class DocumentService {
                 authorId: true,
                 title: true,
                 icon: true,
+                description: true,
+                pageCount: true,
+                status: true,
+                sortOrder: true,
                 slug: true,
                 isArchived: true,
                 createdAt: true,
@@ -143,6 +161,10 @@ export class DocumentService {
             icon?: string;
             plainText?: string;
             isArchived?: boolean;
+            description?: string | null;
+            pageCount?: number;
+            status?: string;
+            sortOrder?: number;
         }
     ) {
         const document = await this.getDocumentById(id, userId);
@@ -171,6 +193,10 @@ export class DocumentService {
                 slug: newSlug !== undefined ? newSlug : undefined,
                 icon: data.icon !== undefined ? data.icon : undefined,
                 plainText: data.plainText !== undefined ? data.plainText : undefined,
+                description: data.description !== undefined ? data.description : undefined,
+                pageCount: data.pageCount !== undefined ? data.pageCount : undefined,
+                status: data.status !== undefined ? data.status : undefined,
+                sortOrder: data.sortOrder !== undefined ? data.sortOrder : undefined,
                 isArchived: data.isArchived !== undefined ? data.isArchived : undefined
             }
         });

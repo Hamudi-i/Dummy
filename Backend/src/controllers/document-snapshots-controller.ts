@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { DocumentSnapshotService } from "../services/document-snapshot-service";
 
 export class DocumentSnapshotController {
-    static async getDocumentSnapshots(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async listDocumentSnapshots(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const documentId = req.params.documentId as string;
             const snapshots = await DocumentSnapshotService.getDocumentSnapshots(documentId);
@@ -12,9 +12,9 @@ export class DocumentSnapshotController {
         }
     }
 
-    static async getSnapshotById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async getDocumentSnapshotById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const snapshotId = req.params.snapshotId as string;
+            const snapshotId = req.params.id as string;
             const snapshot = await DocumentSnapshotService.getSnapshotById(snapshotId);
             res.status(200).json(snapshot);
         } catch (error) {
@@ -22,19 +22,19 @@ export class DocumentSnapshotController {
         }
     }
 
-    static async createSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async createDocumentSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const documentId = req.params.documentId as string;
             const createdById = (req as any).currentUser?.userId;
             const { summary } = req.body;
             const snapshot = await DocumentSnapshotService.createSnapshot(documentId, createdById, summary);
-            res.sendStatus(201).json(snapshot);
+            res.status(201).json(snapshot);
         } catch (error) {
             next(error);
         }
     }
 
-    static async restoreSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async restoreDocumentSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const documentId = req.params.documentId as string;
             const snapshotId = req.params.id as string;
@@ -46,7 +46,7 @@ export class DocumentSnapshotController {
         }
     }
 
-    static async deleteSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async deleteDocumentSnapshot(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id as string;
             await DocumentSnapshotService.deleteSnapshot(id);
