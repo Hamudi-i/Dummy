@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "test:colab": "ts-node scripts/test-colab.ts"
   },
   "engines": {
     "node": ">=20"
@@ -22,6 +23,7 @@
   "description": "",
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",
+    "@hocuspocus/server": "^4.7.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@types/minio": "^7.1.0",
@@ -36,11 +38,15 @@
     "minio": "^8.0.6",
     "multer": "^2.0.2",
     "pg": "^8.13.1",
-    "prisma": "^7.10.0"
+    "prisma": "^7.10.0",
+    "yjs": "^13.6.32"
   },
   "devDependencies": {
+    "@hocuspocus/provider": "^4.7.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.13.1",
     "@types/uuid": "^10.0.0",
     "concurrently": "^9.1.2",
