@@ -13,8 +13,6 @@ import documentRouters from "./routes/documents-route";
 import documentSnapshotRoutes from "./routes/document-snapshots-route";
 import documentUpdateRoutes from "./routes/document-updates-route";
 import documentDraftRoutes from "./routes/document-drafts-route";
-import supportRequestRoutes from "./routes/support-requests-route";
-import userEventRoutes from "./routes/user-events-route";
 import { createCollaborationServer } from "./websocket/collaboration-server";
 
 
@@ -71,8 +69,6 @@ app.use("/api", documentRouters);
 app.use("/api/documents", documentSnapshotRoutes);
 app.use("/api/documents", documentUpdateRoutes);
 app.use("/api/documents", documentDraftRoutes);
-app.use("/api/support-requests", supportRequestRoutes);
-app.use("/api/user-events", userEventRoutes);
 
 // Centralized error handling
 app.use(exceptionFilter);

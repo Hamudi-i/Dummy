@@ -22,7 +22,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   return body as T;
 }
 
-export interface ApiWorkspace { id: string; name: string; slug: string; description?: string | null; icon?: string | null; color?: string | null; badgeLabel?: string | null; badgeStyle?: string | null; previewGradient?: string | null; rotation?: string | null; sortOrder?: number; isArchived?: boolean; updatedAt?: string; documents?: ApiDocument[] }
+export interface ApiWorkspace { id: string; name: string; slug: string; description?: string | null; createdAt?: string; updatedAt?: string; documents?: ApiDocument[] }
 export interface ApiDocument { id: string; workspaceId?: string; title: string; icon?: string | null; description?: string | null; pageCount?: number; status?: string; sortOrder?: number; plainText?: string | null; isArchived?: boolean; updatedAt?: string }
 export interface ApiDocumentDraft { id: string; documentId: string; content: string; isUnsaved: boolean; createdAt: string; updatedAt: string }
 

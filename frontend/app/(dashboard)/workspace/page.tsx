@@ -19,7 +19,7 @@ export default function WorkspacesOverviewPage() {
 
   useEffect(() => {
     api.getWorkspaces().then((items) => setWorkspaces(items.map((ws) => ({
-      id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: ws.icon || "palette", color: ws.color || "#2c5e91",
+      id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: "palette", color: "#2c5e91",
       notebookCount: ws.documents?.filter((doc) => !doc.isArchived).length || 0, lastUpdated: "recently", badgeLabel: "Workspace",
       badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
     })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
@@ -113,95 +113,95 @@ export default function WorkspacesOverviewPage() {
           </button>
         </div>
       ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 sm:gap-8 max-w-6xl mx-auto pl-2 sm:pl-4">
-        {workspaces.map((ws, idx) => {
-          const defaultRotations = ["-rotate-1.5", "rotate-1", "-rotate-1", "rotate-1.5"];
-          const tapeTilts = ["-rotate-3", "rotate-4", "-rotate-2", "rotate-[3.5deg]"];
-          const currentRotation = ws.rotation || defaultRotations[idx % defaultRotations.length];
-          const currentTapeTilt = tapeTilts[idx % tapeTilts.length];
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 sm:gap-8 max-w-6xl mx-auto pl-2 sm:pl-4">
+          {workspaces.map((ws, idx) => {
+            const defaultRotations = ["-rotate-1.5", "rotate-1", "-rotate-1", "rotate-1.5"];
+            const tapeTilts = ["-rotate-3", "rotate-4", "-rotate-2", "rotate-[3.5deg]"];
+            const currentRotation = ws.rotation || defaultRotations[idx % defaultRotations.length];
+            const currentTapeTilt = tapeTilts[idx % tapeTilts.length];
 
-          return (
-            <Link
-              key={ws.id}
-              href={`/workspace/${ws.id}`}
-              /* Connected Top Curve (160px Top Radii), Bottom-Right 114px, Bottom-Left 14px */
-              className={`group bg-[#FFFFFF] border-2 border-[#1B1C1C] rounded-tl-[160px] rounded-tr-[160px] rounded-br-[114px] rounded-bl-[14px] p-6 min-h-[355px] shadow-[5px_5px_0px_rgba(27,28,28,0.22)] hover:shadow-[7px_7px_0px_rgba(27,28,28,0.38)] ${currentRotation} hover:rotate-0 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 relative overflow-visible`}
-            >
-              {/* Authentic Masking Tape Badge (Top-Center, Overlapping Top Border with Random Tilt) */}
-              <div className={`absolute left-1/2 -translate-x-1/2 -top-4.5 z-20 ${currentTapeTilt} pointer-events-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.12)]`}>
-                <div className="relative px-4 py-0.5 bg-[#FFF8DC]/95 text-[#30312C] font-header font-bold text-[11px] tracking-wider uppercase border-y border-[#D6C79B]/70 flex items-center justify-center select-none">
-                  {/* Left Torn Tape Edge (Jagged SVG) */}
-                  <div className="absolute -left-2 top-0 bottom-0 w-2.5 overflow-hidden">
-                    <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
-                      <path d="M10,0 L0,3 L5,8 L0,14 L6,20 L0,26 L10,30 Z" />
-                    </svg>
-                  </div>
+            return (
+              <Link
+                key={ws.id}
+                href={`/workspace/${ws.id}`}
+                /* Connected Top Curve (160px Top Radii), Bottom-Right 114px, Bottom-Left 14px */
+                className={`group bg-[#FFFFFF] border-2 border-[#1B1C1C] rounded-tl-[160px] rounded-tr-[160px] rounded-br-[114px] rounded-bl-[14px] p-6 min-h-[355px] shadow-[5px_5px_0px_rgba(27,28,28,0.22)] hover:shadow-[7px_7px_0px_rgba(27,28,28,0.38)] ${currentRotation} hover:rotate-0 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 relative overflow-visible`}
+              >
+                {/* Authentic Masking Tape Badge (Top-Center, Overlapping Top Border with Random Tilt) */}
+                <div className={`absolute left-1/2 -translate-x-1/2 -top-4.5 z-20 ${currentTapeTilt} pointer-events-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.12)]`}>
+                  <div className="relative px-4 py-0.5 bg-[#FFF8DC]/95 text-[#30312C] font-header font-bold text-[11px] tracking-wider uppercase border-y border-[#D6C79B]/70 flex items-center justify-center select-none">
+                    {/* Left Torn Tape Edge (Jagged SVG) */}
+                    <div className="absolute -left-2 top-0 bottom-0 w-2.5 overflow-hidden">
+                      <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
+                        <path d="M10,0 L0,3 L5,8 L0,14 L6,20 L0,26 L10,30 Z" />
+                      </svg>
+                    </div>
 
-                  <span>{ws.badgeLabel || "Workspace"}</span>
+                    <span>{ws.badgeLabel || "Workspace"}</span>
 
-                  {/* Right Torn Tape Edge (Jagged SVG) */}
-                  <div className="absolute -right-2 top-0 bottom-0 w-2.5 overflow-hidden">
-                    <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
-                      <path d="M0,0 L10,3 L5,8 L10,14 L4,20 L10,26 L0,30 Z" />
-                    </svg>
+                    {/* Right Torn Tape Edge (Jagged SVG) */}
+                    <div className="absolute -right-2 top-0 bottom-0 w-2.5 overflow-hidden">
+                      <svg className="w-full h-full text-[#FFF8DC]/95 fill-current" viewBox="0 0 10 30" preserveAspectRatio="none">
+                        <path d="M0,0 L10,3 L5,8 L10,14 L4,20 L10,26 L0,30 Z" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* 1. Top Row: 3-Dots Button (Top-Right) */}
-              <div className="flex items-center justify-end relative z-10 min-h-[28px]">
-                {/* 3 Dots Vertical Settings Button (Top Right) */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSelectedSettingsItem(ws);
-                  }}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#30312C] hover:bg-[#30312C]/10 transition-colors cursor-pointer"
-                  title="Workspace Options"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2" />
-                    <circle cx="12" cy="12" r="2" />
-                    <circle cx="12" cy="19" r="2" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* 2. Rectangular Picture showing canvas preview placeholder */}
-              <div className="w-[88%] mx-auto h-28 rounded-xl border-1.5 border-[#30312C]/30 overflow-hidden relative shadow-xs bg-[#FAF7EE] group-hover:scale-[1.01] transition-transform z-10 flex items-center justify-center">
-                <img
-                  src="/sketch-preview.jpg"
-                  alt={`${ws.title} Canvas Preview`}
-                  className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
-                />
-                <div className="absolute bottom-1.5 right-2 px-2 py-0.5 bg-[#1B1C1C]/80 text-white rounded-md text-[9.5px] font-header font-bold tracking-wider backdrop-blur-xs">
-                  Canvas Preview
+                {/* 1. Top Row: 3-Dots Button (Top-Right) */}
+                <div className="flex items-center justify-end relative z-10 min-h-[28px]">
+                  {/* 3 Dots Vertical Settings Button (Top Right) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedSettingsItem(ws);
+                    }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#30312C] hover:bg-[#30312C]/10 transition-colors cursor-pointer"
+                    title="Workspace Options"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="5" r="2" />
+                      <circle cx="12" cy="12" r="2" />
+                      <circle cx="12" cy="19" r="2" />
+                    </svg>
+                  </button>
                 </div>
-              </div>
 
-              {/* 3. Workspace Name */}
-              <h3 className="font-header text-xl font-extrabold text-[#30312C] group-hover:text-primary transition-colors relative z-10">
-                {ws.title}
-              </h3>
+                {/* 2. Rectangular Picture showing canvas preview placeholder */}
+                <div className="w-[88%] mx-auto h-28 rounded-xl border-1.5 border-[#30312C]/30 overflow-hidden relative shadow-xs bg-[#FAF7EE] group-hover:scale-[1.01] transition-transform z-10 flex items-center justify-center">
+                  <img
+                    src="/sketch-preview.jpg"
+                    alt={`${ws.title} Canvas Preview`}
+                    className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
+                  />
+                  <div className="absolute bottom-1.5 right-2 px-2 py-0.5 bg-[#1B1C1C]/80 text-white rounded-md text-[9.5px] font-header font-bold tracking-wider backdrop-blur-xs">
+                    Canvas Preview
+                  </div>
+                </div>
 
-              {/* 4. Bottom Row: Edited Time (Bottom Left) & Notebook Count (Bottom Right) */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#30312C]/10 relative z-10">
-                {/* Edited Sometime Ago (Bottom Left) */}
-                <p className="font-body text-xs font-semibold text-[#737067]">
-                  Edited {ws.lastUpdated}
-                </p>
+                {/* 3. Workspace Name */}
+                <h3 className="font-header text-xl font-extrabold text-[#30312C] group-hover:text-primary transition-colors relative z-10">
+                  {ws.title}
+                </h3>
 
-                {/* Notebook Count Badge (Bottom Right) */}
-                <span className="font-body text-xs mr-5 font-semibold text-[#737067] bg-[#efe9d9] px-2.5 py-0.5 rounded-full border border-[#30312C]/20">
-                  {ws.notebookCount} {ws.notebookCount === 1 ? "Notebook" : "Notebooks"}
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+                {/* 4. Bottom Row: Edited Time (Bottom Left) & Notebook Count (Bottom Right) */}
+                <div className="flex items-center justify-between pt-2 border-t border-[#30312C]/10 relative z-10">
+                  {/* Edited Sometime Ago (Bottom Left) */}
+                  <p className="font-body text-xs font-semibold text-[#737067]">
+                    Edited {ws.lastUpdated}
+                  </p>
+
+                  {/* Notebook Count Badge (Bottom Right) */}
+                  <span className="font-body text-xs mr-5 font-semibold text-[#737067] bg-[#efe9d9] px-2.5 py-0.5 rounded-full border border-[#30312C]/20">
+                    {ws.notebookCount} {ws.notebookCount === 1 ? "Notebook" : "Notebooks"}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       )}
 
       {/* Bottom Divider & Footer */}
@@ -231,7 +231,7 @@ export default function WorkspacesOverviewPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onWorkspaceCreated={async (newWs) => {
-          const saved = await api.createWorkspace({ name: newWs.title, description: newWs.description, icon: newWs.icon });
+          const saved = await api.createWorkspace({ name: newWs.title, description: newWs.description });
           const workspaceItem: WorkspaceItem = {
             id: saved.id,
             title: saved.name,
@@ -255,12 +255,12 @@ export default function WorkspacesOverviewPage() {
         item={
           selectedSettingsItem
             ? {
-                id: selectedSettingsItem.id,
-                title: selectedSettingsItem.title,
-                description: selectedSettingsItem.description,
-                icon: selectedSettingsItem.icon,
-                type: "workspace",
-              }
+              id: selectedSettingsItem.id,
+              title: selectedSettingsItem.title,
+              description: selectedSettingsItem.description,
+              icon: selectedSettingsItem.icon,
+              type: "workspace",
+            }
             : null
         }
         onSave={async (updated) => {
