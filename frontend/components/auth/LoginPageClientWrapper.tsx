@@ -34,6 +34,17 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
     }, 4000);
   };
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const error = searchParams.get('error');
+      if (error) {
+        addToast('Authentication Failed', decodeURIComponent(error), 'error');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleLogin = async (creds: { email: string; pass: string }) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -62,7 +73,7 @@ export const LoginPageClientWrapper: React.FC<LoginPageClientWrapperProps> = ({
       }
 
       addToast('Welcome to Co-Lab!', 'Logged in successfully!');
-      
+
       // Redirect to main app/dashboard
       router.push('/workspace');
     } catch (err: any) {

@@ -39,10 +39,18 @@ export class AuthController {
   static async completeOAuthSignIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const provider = OAuthService.provider(req.params.provider as string);
+      if (req.query.error) {
+        const errorMsg = String(req.query.error_description || req.query.error);
+        return res.redirect(`${OAuthService.frontendUrl()}/login?error=${encodeURIComponent(errorMsg)}`);
+      }
       OAuthService.verifyState(provider, String(req.query.state || req.body?.state || ""));
       const profile = await OAuthService.profile(provider, String(req.query.code || req.body?.code || ""));
       res.redirect(OAuthService.redirectWithSession(await AuthService.loginWithOAuth({ ...profile, provider })));
-    } catch (error) { next(error); }
+    } catch (error: any) {
+      const msg = error?.message || "OAuth authentication failed";
+      console.error("[OAuth Callback Error]:", msg);
+      res.redirect(`${OAuthService.frontendUrl()}/login?error=${encodeURIComponent(msg)}`);
+    }
   }
 }
 

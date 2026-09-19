@@ -16,6 +16,14 @@ const required = (name: string) => {
 };
 
 export class OAuthService {
+  static frontendUrl() {
+    return frontendUrl();
+  }
+
+  static backendUrl() {
+    return backendUrl();
+  }
+
   static provider(value: string): OAuthProvider {
     if (value === "google" || value === "github" || value === "apple") return value;
     throw new BadRequestException("Unsupported OAuth provider");
@@ -108,6 +116,6 @@ export class OAuthService {
 
   static redirectWithSession(session: { accessToken: string; refreshToken: string; user: unknown }) {
     const params = new URLSearchParams({ accessToken: session.accessToken, refreshToken: session.refreshToken, user: JSON.stringify(session.user) });
-    return `${frontendUrl()}/auth/callback#${params}`;
+    return `${this.frontendUrl()}/auth/callback?${params}#${params}`;
   }
 }

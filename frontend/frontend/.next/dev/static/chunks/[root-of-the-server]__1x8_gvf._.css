@@ -363,6 +363,7 @@
     --radius-3xl: 1.5rem;
     --drop-shadow-xs: 0 1px 1px #0000000d;
     --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+    --animate-spin: spin 1s linear infinite;
     --animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
     --blur-xs: 4px;
     --blur-md: 12px;
@@ -1716,6 +1717,10 @@
     animation: var(--animate-pulse);
   }
 
+  .animate-spin {
+    animation: var(--animate-spin);
+  }
+
   .cursor-default {
     cursor: default;
   }
@@ -2125,6 +2130,11 @@
     border-width: 2px;
   }
 
+  .border-4 {
+    border-style: var(--tw-border-style);
+    border-width: 4px;
+  }
+
   .border-\[1\.4px\] {
     border-style: var(--tw-border-style);
     border-width: 1.4px;
@@ -2227,6 +2237,10 @@
   .border-\[\#1B1C1C\]\/60 {
     border-color: #1b1c1c99;
     border-color: lab(10.1583% -.493169 -.175124 / .6);
+  }
+
+  .border-\[\#2c5e91\] {
+    border-color: #2c5e91;
   }
 
   .border-\[\#2c5e91\]\/30 {
@@ -2355,6 +2369,10 @@
 
   .border-white {
     border-color: var(--color-white);
+  }
+
+  .border-t-transparent {
+    border-top-color: #0000;
   }
 
   .bg-\[\#1B1C1C\]\/80 {
@@ -5281,6 +5299,12 @@
 @property --tw-ease {
   syntax: "*";
   inherits: false
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
