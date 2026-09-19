@@ -66,7 +66,11 @@ export default function NotebookEditorPage() {
   });
   const [liveCollaborators, setLiveCollaborators] = useState<Array<{ name: string; color: string }>>([]);
 
-  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:5000/collaboration";
+  const wsUrl =
+    process.env.NEXT_PUBLIC_WS_URL ||
+    (process.env.NEXT_PUBLIC_API_URL
+      ? `${process.env.NEXT_PUBLIC_API_URL.replace(/^http/, "ws").replace(/\/$/, "")}/collaboration`
+      : "ws://localhost:5000/collaboration");
 
   useEffect(() => {
     try {

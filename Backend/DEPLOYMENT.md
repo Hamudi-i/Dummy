@@ -1,16 +1,6 @@
 # Deployment Guide
 
-End-to-end deployment of this starter pack:
-
-- Database: Supabase (managed PostgreSQL)
-- Backend API (this repo): Render
-- Frontend (Next.js): Vercel
-
-```
-Browser  ->  Vercel (React SPA)  ->  Render (Express API)  ->  Supabase (Postgres)
-```
-
-The backend uses Prisma with PostgreSQL; Supabase is just Postgres behind a connection string.
+For the full, up-to-date **100% Free ($0)** deployment guide for Vercel, Render, and Neon/Supabase, please see [../DEPLOYMENT.md](../DEPLOYMENT.md).
 
 ## OAuth: Google, GitHub, and Apple
 
@@ -36,11 +26,11 @@ Then create OAuth apps in each provider dashboard and add the matching redirect
 URL below. Copy each provider's client ID and secret into the corresponding
 Render environment variables. Never put a client secret in the frontend.
 
-| Provider | Provider dashboard action | Redirect / callback URL | Backend variables |
-| --- | --- | --- | --- |
-| Google | Google Cloud Console → APIs & Services → Credentials → Create Credentials → OAuth client ID → Web application | `https://co-lab-api.onrender.com/api/auth/oauth/google/callback` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
-| GitHub | GitHub → Settings → Developer settings → OAuth Apps → New OAuth App | `https://co-lab-api.onrender.com/api/auth/oauth/github/callback` | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
-| Apple | Apple Developer → Certificates, Identifiers & Profiles → Identifiers / Keys → Sign in with Apple | `https://co-lab-api.onrender.com/api/auth/oauth/apple/callback` | `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` |
+| Provider | Provider dashboard action                                                                                     | Redirect / callback URL                                          | Backend variables                                                       |
+| -------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Google   | Google Cloud Console → APIs & Services → Credentials → Create Credentials → OAuth client ID → Web application | `https://co-lab-api.onrender.com/api/auth/oauth/google/callback` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                              |
+| GitHub   | GitHub → Settings → Developer settings → OAuth Apps → New OAuth App                                           | `https://co-lab-api.onrender.com/api/auth/oauth/github/callback` | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`                              |
+| Apple    | Apple Developer → Certificates, Identifiers & Profiles → Identifiers / Keys → Sign in with Apple              | `https://co-lab-api.onrender.com/api/auth/oauth/apple/callback`  | `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` |
 
 For Apple, `APPLE_CLIENT_ID` is the Services ID. Download the generated `.p8`
 key, paste its contents into `APPLE_PRIVATE_KEY` as one line, and replace every
@@ -74,26 +64,27 @@ Tables are created automatically on first boot because `DB_SYNCHRONIZE=true`. Fo
 Option A - Blueprint (recommended): Render Dashboard -> **New -> Blueprint** -> select this repo. It reads [`render.yaml`](render.yaml).
 
 Option B - Manual: **New -> Web Service** from this repo with:
+
 - Build command: `npm install && npm run build`
 - Start command: `npm run start`
 - Health check path: `/ebev1`
 
 ### Environment variables (Render dashboard)
 
-| Variable | Value / notes |
-| --- | --- |
-| `DATABASE_URL` | Supabase Session pooler URI (from step 1) |
-| `DB_SSL` | `true` |
-| `DB_SYNCHRONIZE` | `true` for first deploy |
-| `NODE_ENV` | `production` |
-| `JWT_SECRET` | long random string (rotate the old one) |
-| `REFRESH_SECRET_TOKEN` | long random string (rotate the old one) |
-| `BcryptHashRound` | `10` |
-| `CORS_ORIGINS` | your Vercel URL, e.g. `https://your-app.vercel.app` |
-| `BREVO_API_KEY` | Brevo transactional email key (rotate the old one) |
-| `BREVO_SENDER_EMAIL` | verified sender email |
-| `BREVO_SENDER_NAME` | sender display name |
-| `MINIO_*` | file storage config (see Storage note below) |
+| Variable               | Value / notes                                       |
+| ---------------------- | --------------------------------------------------- |
+| `DATABASE_URL`         | Supabase Session pooler URI (from step 1)           |
+| `DB_SSL`               | `true`                                              |
+| `DB_SYNCHRONIZE`       | `true` for first deploy                             |
+| `NODE_ENV`             | `production`                                        |
+| `JWT_SECRET`           | long random string (rotate the old one)             |
+| `REFRESH_SECRET_TOKEN` | long random string (rotate the old one)             |
+| `BcryptHashRound`      | `10`                                                |
+| `CORS_ORIGINS`         | your Vercel URL, e.g. `https://your-app.vercel.app` |
+| `BREVO_API_KEY`        | Brevo transactional email key (rotate the old one)  |
+| `BREVO_SENDER_EMAIL`   | verified sender email                               |
+| `BREVO_SENDER_NAME`    | sender display name                                 |
+| `MINIO_*`              | file storage config (see Storage note below)        |
 
 Do NOT set `PORT` - Render provides it and the app reads `process.env.PORT`.
 

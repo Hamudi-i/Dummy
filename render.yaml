@@ -4,6 +4,7 @@ services:
     name: colab-backend
     runtime: node
     plan: free
+    rootDir: Backend
     buildCommand: npm install && npm run build
     startCommand: npm run prisma:deploy && npm run start
     healthCheckPath: /health
