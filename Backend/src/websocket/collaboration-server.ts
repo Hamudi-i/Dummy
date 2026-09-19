@@ -19,7 +19,6 @@ export function createCollaborationServer() {
         debounce: 2000,
         // Max debounce: guarantee a save at least every 10 seconds during continuous edits
         maxDebounce: 10000,
-
         /**
          * 1. Authentication Hook
          * Authenticates the incoming connection using JWT bearer token.
