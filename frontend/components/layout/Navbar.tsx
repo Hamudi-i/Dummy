@@ -3,8 +3,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Book } from "lucide-react";
+import { BookOpen, Book, Bell } from "lucide-react";
 import { useUserProfile, UserProfile } from "@/lib/user-store";
+import { useNotifications } from "@/lib/notifications-store";
+import { NotificationsModal } from "@/components/modals/NotificationsModal";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
@@ -20,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   profileOverride,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const { unreadCount } = useNotifications();
   const { profile: storeProfile } = useUserProfile();
   const profile = profileOverride || storeProfile;
 
@@ -142,6 +146,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </svg>
         </form>
 
+        {/* Notification Bell Icon Button with Vibrant Blue Badge */}
+        <button
+          type="button"
+          onClick={() => setIsNotificationsOpen(true)}
+          className="relative w-10 h-10 rounded-full border-1.5 border-[#30312C] bg-white text-[#30312C] flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_2px_0px_#30312C] cursor-pointer group"
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          <Bell className="w-5 h-5 text-[#30312C] transition-transform group-hover:rotate-12" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 bg-[#2c5e91] text-white text-[11px] font-header font-black rounded-full border-1.5 border-[#30312C] flex items-center justify-center shadow-[1px_1px_0px_#30312C] animate-pulse">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </button>
+
         {/* Circular Profile Icon */}
         <Link
           href="/settings"
@@ -161,6 +181,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </Link>
       </div>
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
     </header>
   );
 };
