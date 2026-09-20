@@ -21,7 +21,6 @@ export interface CollaborationCursorOptions {
 
 export const CollaborationCursor = Extension.create<CollaborationCursorOptions>({
   name: "collaborationCursor",
-
   addOptions() {
     return {
       provider: null,
