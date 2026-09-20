@@ -34,6 +34,17 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
     }, 4000);
   };
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const error = searchParams.get('error');
+      if (error) {
+        addToast('Authentication Failed', decodeURIComponent(error), 'error');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleSignUp = async (data: { name: string; email: string; pass: string }) => {
     try {
       const response = await fetch("http://localhost:5000/api/auth/register", {
