@@ -26,10 +26,11 @@ interface TiptapCanvasProps {
   user?: {
     name: string;
     color: string;
+    avatarUrl?: string | null;
   };
   token?: string;
   wsUrl?: string; // Hocuspocus WebSocket URL from backend
-  onCollaboratorsChange?: (users: Array<{ name: string; color: string }>) => void;
+  onCollaboratorsChange?: (users: Array<{ name: string; color: string; avatarUrl?: string | null }>) => void;
 }
 
 export function TiptapCanvas({
@@ -40,7 +41,7 @@ export function TiptapCanvas({
   onExport,
   onShare,
   onContentChange,
-  user = { name: "Natty", color: "#2c5e91" },
+  user = { name: "Natty", color: "#2c5e91", avatarUrl: null },
   token,
   wsUrl,
   onCollaboratorsChange,
@@ -77,6 +78,13 @@ export function TiptapCanvas({
     };
   }, [provider]);
 
+  // Update local awareness when user details (name, color, avatarUrl) change
+  useEffect(() => {
+    if (provider?.awareness && user) {
+      provider.awareness.setLocalStateField("user", user);
+    }
+  }, [provider, user]);
+
   // Track live connected peers via Yjs awareness
   useEffect(() => {
     if (!provider || !provider.awareness) return;
@@ -84,12 +92,13 @@ export function TiptapCanvas({
     const awareness = provider.awareness;
     const handleAwareness = () => {
       const states = awareness.getStates();
-      const userMap = new Map<string, { name: string; color: string }>();
+      const userMap = new Map<string, { name: string; color: string; avatarUrl?: string | null }>();
       states.forEach((state) => {
         if (state.user?.name) {
           userMap.set(state.user.name, {
             name: state.user.name,
             color: state.user.color || "#2c5e91",
+            avatarUrl: state.user.avatarUrl || null,
           });
         }
       });

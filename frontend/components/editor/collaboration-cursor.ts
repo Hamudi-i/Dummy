@@ -15,6 +15,7 @@ export interface CollaborationCursorOptions {
   user: {
     name: string | null;
     color: string | null;
+    avatarUrl?: string | null;
   };
   render?: (user: Record<string, any>) => HTMLElement;
 }
@@ -27,6 +28,7 @@ export const CollaborationCursor = Extension.create<CollaborationCursorOptions>(
       user: {
         name: null,
         color: null,
+        avatarUrl: null,
       },
       render: (user: Record<string, any>) => {
         const cursor = document.createElement("span");
