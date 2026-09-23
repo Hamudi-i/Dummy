@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   Loader2,
 } from "lucide-react";
+import { notificationsStore } from "@/lib/notifications-store";
 
 const AVATAR_COLORS = [
   "bg-[#2c5e91] text-white",
