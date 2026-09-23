@@ -67,7 +67,7 @@ git push origin <your-branch>
    - **Branch**: Select your deployment branch (e.g. `main` or your working branch)
    - **Root Directory**: `Backend` _(⚠️ CRITICAL: Must be `Backend` because this is a monorepo!)_
    - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install --include=dev && npm run build`
    - **Start Command**: `npm run prisma:deploy && npm run start` _(This automatically applies database migrations and starts the server)_
    - **Instance Type**: `Free` ($0/month)
 
