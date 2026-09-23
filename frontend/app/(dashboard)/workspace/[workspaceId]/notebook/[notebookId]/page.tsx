@@ -8,6 +8,7 @@ import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { saveDraft, removeDraft, getDrafts, getSavedNotebookContent, saveNotebookContent } from "@/lib/drafts-store";
 import { api, ApiWorkspaceMember, ApiWorkspaceInvite } from "@/lib/api";
+import { getUserProfile } from "@/lib/user-store";
 import { toast } from "@/components/ui/sonner";
 import { TiptapCanvas } from "@/components/editor/TiptapCanvas";
 import {
@@ -26,6 +27,55 @@ const AVATAR_COLORS = [
   "bg-purple-600 text-white",
   "bg-rose-500 text-white",
 ];
+
+function CollaboratorAvatarBadge({
+  name,
+  avatarUrl,
+  color,
+  fallbackClass,
+  statusTitle,
+  isLive = false,
+}: {
+  name: string;
+  avatarUrl?: string | null;
+  color?: string;
+  fallbackClass?: string;
+  statusTitle: string;
+  isLive?: boolean;
+}) {
+  const [imgError, setImgError] = useState(false);
+  const initial = (name || "U")[0].toUpperCase();
+
+  return (
+    <div
+      className="relative group cursor-pointer"
+      title={`${name} (${statusTitle})`}
+    >
+      <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+        {avatarUrl && !imgError ? (
+          <img
+            src={avatarUrl}
+            alt={name}
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div
+            className={`w-full h-full font-header font-extrabold text-base sm:text-lg flex items-center justify-center text-white ${fallbackClass || ""}`}
+            style={color ? { backgroundColor: color } : undefined}
+          >
+            {initial}
+          </div>
+        )}
+      </div>
+      <span
+        className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs ${isLive ? "animate-pulse" : ""
+          }`}
+        title={statusTitle}
+      />
+    </div>
+  );
+}
 
 export default function NotebookEditorPage() {
   const params = useParams();
@@ -60,11 +110,18 @@ export default function NotebookEditorPage() {
   // Current logged in user & token for WebSockets
   const [currentUserId, setCurrentUserId] = useState("");
   const [token, setToken] = useState("");
-  const [currentUser, setCurrentUser] = useState<{ name: string; color: string }>({
+  const [currentUser, setCurrentUser] = useState<{
+    name: string;
+    color: string;
+    avatarUrl?: string | null;
+  }>({
     name: "You",
     color: "#2c5e91",
+    avatarUrl: null,
   });
-  const [liveCollaborators, setLiveCollaborators] = useState<Array<{ name: string; color: string }>>([]);
+  const [liveCollaborators, setLiveCollaborators] = useState<
+    Array<{ name: string; color: string; avatarUrl?: string | null }>
+  >([]);
 
   const wsUrl =
     process.env.NEXT_PUBLIC_WS_URL ||
@@ -78,6 +135,14 @@ export default function NotebookEditorPage() {
       setToken(t);
 
       const stored = localStorage.getItem("user");
+      let fallbackAvatar: string | null = null;
+      try {
+        const localProfile = getUserProfile();
+        fallbackAvatar = localProfile.profilePic || null;
+      } catch {
+        // ignore
+      }
+
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed.id || parsed.userId) {
@@ -88,10 +153,14 @@ export default function NotebookEditorPage() {
           .split("")
           .reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
         const colorPalette = ["#2c5e91", "#e48358", "#10b981", "#8b5cf6", "#f59e0b", "#ec4899"];
+        const avatarUrl = parsed.avatarUrl || parsed.profilePic || fallbackAvatar;
         setCurrentUser({
           name,
           color: colorPalette[charSum % colorPalette.length],
+          avatarUrl,
         });
+      } else if (fallbackAvatar) {
+        setCurrentUser((prev) => ({ ...prev, avatarUrl: fallbackAvatar }));
       }
     } catch {
       // ignore
@@ -314,64 +383,49 @@ export default function NotebookEditorPage() {
           <div className="flex items-center space-x-3 shrink-0">
             {liveCollaborators.length > 0 ? (
               liveCollaborators.slice(0, 4).map((collab, idx) => {
-                const initial = (collab.name || "U")[0].toUpperCase();
+                const resolvedAvatar =
+                  collab.avatarUrl ||
+                  members.find(
+                    (m) =>
+                      (m.user.name === collab.name || m.user.email === collab.name) &&
+                      m.user.avatarUrl
+                  )?.user.avatarUrl ||
+                  (collab.name === currentUser.name ? currentUser.avatarUrl : null);
+
                 return (
-                  <div
+                  <CollaboratorAvatarBadge
                     key={`${collab.name}-${idx}`}
-                    className="relative group cursor-pointer"
-                    title={`${collab.name} (Active in notebook)`}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-                      <div
-                        className="w-full h-full font-header font-extrabold text-base sm:text-lg flex items-center justify-center text-white"
-                        style={{ backgroundColor: collab.color }}
-                      >
-                        {initial}
-                      </div>
-                    </div>
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs animate-pulse"
-                      title="Active in notebook"
-                    />
-                  </div>
+                    name={collab.name}
+                    avatarUrl={resolvedAvatar}
+                    color={collab.color}
+                    statusTitle="Active in notebook"
+                    isLive={true}
+                  />
                 );
               })
             ) : members.length > 0 ? (
               members.slice(0, 3).map((m, idx) => {
-                const initial = (m.user.name || m.user.email || "U")[0].toUpperCase();
-                const colorClass = AVATAR_COLORS[idx % AVATAR_COLORS.length];
-                const displayName = m.user.name || m.user.email;
+                const displayName = m.user.name || m.user.email || "User";
                 return (
-                  <div
+                  <CollaboratorAvatarBadge
                     key={m.id}
-                    className="relative group cursor-pointer"
-                    title={`${displayName} (${m.role.toLowerCase()})`}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-                      <div className={`w-full h-full ${colorClass} font-header font-extrabold text-base sm:text-lg flex items-center justify-center`}>
-                        {initial}
-                      </div>
-                    </div>
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"
-                      title="Workspace member"
-                    />
-                  </div>
+                    name={displayName}
+                    avatarUrl={m.user.avatarUrl}
+                    fallbackClass={AVATAR_COLORS[idx % AVATAR_COLORS.length]}
+                    statusTitle={`${m.role.toLowerCase()} (Workspace member)`}
+                    isLive={false}
+                  />
                 );
               })
             ) : (
               /* Fallback avatar */
-              <div className="relative group cursor-pointer" title="Active Collaborator">
-                <div className="w-12 h-12 rounded-full bg-[#FAF7EE] border-2 border-[#30312C] shadow-[2.5px_2px_0px_#30312C] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
-                  <div className="w-full h-full bg-[#2c5e91] text-white font-header font-extrabold text-base sm:text-lg flex items-center justify-center">
-                    C
-                  </div>
-                </div>
-                <span
-                  className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"
-                  title="Online"
-                />
-              </div>
+              <CollaboratorAvatarBadge
+                name={currentUser.name || "Collaborator"}
+                avatarUrl={currentUser.avatarUrl}
+                color="#2c5e91"
+                statusTitle="Online"
+                isLive={false}
+              />
             )}
           </div>
         </div>
@@ -503,8 +557,16 @@ export default function NotebookEditorPage() {
                           className="flex items-center justify-between p-2 rounded-xl hover:bg-white/60 transition-colors"
                         >
                           <div className="flex items-center space-x-3">
-                            <div className={`w-9 h-9 rounded-full ${colorClass} font-header font-bold text-xs flex items-center justify-center border border-[#30312C]`}>
-                              {initial}
+                            <div className={`w-9 h-9 rounded-full ${colorClass} font-header font-bold text-xs flex items-center justify-center border border-[#30312C] overflow-hidden bg-[#FAF7EE]`}>
+                              {member.user.avatarUrl ? (
+                                <img
+                                  src={member.user.avatarUrl}
+                                  alt={displayName}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                initial
+                              )}
                             </div>
                             <div>
                               <h4 className="font-header font-bold text-xs text-[#30312C]">
