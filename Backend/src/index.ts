@@ -53,7 +53,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Public health check endpoints
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Backend API Starter Pack - OK");
+  res.status(200).send("Backend API CO-LAB - OK");
 });
 
 app.get("/health", (req: Request, res: Response) => {
