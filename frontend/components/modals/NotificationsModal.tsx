@@ -32,7 +32,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
 }) => {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<"ALL" | "INVITES" | "ACTIVITY">("ALL");
-  
+
   // Verification states
   const [confirmAction, setConfirmAction] = useState<"MARK_ALL_READ" | "DELETE_ALL" | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -40,6 +40,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
   const {
     notifications,
     unreadCount,
+    refreshInvites,
     markAsRead,
     markAllAsRead,
     acceptInvite,
@@ -51,6 +52,12 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      refreshInvites();
+    }
+  }, [isOpen, refreshInvites]);
 
   if (!isOpen || !mounted) return null;
 
@@ -182,22 +189,20 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab("ALL")}
-              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer ${
-                activeTab === "ALL"
-                  ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
-                  : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
-              }`}
+              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer ${activeTab === "ALL"
+                ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
+                : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
+                }`}
             >
               All ({notifications.length})
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("INVITES")}
-              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer flex items-center space-x-1 ${
-                activeTab === "INVITES"
-                  ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
-                  : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
-              }`}
+              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer flex items-center space-x-1 ${activeTab === "INVITES"
+                ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
+                : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
+                }`}
             >
               <span>Invites</span>
               {notifications.filter((n) => n.type === "INVITE" && !n.read).length > 0 && (
@@ -207,11 +212,10 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab("ACTIVITY")}
-              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer ${
-                activeTab === "ACTIVITY"
-                  ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
-                  : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
-              }`}
+              className={`px-3 py-1.5 rounded-xl font-header font-bold text-xs transition-all cursor-pointer ${activeTab === "ACTIVITY"
+                ? "bg-[#2c5e91] text-white shadow-[1px_1px_0px_#30312C]"
+                : "text-[#737067] hover:text-[#30312C] hover:bg-neutral-100"
+                }`}
             >
               Activity
             </button>
@@ -264,11 +268,10 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
               <div
                 key={notif.id}
                 onClick={() => markAsRead(notif.id)}
-                className={`relative p-4 rounded-2xl border-1.5 transition-all cursor-pointer group ${
-                  notif.read
-                    ? "bg-white/80 border-[#30312C]/20 hover:border-[#30312C]/40"
-                    : "bg-[#F0F5FA] border-[#2c5e91]/60 shadow-[2px_2px_0px_#2c5e91]"
-                }`}
+                className={`relative p-4 rounded-2xl border-1.5 transition-all cursor-pointer group ${notif.read
+                  ? "bg-white/80 border-[#30312C]/20 hover:border-[#30312C]/40"
+                  : "bg-[#F0F5FA] border-[#2c5e91]/60 shadow-[2px_2px_0px_#2c5e91]"
+                  }`}
               >
                 {/* Unread Blue Pill Indicator */}
                 {!notif.read && (
