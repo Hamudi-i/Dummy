@@ -45,27 +45,66 @@ export class DocumentSnapshotService {
         return snapshot;
     }
 
+    static async getRecentSnapshotsForUser(userId: string) {
+        if (!userId) return [];
+        return prisma.documentSnapshot.findMany({
+            where: {
+                document: {
+                    workspace: {
+                        members: {
+                            some: { userId },
+                        },
+                    },
+                },
+            },
+            select: {
+                id: true,
+                documentId: true,
+                summary: true,
+                createdAt: true,
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        workspaceId: true,
+                    },
+                },
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 20,
+        });
+    }
+
     static async createSnapshot(documentId: string, createdById?: string, summary?: string, customCrdtState?: Buffer) {
         const document = await prisma.document.findUnique({
             where: { id: documentId },
-            select: { id: true, crdtState: true }
+            select: { id: true, crdtState: true, title: true, plainText: true }
         });
 
         if (!document) {
             throw new NotFoundException("Document not found");
         }
 
-        // use provided binary state, or capture the document's current state
-        const stateToSave = customCrdtState || document.crdtState;
-        if (!stateToSave) {
-            throw new BadRequestException("No document state availabele to snapshot");
-        }
+        // use provided binary state, or document's current CRDT state, or fallback to plain text buffer
+        const stateToSave = customCrdtState || document.crdtState || (document.plainText ? Buffer.from(document.plainText) : Buffer.alloc(0));
+
+        const count = await prisma.documentSnapshot.count({ where: { documentId } });
+        const versionNumber = `v1.${count + 1}`;
+        const autoSummary = summary || `Version snapshot ${versionNumber} created for '${document.title}'`;
 
         return prisma.documentSnapshot.create({
             data: {
                 documentId,
                 createdById,
-                summary: summary || "Auto-saved version",
+                summary: autoSummary,
                 crdtState: new Uint8Array(stateToSave)
             },
             select: {
@@ -73,6 +112,13 @@ export class DocumentSnapshotService {
                 documentId: true,
                 summary: true,
                 createdAt: true,
+                document: {
+                    select: {
+                        id: true,
+                        title: true,
+                        workspaceId: true,
+                    },
+                },
                 createdBy: {
                     select: {
                         id: true,

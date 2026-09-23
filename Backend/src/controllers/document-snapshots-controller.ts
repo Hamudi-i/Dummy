@@ -2,6 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import { DocumentSnapshotService } from "../services/document-snapshot-service";
 
 export class DocumentSnapshotController {
+    static async getRecentSnapshotsForUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = (req as any).currentUser?.userId as string;
+            const snapshots = await DocumentSnapshotService.getRecentSnapshotsForUser(userId);
+            res.status(200).json(snapshots);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async listDocumentSnapshots(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const documentId = req.params.documentId as string;

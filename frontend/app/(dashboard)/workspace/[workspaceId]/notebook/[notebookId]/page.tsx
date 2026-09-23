@@ -8,6 +8,7 @@ import { INITIAL_WORKSPACES, INITIAL_NOTEBOOKS } from "@/lib/mock-data";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { saveDraft, removeDraft, getDrafts, getSavedNotebookContent, saveNotebookContent } from "@/lib/drafts-store";
 import { api, ApiWorkspaceMember, ApiWorkspaceInvite } from "@/lib/api";
+import { notificationsStore } from "@/lib/notifications-store";
 import { toast } from "@/components/ui/sonner";
 import { TiptapCanvas } from "@/components/editor/TiptapCanvas";
 import {
@@ -181,6 +182,10 @@ export default function NotebookEditorPage() {
   const handleSave = async () => {
     try {
       await api.updateDocument(notebookId, { plainText: content });
+      const snapshot = await api.createDocumentSnapshot(notebookId).catch(() => null);
+      if (snapshot) {
+        notificationsStore.loadMyInvites();
+      }
     } catch (error) {
       toast.error("Notebook was not saved", {
         description: error instanceof Error ? error.message : "Please try again.",
