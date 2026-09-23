@@ -52,10 +52,35 @@ export interface ApiWorkspaceInvite {
   token: string;
   expiresAt: string;
   createdAt: string;
+  workspace?: {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string | null;
+  };
   invitedBy?: {
     id: string;
     name?: string | null;
     email: string;
+    avatarUrl?: string | null;
+  };
+}
+
+export interface ApiDocumentSnapshot {
+  id: string;
+  documentId: string;
+  summary: string;
+  createdAt: string;
+  document?: {
+    id: string;
+    title: string;
+    workspaceId: string;
+  };
+  createdBy?: {
+    id: string;
+    name?: string | null;
+    email: string;
+    avatarUrl?: string | null;
   };
 }
 
@@ -82,4 +107,9 @@ export const api = {
   getWorkspaceInvites: (workspaceId: string) => request<ApiWorkspaceInvite[]>(`/api/${workspaceId}/invites`),
   createWorkspaceInvite: (workspaceId: string, email: string, role: "ADMIN" | "MEMBER" = "MEMBER") => request<ApiWorkspaceInvite>(`/api/${workspaceId}/invites`, { method: "POST", body: JSON.stringify({ email, role }) }),
   revokeWorkspaceInvite: (inviteId: string) => request<{ message: string }>(`/api/invites/${inviteId}`, { method: "DELETE" }),
+  getMyInvites: () => request<ApiWorkspaceInvite[]>("/api/invites/me"),
+  acceptWorkspaceInvite: (tokenOrId: string) => request<{ message: string; member: ApiWorkspaceMember }>(`/api/invites/${tokenOrId}/accept`, { method: "POST" }),
+  declineWorkspaceInvite: (tokenOrId: string) => request<{ message: string }>(`/api/invites/${tokenOrId}/decline`, { method: "POST" }),
+  createDocumentSnapshot: (documentId: string, summary?: string) => request<ApiDocumentSnapshot>(`/api/documents/${documentId}/snapshots`, { method: "POST", body: JSON.stringify({ summary }) }),
+  getRecentSnapshots: () => request<ApiDocumentSnapshot[]>("/api/documents/snapshots/recent"),
 };

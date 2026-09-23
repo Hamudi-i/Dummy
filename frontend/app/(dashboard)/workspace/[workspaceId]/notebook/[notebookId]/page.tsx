@@ -250,6 +250,10 @@ export default function NotebookEditorPage() {
   const handleSave = async () => {
     try {
       await api.updateDocument(notebookId, { plainText: content });
+      const snapshot = await api.createDocumentSnapshot(notebookId).catch(() => null);
+      if (snapshot) {
+        notificationsStore.loadMyInvites();
+      }
     } catch (error) {
       toast.error("Notebook was not saved", {
         description: error instanceof Error ? error.message : "Please try again.",

@@ -18,11 +18,17 @@ export default function WorkspacesOverviewPage() {
   const [newIcon, setNewIcon] = useState("palette");
 
   useEffect(() => {
-    api.getWorkspaces().then((items) => setWorkspaces(items.map((ws) => ({
-      id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: "palette", color: "#2c5e91",
-      notebookCount: ws.documents?.filter((doc) => !doc.isArchived).length || 0, lastUpdated: "recently", badgeLabel: "Workspace",
-      badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
-    })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
+    const loadWorkspaces = () => {
+      api.getWorkspaces().then((items) => setWorkspaces(items.map((ws) => ({
+        id: ws.id, title: ws.name, description: ws.description || "Collaborative workspace for notes and sketches.", icon: "palette", color: "#2c5e91",
+        notebookCount: ws.documents?.filter((doc) => !doc.isArchived).length || 0, lastUpdated: "recently", badgeLabel: "Workspace",
+        badgeStyle: "bg-[#2c5e91]/15 text-[#2c5e91] border-[#2c5e91]/30", previewGradient: "from-[#2c5e91]/20 via-[#fdd355]/20 to-[#FAF7EE]",
+      })))).catch((error) => toast.error("Could not load workspaces", { description: error.message }));
+    };
+
+    loadWorkspaces();
+    window.addEventListener("workspace-joined", loadWorkspaces);
+    return () => window.removeEventListener("workspace-joined", loadWorkspaces);
   }, []);
 
   const handleCreateWorkspace = (e: React.FormEvent) => {

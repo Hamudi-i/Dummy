@@ -6,6 +6,7 @@ const router = express.Router({ mergeParams: true });
 
 router.use(Authenticate);
 
+router.get("/snapshots/recent", DocumentSnapshotController.getRecentSnapshotsForUser);
 router.get("/:documentId/snapshots", DocumentSnapshotController.listDocumentSnapshots);
 router.get("/:documentId/snapshots/:id", DocumentSnapshotController.getDocumentSnapshotById);
 router.post("/:documentId/snapshots", DocumentSnapshotController.createDocumentSnapshot);
