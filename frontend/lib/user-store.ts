@@ -15,7 +15,7 @@ export interface UserProfile {
 const DEFAULT_PROFILE: UserProfile = {
   id: "usr-default",
   fullName: "Natty Aman",
-  username: "natty_colab",
+  username: "CoLab_User",
   email: "natty@colab.studio",
   bio: "Product Designer & Developer building collaborative tools.",
   profilePic: "/fox.png",

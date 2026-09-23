@@ -8,6 +8,7 @@ export interface ArchivedItem {
   description?: string;
   archivedAt: string;
   workspaceId?: string;
+  source?: "backend";
 }
 
 const STORAGE_KEY = "colab_archived_items";

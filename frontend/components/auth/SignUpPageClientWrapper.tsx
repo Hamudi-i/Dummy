@@ -71,15 +71,13 @@ export const SignUpPageClientWrapper: React.FC<SignUpPageClientWrapperProps> = (
         return;
       }
 
-      addToast(
-        'Account Created!',
-        `Welcome to Co-Lab, ${data.name || data.email}! Redirecting to login...`,
-        'success'
-      );
+      localStorage.setItem('accessToken', resData.accessToken);
+      localStorage.setItem('refreshToken', resData.refreshToken);
+      if (resData.user) {
+        localStorage.setItem('user', JSON.stringify(resData.user));
+      }
 
-      setTimeout(() => {
-        router.push('/login');
-      }, 1500);
+      router.replace('/workspace');
     } catch (error) {
       console.error("Signup error:", error);
       addToast(

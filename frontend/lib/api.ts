@@ -90,7 +90,8 @@ export const api = {
   createWorkspace: (data: Pick<ApiWorkspace, "name"> & Partial<ApiWorkspace>) => request<ApiWorkspace>("/api/workspaces", { method: "POST", body: JSON.stringify(data) }),
   updateWorkspace: (id: string, data: Partial<ApiWorkspace>) => request<ApiWorkspace>(`/api/workspaces/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteWorkspace: (id: string) => request<void>(`/api/workspaces/${id}`, { method: "DELETE" }),
-  getDocuments: (workspaceId: string) => request<ApiDocument[]>(`/api/workspaces/${workspaceId}/documents`),
+  getDocuments: (workspaceId: string, archived = false) =>
+    request<ApiDocument[]>(`/api/workspaces/${workspaceId}/documents${archived ? "?archived=true" : ""}`),
   getDocument: (id: string) => request<ApiDocument>(`/api/documents/${id}`),
   createDocument: (workspaceId: string, data: Pick<ApiDocument, "title"> & Partial<ApiDocument>) => request<ApiDocument>(`/api/workspaces/${workspaceId}/documents`, { method: "POST", body: JSON.stringify(data) }),
   updateDocument: (id: string, data: Partial<Pick<ApiDocument, "title" | "icon" | "plainText" | "description" | "pageCount" | "status" | "sortOrder">>) => request<ApiDocument>(`/api/documents/${id}`, { method: "PUT", body: JSON.stringify(data) }),

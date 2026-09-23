@@ -8,6 +8,7 @@ import {
   deleteArchivedItem,
   ArchivedItem,
 } from "@/lib/archive-store";
+import { api } from "@/lib/api";
 import { IconRenderer } from "@/components/ui/IconRenderer";
 import { ConfirmDeleteModal } from "@/components/modals/ConfirmDeleteModal";
 import {
@@ -27,25 +28,83 @@ export default function ArchivePage() {
   const [deleteCandidate, setDeleteCandidate] = useState<{ id: string; title: string; type: string } | null>(null);
 
   useEffect(() => {
-    setArchivedList(getArchivedItems());
+    let active = true;
+
+    const loadArchivedItems = async () => {
+      if (!localStorage.getItem("accessToken")) {
+        if (active) setArchivedList(getArchivedItems());
+        return;
+      }
+
+      try {
+        const workspaces = await api.getWorkspaces();
+        const archivedDocuments = await Promise.all(
+          workspaces.map(async (workspace) => {
+            const documents = await api.getDocuments(workspace.id, true);
+            return documents.map((document) => ({
+              id: document.id,
+              title: document.title,
+              type: "notebook" as const,
+              icon: document.icon || "BookOpen",
+              description: document.description || undefined,
+              archivedAt: document.updatedAt
+                ? `Archived ${new Date(document.updatedAt).toLocaleDateString()}`
+                : "Archived recently",
+              workspaceId: workspace.id,
+              source: "backend" as const,
+            }));
+          })
+        );
+        if (active) setArchivedList(archivedDocuments.flat());
+      } catch (error) {
+        console.error("Could not load archived documents:", error);
+        if (active) setArchivedList(getArchivedItems());
+      }
+    };
+
+    loadArchivedItems();
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const handleRestore = (id: string, title: string) => {
-    restoreItem(id);
-    setArchivedList(getArchivedItems());
-    toast.success("Restored Successfully", {
-      description: `"${title}" has been restored to your active workspace.`,
-    });
+  const handleRestore = async (item: ArchivedItem) => {
+    try {
+      if (item.source === "backend") {
+        await api.restoreDocument(item.id);
+      } else {
+        restoreItem(item.id);
+      }
+      setArchivedList((items) => items.filter((archivedItem) => archivedItem.id !== item.id));
+      toast.success("Restored Successfully", {
+        description: `"${item.title}" has been restored to your active workspace.`,
+      });
+    } catch (error) {
+      toast.error("Could not restore item", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteCandidate) return;
-    deleteArchivedItem(deleteCandidate.id);
-    setArchivedList(getArchivedItems());
-    toast.error("Permanently Deleted", {
-      description: `"${deleteCandidate.title}" removed from the archive vault.`,
-    });
-    setDeleteCandidate(null);
+    const item = archivedList.find((archivedItem) => archivedItem.id === deleteCandidate.id);
+    try {
+      if (item?.source === "backend") {
+        await api.deleteDocument(deleteCandidate.id);
+      } else {
+        deleteArchivedItem(deleteCandidate.id);
+      }
+      setArchivedList((items) => items.filter((archivedItem) => archivedItem.id !== deleteCandidate.id));
+      toast.error("Permanently Deleted", {
+        description: `"${deleteCandidate.title}" removed from the archive vault.`,
+      });
+      setDeleteCandidate(null);
+    } catch (error) {
+      toast.error("Could not delete item", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
   };
 
   const filteredItems = archivedList.filter((item) => {
@@ -192,7 +251,7 @@ export default function ArchivePage() {
                   <div className="flex items-center justify-start space-x-3 relative z-10 pt-2 left-8">
                     <button
                       type="button"
-                      onClick={() => handleRestore(ws.id, ws.title)}
+                      onClick={() => handleRestore(ws)}
                       className="px-3 py-1 bg-[#FAF7EE] hover:bg-white text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1"
                       title="Restore Workspace"
                     >
@@ -325,7 +384,7 @@ export default function ArchivePage() {
                     <div className="flex items-center justify-between text-xs font-body relative z-10 pt-0 -top-3 -mt-1">
                       <button
                         type="button"
-                        onClick={() => handleRestore(nb.id, nb.title)}
+                        onClick={() => handleRestore(nb)}
                         className="px-3 py-1 bg-[#FAF7EE] hover:bg-white text-[#30312C] font-header font-bold text-xs rounded-xl border border-[#30312C] shadow-[1.5px_1.5px_0px_#30312C] transition-all cursor-pointer flex items-center space-x-1"
                       >
                         <RotateCcw className="w-3.5 h-3.5 text-[#2c5e91]" />
